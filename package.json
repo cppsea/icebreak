@@ -1,0 +1,24 @@
+{
+  "private": true,
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": []
+  },
+  "name": "icebreak",
+  "version": "0.0.0",
+  "scripts": {
+    "app:ios": "yarn workspace app ios",
+    "app:android": "yarn workspace app android",
+    "app:start": "yarn workspace app start",
+    "app:setup": "yarn workspace app pod:install",
+    "server:start": "yarn workspace server start",
+    "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn"
+  },
+  "description": "organization engagement platform",
+  "main": "index.js",
+  "author": "SEA",
+  "license": "MIT",
+  "packageManager": "yarn@3.2.3"
+}

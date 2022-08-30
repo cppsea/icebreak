@@ -1,0 +1,11 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "SEA",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "express": "^4.18.1"
+  }
+}
