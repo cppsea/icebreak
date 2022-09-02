@@ -1,11 +1,19 @@
 const express = require("express");
-const app = express();
+const cors = require("cors");
 
+const app = express();
 const PORT = 3000;
 
-app.get('/', (request, response) => {
+const users = require("./controllers/users");
+
+app.use(cors());
+app.use(express.json());
+
+app.get('/', async (request, response) => {
   response.send("Hello SEA!");
 });
+
+app.use('/api/users', users);
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
