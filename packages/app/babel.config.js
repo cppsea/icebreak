@@ -5,7 +5,6 @@ module.exports = {
       require.resolve('babel-plugin-module-resolver'),
       {
         root: ['./packages/app'],
-        extensions: ['.ts', '.tsx', '.jsx', '.js', '.json', '.jpg', '.jpeg'],
         alias: {
           '@app': './packages/app',
         },

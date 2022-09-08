@@ -2,9 +2,9 @@ import React from 'react';
 import { SafeAreaView } from 'react-native';
 
 function Screen(props) {
-  const { children } = props;
+  const { children, ...rest } = props;
 
-  return <SafeAreaView>{children}</SafeAreaView>;
+  return <SafeAreaView {...rest}>{children}</SafeAreaView>;
 }
 
 export default Screen;

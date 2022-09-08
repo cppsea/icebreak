@@ -3,9 +3,13 @@ import { NavigationContainer } from '@react-navigation/native';
 
 import LandingStack from './screens/landing/LandingStack';
 
+const LINKING_CONFIG = {
+  prefixes: ['icebreak://'],
+};
+
 function Root() {
   return (
-    <NavigationContainer>
+    <NavigationContainer linking={LINKING_CONFIG}>
       <LandingStack />
     </NavigationContainer>
   );

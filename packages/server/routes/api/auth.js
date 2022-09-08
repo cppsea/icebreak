@@ -12,7 +12,7 @@ passport.deserializeUser(AuthController.deserializeUser);
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
   clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "/auth/google/callback"
+  callbackURL: "api/auth/google/callback"
 }, AuthController.createUser));
 
 router.get("/google", passport.authenticate("google", {

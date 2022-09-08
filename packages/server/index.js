@@ -30,7 +30,7 @@ app.get('/', async (request, response) => {
   response.send("Hello SEA!");
 });
 
-app.use('/auth', auth);
+app.use('/api/auth', auth);
 app.use('/api/users', users);
 
 app.listen(PORT, () => {
