@@ -2,6 +2,7 @@ const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
 const session = require("express-session");
+const cookieParser = require("cookie-parser");
 const passport = require("passport");
 
 dotenv.config();
@@ -12,7 +13,13 @@ const PORT = 5050;
 const users = require("./routes/api/users");
 const auth = require("./routes/api/auth");
 
-app.use(cors());
+app.use(cors({
+  origin: ["icebreak://", "http://localhost:8081"],
+  credentials: true,
+}));
+
+app.use(cookieParser());
+// app.use(express.bodyParser());
 app.use(express.json());
 
 app.use(

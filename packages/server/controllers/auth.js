@@ -12,7 +12,6 @@ async function createUser(accessToken, refreshToken, profile, callback) {
         RETURNING *
       `);
       console.log("user doesn't exist. create one");
-      console.log(profile);
       callback(null, createUser.rows[0]);
     } else {
       console.log("user exists");
@@ -37,7 +36,7 @@ async function deserializeUser(id, callback) {
   try {
     console.log("deserializeUser");
     console.log("id", id);
-    const user = await postgres.query(`select * from users where id='${id}'`);
+    const user = await postgres.query(`select * from users where user_id='${id}'`);
     if (user.rows) {
       console.log(user.rows[0]);
       callback(null, user.rows[0]);
