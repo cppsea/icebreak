@@ -1,13 +1,12 @@
 import React from 'react';
-import { SafeAreaView, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
+
+import LandingStack from './screens/landing/LandingStack';
 
 function Root() {
   return (
     <NavigationContainer>
-      <SafeAreaView>
-        <Text>hello sea</Text>
-      </SafeAreaView>
+      <LandingStack />
     </NavigationContainer>
   );
 }
