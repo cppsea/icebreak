@@ -1,21 +1,20 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback } from 'react';
 import { Linking, Text } from 'react-native';
 import { InAppBrowser } from 'react-native-inappbrowser-reborn';
-import CookieManager from '@react-native-cookies/cookies';
 
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
 
 import { useUserContext } from '@app/utils/UserContext';
+import AsyncStorage from '@react-native-community/async-storage';
+import { getUserInfo } from '@app/utils/datalayer';
 
 function LandingScreen() {
   // const navigation = useNavigation();
   const { user, setUser } = useUserContext();
 
   const handleOnLoginWithGoogle = useCallback(async () => {
-    // Linking.openURL('http://localhost:5050/api/auth/google');
     try {
-      await CookieManager.clearAll();
       if (await InAppBrowser.isAvailable()) {
         const result = await InAppBrowser.openAuth(
           'http://localhost:5050/api/auth/google',
@@ -30,31 +29,23 @@ function LandingScreen() {
           },
         );
 
-        console.log(result);
-        Linking.openURL(result.url);
-        const [, payload] = result.url.match(/user=([^#]+)/);
+        const [, token] = result.url.match(/token=([^#]+)/);
 
-        const normalizedPayload = JSON.parse(decodeURIComponent(payload));
-        console.log(normalizedPayload);
+        await AsyncStorage.setItem('token', token);
+        const payload = await getUserInfo();
+
         setUser({
           ...user,
-          data: normalizedPayload,
+          isLoggedIn: true,
+          data: payload,
         });
-        console.log(await CookieManager.getAll());
+        Linking.openURL(result.url);
+      } else {
+        Linking.openURL('http://localhost:5050/api/auth/google');
       }
     } catch (error) {
       console.log(error);
     }
-  }, []);
-
-  useEffect(() => {
-    Linking.addEventListener('url', ({ url }) => {
-      console.log(url);
-    });
-
-    return () => {
-      Linking.removeAllListeners('url');
-    };
   }, [user, setUser]);
 
   return (

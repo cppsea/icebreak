@@ -19,19 +19,9 @@ app.use(cors({
 }));
 
 app.use(cookieParser());
-// app.use(express.bodyParser());
 app.use(express.json());
 
-app.use(
-  session({
-    secret: process.env.PASSPORT_SECRET,
-    resave: true,
-    saveUninitialized: true
-  })
-);
-
 app.use(passport.initialize());
-app.use(passport.session());
 
 app.get('/', async (request, response) => {
   response.send("Hello SEA!");

@@ -1,4 +1,5 @@
 const postgres = require("../utils/postgres");
+const token = require("../utils/token");
 
 async function createUser(accessToken, refreshToken, profile, callback) {
   try {
@@ -46,8 +47,18 @@ async function deserializeUser(id, callback) {
   }
 }
 
+async function authenticate(request, response, next) {
+  const authToken = request.get("Authorization");
+  console.log(authToken);
+  const payload = token.verify(authToken);
+  console.log(authToken);
+  request.user = payload;
+  next();
+}
+
 module.exports = {
   createUser,
   serializeUser,
-  deserializeUser
+  deserializeUser,
+  authenticate
 }

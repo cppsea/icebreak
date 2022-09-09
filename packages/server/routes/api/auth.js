@@ -1,6 +1,7 @@
 const express = require("express");
 const passport = require("passport");
 const router = express.Router();
+const token = require("../../utils/token");
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -15,17 +16,28 @@ passport.use(new GoogleStrategy({
 passport.serializeUser(AuthController.serializeUser);
 passport.deserializeUser(AuthController.deserializeUser);
 
+router.get('/user', AuthController.authenticate, (request, response) => {
+  try {
+    response.send(request.user);
+  } catch(error) {
+    response.status(403).send({
+      message: error.message,
+      success: false
+    });
+  }
+});
+
 router.get("/google", passport.authenticate("google", {
-  scope: ["profile", "email"]
+  scope: ["profile", "email"],
+  prompt: 'select_account',
 }));
 
 router.get("/google/callback", passport.authenticate("google", {
   failureRedirect: "icebreak://",
-  session: true
+  session: false
 }), (request, response) => {
-  console.log(request.isAuthenticated());
-  response.redirect(`icebreak://login?user=${JSON.stringify(request.user)}`);
-  // response.redirect(`http://localhost:3000/feed`);
+  const newToken = token.generate(request.user);
+  response.redirect(`icebreak://login?token=${newToken}`);
 });
 
 router.get('/logout', (request, response) => {

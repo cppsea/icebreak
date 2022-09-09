@@ -7,7 +7,8 @@ async function getAllUsers() {
 
 async function getUser(userId) {
   const query = await postgres.query(`SELECT * FROM users WHERE user_id='${userId}'`);
-  return query.rows;
+  console.log('getUser', query);
+  return query.rows[0];
 }
 
 module.exports = {
