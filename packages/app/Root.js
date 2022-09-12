@@ -2,13 +2,15 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import AsyncStorage from '@react-native-community/async-storage';
 
 import { UserProvider, useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 
 import LandingStack from '@app/screens/landing/LandingStack';
 import FeedStack from '@app/screens/feed/FeedStack';
-import AsyncStorage from '@react-native-community/async-storage';
+import GroupStack from '@app/screens/group/GroupStack';
+import ExploreStack from '@app/screens/explore/ExploreStack';
 
 const LINKING_CONFIG = {
   prefixes: ['icebreak://'],
@@ -19,8 +21,10 @@ const Stack = createNativeStackNavigator();
 
 function TabNavigation() {
   return (
-    <Tab.Navigator>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
       <Tab.Screen name="Feed" component={FeedStack} />
+      <Tab.Screen name="Explore" component={ExploreStack} />
+      <Tab.Screen name="Orgs" component={GroupStack} />
     </Tab.Navigator>
   );
 }
@@ -32,7 +36,6 @@ function App() {
     const token = await AsyncStorage.getItem('token');
     if (token) {
       const payload = await getUserInfo();
-      console.log('@', payload);
       setUser({
         ...user,
         isLoggedIn: true,

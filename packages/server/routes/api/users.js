@@ -5,8 +5,15 @@ const UserController = require("../../controllers/users");
 const AuthController = require("../../controllers/auth");
 
 router.get('/', async (request, response) => {
-  const users = await UserController.getAllUsers();
-  response.send(users);
+  try {
+    const users = await UserController.getAllUsers();
+    response.send(users);
+  } catch(error) {
+    response.send({
+      success: false,
+      message: error.message
+    });
+  }
 });
 
 router.get('/:userId', AuthController.authenticate, async (request, response) => {

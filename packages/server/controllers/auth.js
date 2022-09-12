@@ -1,7 +1,7 @@
 const postgres = require("../utils/postgres");
 const token = require("../utils/token");
 
-async function createUser(accessToken, refreshToken, profile, callback) {
+async function create(accessToken, refreshToken, profile, callback) {
   try {
     let { sub: id, given_name, family_name, picture, email } = profile._json;
     picture = picture.replace("=s96-c", "");
@@ -23,7 +23,7 @@ async function createUser(accessToken, refreshToken, profile, callback) {
   }
 }
 
-async function serializeUser(payload, callback) {
+async function serialize(payload, callback) {
   try {
     const { user_id } = payload;
     console.log("serializeUser", user_id);
@@ -33,7 +33,7 @@ async function serializeUser(payload, callback) {
   }
 }
 
-async function deserializeUser(id, callback) {
+async function deserialize(id, callback) {
   try {
     console.log("deserializeUser");
     console.log("id", id);
@@ -57,8 +57,8 @@ async function authenticate(request, response, next) {
 }
 
 module.exports = {
-  createUser,
-  serializeUser,
-  deserializeUser,
+  create,
+  serialize,
+  deserialize,
   authenticate
 }
