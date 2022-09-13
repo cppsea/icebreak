@@ -18,14 +18,14 @@ Start the backend server by running:
 yarn server:start
 ```
 
-Starting Metro; the JavaScript bundler that ships with React Native.
+Start Metro; the JavaScript bundler that ships with React Native.
 ```
 yarn app:start
 ```
 
 Start Emulator
 
-iOS:
+iOS (MacOS Only)
 ```
 yarn app:ios
 ```
