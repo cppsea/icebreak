@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { Text, Image, StyleSheet } from 'react-native';
 import axios from 'axios';
-import AsyncStorage from '@react-native-community/async-storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Screen from '@app/components/Screen';
 import Button from '@app/components/Button';

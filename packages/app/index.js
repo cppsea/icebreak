@@ -1,5 +1,8 @@
-import { AppRegistry } from 'react-native';
-import Root from './Root';
-import { name as appName } from './app.json';
+import { registerRootComponent } from 'expo';
 
-AppRegistry.registerComponent(appName, () => Root);
+import Root from './Root';
+
+// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
+// It also ensures that whether you load the app in Expo Go or in a native build,
+// the environment is set up appropriately
+registerRootComponent(Root);
