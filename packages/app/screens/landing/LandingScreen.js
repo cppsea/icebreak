@@ -1,6 +1,7 @@
-import React, { useCallback } from 'react';
-import { Linking, Text } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { Text } from 'react-native';
 import * as WebBroswer from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
 
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
@@ -8,48 +9,57 @@ import Screen from '@app/components/Screen';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
+import axios from 'axios';
+
+WebBroswer.maybeCompleteAuthSession();
 
 function LandingScreen() {
-  // const navigation = useNavigation();
   const { user, setUser } = useUserContext();
+
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    responseType: 'id_token',
+    expoClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+    iosClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+    androidClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+    webClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+  });
 
   const handleOnLoginWithGoogle = useCallback(async () => {
     try {
-      //   const result = await InAppBrowser.openAuth(
-      //     'http://localhost:5050/api/auth/google',
-      //     'icebreak://',
-      //     {
-      //       // iOS Properties
-      //       ephemeralWebSession: false,
-      //       // Android Properties
-      //       showTitle: false,
-      //       enableUrlBarHiding: true,
-      //       enableDefaultShare: false,
-      //     },
-      //   );
+      const result = await promptAsync();
 
-      //   const [, token] = result.url.match(/token=([^#]+)/);
+      if (request.type !== 'success') {
+        throw new Error("Failed to authenticate with Google's OAuth");
+      }
 
-      //   await AsyncStorage.setItem('token', token);
-      //   const payload = await getUserInfo();
+      const id_token = result.params.id_token;
 
-      //   setUser({
-      //     ...user,
-      //     isLoggedIn: true,
-      //     data: payload,
-      //   });
-      //   Linking.openURL(result.url);
-      const result = await WebBroswer.openAuthSessionAsync(`${ENDPOINT}/auth/google`, "icebreak://");
-      console.log(result);
-    } catch (error) {
-      console.log(error);
+      const body = {
+        accessToken: id_token
+      };
+
+      const { data } = await axios.post(`${ENDPOINT}/auth/verify`, body);
+      if (data?.success) {
+        setUser({
+          ...user,
+          isLoggedIn: true,
+          data: data.payload
+        }); 
+      }
+    } catch(error) {
+      console.log(error.message);
     }
-  }, [user, setUser]);
+  }, [user, setUser, request]);
 
   return (
     <Screen>
       <Text>icebreak</Text>
-      <Button onPress={handleOnLoginWithGoogle} title="login with google" />
+      <Text>Login</Text>
+      <Button
+        disabled={!request}
+        onPress={handleOnLoginWithGoogle}
+        title="login with google"
+      />
     </Screen>
   );
 }

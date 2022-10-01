@@ -32,8 +32,8 @@ function FeedScreen() {
 
   return (
     <Screen>
-      <Text>Hello, {user.data.first_name}</Text>
-      <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
+      <Text>Hello, {user.data.firstName}</Text>
+      <Image style={styles.avatar} source={{ uri: user.data.picture }} />
       <Text>{JSON.stringify(user)}</Text>
       <Button onPress={handleOnLogout} title="logout" />
       <Button onPress={handleGetAllUsers} title="get all users" />
