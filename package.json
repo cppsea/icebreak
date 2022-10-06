@@ -16,7 +16,10 @@
     "server:start": "yarn workspace server start",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
-    "dev": "yarn workspace server dev; yarn workspace app dev"
+    "dev": "node ./scripts/run.js"
+  },
+  "devDependencies": {
+    "ttab": "^0.7.3"
   },
   "description": "organization engagement platform",
   "main": "index.js",

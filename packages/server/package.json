@@ -23,7 +23,6 @@
     "pg": "^8.8.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19",
-    "ttab": "^0.7.3"
+    "nodemon": "^2.0.19"
   }
 }
