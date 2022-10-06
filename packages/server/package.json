@@ -6,7 +6,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon index.js",
+    "forward": "ttab node scripts/ngrok.js",
+    "dev": "ttab yarn start"
   },
   "dependencies": {
     "cookie-parser": "^1.4.6",
@@ -21,6 +23,7 @@
     "pg": "^8.8.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "ttab": "^0.7.3"
   }
 }

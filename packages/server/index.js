@@ -7,7 +7,7 @@ const passport = require("passport");
 dotenv.config();
 
 const app = express();
-const PORT = 5050;
+const PORT = process.env.PORT || 5050;
 
 const users = require("./routes/api/users");
 const auth = require("./routes/api/auth");

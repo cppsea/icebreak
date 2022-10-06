@@ -6,7 +6,8 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "dev": "ttab expo start"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.17.3",

@@ -14,7 +14,9 @@
     "app:start": "yarn workspace app start",
     "app:link": "cd packages/app/ios; pod install;",
     "server:start": "yarn workspace server start",
-    "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn"
+    "port:forward": "yarn workspace server forward",
+    "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
+    "dev": "yarn workspace server dev; yarn workspace app dev"
   },
   "description": "organization engagement platform",
   "main": "index.js",
