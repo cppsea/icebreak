@@ -1,10 +1,15 @@
 import React from 'react';
-import { SafeAreaView } from 'react-native';
+import { SafeAreaView, StatusBar } from 'react-native';
 
 function Screen(props) {
   const { children, ...rest } = props;
 
-  return <SafeAreaView {...rest}>{children}</SafeAreaView>;
+  return (
+    <SafeAreaView {...rest}>
+      <StatusBar barStyle='dark-content'/>
+      {children}
+    </SafeAreaView>
+  );
 }
 
 export default Screen;

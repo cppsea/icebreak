@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect } from 'react';
+import axios from 'axios';
 import { Text } from 'react-native';
 import * as WebBroswer from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
@@ -9,7 +10,6 @@ import Screen from '@app/components/Screen';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
-import axios from 'axios';
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -28,17 +28,17 @@ function LandingScreen() {
     try {
       const result = await promptAsync();
 
-      if (request.type !== 'success') {
+      if (result.type !== 'success') {
         throw new Error("Failed to authenticate with Google's OAuth");
       }
 
       const id_token = result.params.id_token;
 
       const body = {
-        accessToken: id_token
+        token: id_token
       };
 
-      const { data } = await axios.post(`${ENDPOINT}/auth/verify`, body);
+      const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {
         setUser({
           ...user,

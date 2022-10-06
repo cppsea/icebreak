@@ -26,7 +26,6 @@ router.post('/verify', async (request, response) => {
     if (accessToken == undefined) {
       throw new Error("AccessToken isn't defined in body.");
     }
-    console.log(accessToken);
 
     const { payload } = await client.verifyIdToken({
       idToken: accessToken,
@@ -62,10 +61,43 @@ router.get('/user', AuthController.authenticate, (request, response) => {
   }
 });
 
-router.get("/google", passport.authenticate("google", {
-  scope: ["profile", "email"],
-  prompt: 'select_account',
-}));
+// router.get("/google", passport.authenticate("google", {
+//   scope: ["profile", "email"],
+//   prompt: 'select_account',
+// }));
+
+router.post("/google", AuthController.login, async (request, response) => {
+  try {
+
+    const { 
+      user_id,
+      joined_date,
+      last_login,
+      first_name,
+      last_name,
+      email,
+      avatar
+    } = request.user;
+
+    response.send({
+      success: true,
+      payload: {
+        userId: user_id,
+        firstName: first_name,
+        lastName: last_name,
+        avatar: avatar,
+        email: email,
+        joinedDate: joined_date,
+        lastLogin: last_login
+      }
+    });
+  } catch(error) {
+    response.status(403).send({
+      message: error.message,
+      success: false
+    });
+  }
+});
 
 router.get("/google/callback", passport.authenticate("google", {
   failureRedirect: "icebreak://",
