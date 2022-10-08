@@ -1,17 +1,28 @@
 const fs = require("fs");
 const os = require("os");
-const { exec } = require("child_process");
-const PORT = 5050;
+const path = require("path");
+const { exec, execSync } = require("child_process");
 
+const PORT = 5050;
 const systemType = os.platform();
 
-if ((systemType !== "linux") && systemType !== "darwin") {
-  console.log("This command currently only supports linux or unix at the moment.");
+if (systemType !== "darwin") {
+  console.log("This command currently only supports unix at the moment.");
   return;
 }
 
+function newTerminal(command) {
+  const PWD = path.join(__dirname, "../");
+  execSync(`
+  osascript -e 'tell application "Terminal" to activate' \
+  -e 'tell application "System Events" to keystroke "t" using {command down}' \
+  -e 'tell application "Terminal" to do script "cd ${PWD} && ${command}" in front window'
+  `);
+}
+
+// Make sure all instances of ngrok's process doesn't exist.
 exec("killall ngrok");
-exec(`ttab ngrok http ${PORT}`);
+newTerminal(`ngrok http ${PORT}`);
 
 setTimeout(() => {
   exec("curl http://127.0.0.1:4040/api/tunnels", (error, stdout) => {
@@ -38,5 +49,5 @@ setTimeout(() => {
   });
 }, 3000);
 
-exec("ttab yarn server:start");
-exec("ttab yarn app:start");
+newTerminal("yarn server:start");
+newTerminal("yarn app:start");
