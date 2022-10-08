@@ -44,7 +44,7 @@ async function authenticateWithGoogle(token) {
   if (rows.length < 1) {
     const createUser = await postgres.query(`
       INSERT INTO Users (user_id, email, avatar, first_name, last_name)
-      VALUES ('${id}', '${email}', '${picture}', '${given_name}', '${family_name}')
+      VALUES ('${userId}', '${email}', '${picture}', '${given_name}', '${family_name}')
       RETURNING *
     `);
 
