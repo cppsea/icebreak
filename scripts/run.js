@@ -1,27 +1,67 @@
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const { exec, execSync } = require("child_process");
+const { exec, execSync, spawn } = require("child_process");
 
 const PORT = 5050;
+const PATH_LIMIT = 1024;
+const SPAWN_SHELL_DELAY = 1000;
+const REWRITE_NGROK_URL_DELAY = 3000;
+const NGROK_PATH = process.argv[2];
 const systemType = os.platform();
 
-if (systemType !== "darwin") {
-  console.log("This command currently only supports unix at the moment.");
-  return;
+const windowsShellOptions = {
+  shell: process.env.ComSpec || "C:\\Windows\\system32\\cmd.exe",
+};
+
+function setNgrokPath() {
+  if (!NGROK_PATH) return;
+
+  const newPath = process.env.path + ";" + NGROK_PATH;
+
+  if (newPath.length > PATH_LIMIT) {
+    throw new Error(
+      "Your path variable is over 1024 characters long. You will have to shorten it or add ngrok manually to your path."
+    );
+  } else {
+    console.log("path changed");
+    exec(`setx PATH "%PATH%;${NGROK_PATH}"`);
+  }
 }
 
 function newTerminal(command) {
-  const PWD = path.join(__dirname, "../");
-  execSync(`
-  osascript -e 'tell application "Terminal" to activate' \
-  -e 'tell application "System Events" to keystroke "t" using {command down}' \
-  -e 'tell application "Terminal" to do script "cd ${PWD} && ${command}" in front window'
-  `);
+  const CWD = path.join(__dirname, "../");
+
+  switch (systemType) {
+    case "win32":
+      // empty double quotes is intentional because of how the "start" Windows
+      // command parameters work, setTimeout() used for Windows to prevent new
+      // shells from opening too fast and skipping some commands
+      setTimeout(() => {
+        spawn(`start "" /d ${CWD} ${command}`, [], windowsShellOptions);
+      }, SPAWN_SHELL_DELAY);
+      break;
+    case "darwin":
+      execSync(`
+      osascript -e 'tell application "Terminal" to activate' \
+      -e 'tell application "System Events" to keystroke "t" using {command down}' \
+      -e 'tell application "Terminal" to do script "cd ${CWD} && ${command}" in front window'
+      `);
+      break;
+    default:
+      console.log(
+        "This dev script currently only supports Windows/unix at the moment."
+      );
+  }
 }
 
 // Make sure all instances of ngrok's process doesn't exist.
-exec("killall ngrok");
+if (systemType === "win32") {
+  setNgrokPath();
+  spawn("Taskkill /IM ngrok.exe /F", [], windowsShellOptions);
+} else if (systemType === "darwin") {
+  exec("killall ngrok");
+}
 newTerminal(`ngrok http ${PORT}`);
 
 setTimeout(() => {
@@ -35,19 +75,22 @@ setTimeout(() => {
         throw error;
       } else {
         const FILE_PATH = "./packages/app/utils/constants.js";
-        fs.readFile(FILE_PATH, "utf-8", function(error, data) {
+        fs.readFile(FILE_PATH, "utf-8", function (error, data) {
           if (error) throw error;
-          const overwrite = data.replace(/\b(https:\/\/)\b.*\b(.ngrok.io)\b/, public_url);
+          const overwrite = data.replace(
+            /\b(https:\/\/)\b.*\b(.ngrok.io)\b/,
+            public_url
+          );
 
-          fs.writeFile(FILE_PATH, overwrite, "utf-8", function(error) {
+          fs.writeFile(FILE_PATH, overwrite, "utf-8", function (error) {
             if (error) throw error;
             console.log("Successfully overwrite ngrok URL");
           });
         });
       }
-    })
+    });
   });
-}, 3000);
+}, REWRITE_NGROK_URL_DELAY);
 
 newTerminal("yarn server:start");
 newTerminal("yarn app:start");
