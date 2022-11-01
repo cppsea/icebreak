@@ -8,6 +8,54 @@ CREATE TABLE users (
   avatar varchar(255) NOT NULL
 );
 
+CREATE TABLE Guild (
+  guild_id VARCHAR(255),
+  name VARCHAR(100),
+  handler VARCHAR(50),
+  description VARCHAR(255),
+  media TEXT[],
+  invite_only BOOLEAN,
+  PRIMARY KEY(guild_id)
+);
+
+CREATE TABLE Event (
+  event_id VARCHAR(255),
+  guild_id VARCHAR(255),
+  title VARCHAR(255),
+  description VARCHAR(255),
+  start_date TIMESTAMP,
+  end_date TIMESTAMP,
+  location VARCHAR(255),
+  thumbnail VARCHAR(255),
+  PRIMARY KEY(event_id),
+  FOREIGN KEY(guild_id)
+    REFERENCES Guild(guild_id) 
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
+
+INSERT INTO Guild
+VALUES (
+  'nfb38fv30fb339fb',
+  'Software Engineering Association',
+  'cppsea',
+  'The Software Engineering Association (SEA) teaches and encourages the professional skills needed to be a Software Engineer, including code review, unit testing, communication, and software design. Our online and in-meeting exercises allow anyone, novice or professional, to sharpen and practice these skills.',
+  '{https://www.instagram.com/cpp.sea, https://github.com/cppsea}',
+  true
+);
+
+INSERT INTO Event
+VALUES (
+  '384629bffb28f2',
+  'nfb38fv30fb339fb',
+  'SEA goes to Innovation Brew Works',
+  'Come join us for our first social hangout at the Innovation Brew Works. Meet other SEA members while playing board games and munching on food.',
+  '2022-10-14 19:00:00',
+  '2022-10-14 22:00:00',
+  '3650 W Temple Ave, Pomona, CA 91768',
+  'https://thepolypost.com/wp-content/uploads/2018/02/t9u2ajcvo6bemz7qbahg.jpg'
+);
+
 INSERT INTO users (user_id, first_name, last_name, email, avatar) 
 VALUES (
   'sdfdf2f2bf2efgasdfssfsdff',
