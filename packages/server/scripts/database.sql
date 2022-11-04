@@ -34,6 +34,36 @@ CREATE TABLE Event (
     ON DELETE SET NULL
 );
 
+CREATE TABLE user_guild (
+  user_id VARCHAR(255),
+  guild_id VARCHAR(255),
+  FOREIGN KEY(user_id)
+    REFERENCES users(user_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  FOREIGN KEY(guild_id)
+    REFERENCES Guild(guild_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  PRIMARY KEY(user_id, guild_id),
+  user_role VARCHAR(255),
+  points SMALLINT,
+  user_admin SMALLINT
+);
+
+CREATE TABLE members_pending (
+  user_id VARCHAR(255),
+  event_id VARCHAR(255),
+  FOREIGN KEY(user_id)
+    REFERENCES users(user_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  FOREIGN KEY(event_id)
+    REFERENCES Event(event_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
+
 INSERT INTO Guild
 VALUES (
   'nfb38fv30fb339fb',
