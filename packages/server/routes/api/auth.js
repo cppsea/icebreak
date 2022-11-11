@@ -11,7 +11,19 @@ const { response } = require("express");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
-const crypto = require('node:crypto');
+const crypto = require ("crypto");
+
+const algorithm = "aes-256-cbc"; 
+
+const message = "This is a secret message";
+
+const initVector = crypto.randomBytes(16);
+
+const Securitykey = crypto.randomBytes(32);
+
+const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
+
+let encryptedPassword = cipher.update(message, "utf-8", "hex");
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -129,7 +141,7 @@ router.post("/register", (request, response) => {
     hash.update(password);
     const encriptedPassword = hash.digest('hex');
     
-    const newToken = token.generate({ email, encriptedPassword}); // create a signed jwt token
+    const newToken = token.generate({ email, encryptedPassword}); // create a signed jwt token
     
     response.send({  // send jwt token
       success: true,
@@ -145,20 +157,56 @@ router.post("/register", (request, response) => {
   }
 });
 
-/*
-router.post("/test", (request, response) => {
+
+router.post("/login", (request, response) => {
+  
   try{
-    const { email } = request.body;
-    console.log(email);
-    response.send({ "email": email });
-  }
-  catch(error){
-    response.status(403).send({
-      message: error.message,
-      success: false
-    });
-  }
+    
+    // Get user input
+    const { email, password } =  request.body;
+
+    // Validate credentials
+    if(!(email && password)){
+      throw new Error("All inputs are required");
+    }
+
+    // Validate if email is in database
+    if(user.getUserByEmail(email) === null){ // check if email is already in the database
+      throw new Error("User already exists with this email");
+
+    }else{
+
+      // Decryptes password in database
+      const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
+
+      let decryptedPW = decipher.update(encryptedPassword, "hex", "utf-8");
+
+      decryptedPW += decipher.final("utf8");
+
+      if(password === decryptedPW && email === user.getUserByEmail()){
+        // Create token
+        const token = jwt.sign(
+          { user_id: user.id, email },
+          process.env.TOKEN_KEY,
+          {
+            expiresIn: "2h",
+          }
+        );
+
+        user.token = token;
+        response.status(200).json(user);
+      }
+
+    }
+
+} catch(error){
+  response.status(400).send({
+    message: error.message,
+    success: false
+  });
+}
 });
-*/
+
+
 
 module.exports = router;
