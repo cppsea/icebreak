@@ -7,6 +7,11 @@ const { OAuth2Client } = require('google-auth-library');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const AuthController = require("../../controllers/auth");
+const { response } = require("express");
+const postgres = require("../../utils/postgres");
+const user = require("../../controllers/users");
+
+const crypto = require('node:crypto');
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -106,5 +111,54 @@ router.get("/google/callback", passport.authenticate("google", {
   const newToken = token.generate(request.user);
   response.redirect(`icebreak://login?token=${newToken}`);
 });
+
+router.post("/register", (request, response) => {
+
+  try{
+    const { email, password, } = request.body;
+    
+    if(!email.includes("@")){ // check if email is valid
+      throw new Error("Email is invalid.");
+    }
+    
+    if(user.getUserByEmail(email) === null){ // check if email is already in the database
+      throw new Error("User already exists with this email");
+    }
+
+    const hash = crypto.createHash('sha256'); // encrypt the user password
+    hash.update(password);
+    const encriptedPassword = hash.digest('hex');
+    
+    const newToken = token.generate({ email, encriptedPassword}); // create a signed jwt token
+    
+    response.send({  // send jwt token
+      success: true,
+      newToken
+      }
+    ); 
+  }
+  catch(error){
+    response.status(403).send({
+      message: error.message,
+      success: false
+    });
+  }
+});
+
+/*
+router.post("/test", (request, response) => {
+  try{
+    const { email } = request.body;
+    console.log(email);
+    response.send({ "email": email });
+  }
+  catch(error){
+    response.status(403).send({
+      message: error.message,
+      success: false
+    });
+  }
+});
+*/
 
 module.exports = router;

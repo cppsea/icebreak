@@ -10,7 +10,13 @@ async function getUser(userId) {
   return query.rows[0];
 }
 
+async function getUserByEmail(email){
+  const query = await postgres.query(`SELECT * FROM users WHERE email='${email}'`);
+  return query.rows[0];
+}
+
 module.exports = {
   getUser,
   getAllUsers,
+  getUserByEmail
 }
