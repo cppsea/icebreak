@@ -6,7 +6,7 @@ const { exec, execSync, spawn } = require("child_process");
 const PORT = 5050;
 const PATH_LIMIT = 1024;
 const SPAWN_SHELL_DELAY = 1000;
-const REWRITE_NGROK_URL_DELAY = 3000;
+const REWRITE_NGROK_URL_DELAY = 10000;
 const NGROK_PATH = process.argv[2];
 const systemType = os.platform();
 
