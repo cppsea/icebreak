@@ -1,5 +1,5 @@
 CREATE TABLE users (
-  user_id varchar(255) UNIQUE PRIMARY KEY NOT NULL,
+  user_id varchar(255) PRIMARY KEY NOT NULL,
   joined_date TIMESTAMP,
   last_login TIMESTAMP,
   first_name varchar(50) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE Guild (
   guild_id VARCHAR(255),
   name VARCHAR(100),
   handler VARCHAR(50),
-  description VARCHAR(255),
+  description TEXT,
   media TEXT[],
   invite_only BOOLEAN,
   PRIMARY KEY(guild_id)
