@@ -1,12 +1,12 @@
-import React, { useCallback, useEffect, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import axios from 'axios';
-import { StyleSheet, View, Text, Image, TouchableHighlight, LogBox, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard} from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
 import * as WebBroswer from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
-
+import TextInput from '@app/components/TextInput';
 
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
@@ -74,9 +74,7 @@ function LandingScreen() {
     },
     textInput: {
       backgroundColor: "#ebebeb",
-      borderColor: '#cccccc',
       borderWidth: 1,
-      marginBottom: 15,
       paddingLeft: 10,
     },
     loginButton: {
@@ -110,11 +108,51 @@ function LandingScreen() {
       fontWeight: "bold", 
       fontSize: 40
     },
-  })
+  });
 
-  // States to change the variable with the TextInput
-  const [username, onChangeUsername] = React.useState("");
-  const [password, onChangePassword] = React.useState("");
+  // State to change the variable with the TextInput
+  const [inputs, setInputs] = React.useState({email: '', password: ''})
+  const [errors, setErrors] = React.useState({})
+
+  const validateInput = () => {
+    const emailRE = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    let isValid = true;
+
+    // Reset the error message
+    for (const inputKey in inputs) {
+      handleError(inputKey, null)
+    }
+    
+    if (!inputs.email) {
+      handleError('email', 'Please enter an email.');
+      isValid = false;
+    } else if (!inputs.email.match(emailRE)) {
+      handleError('email', 'Please enter a valid email.');
+      isValid = false;
+    }
+
+    if (!inputs.password) {
+      handleError('password', 'Please enter a password.');
+      isValid = false;
+    }
+
+    if (isValid) {
+      login();
+    }
+  }
+
+  const login = () => {
+    // TODO: Login code here
+    Alert.alert("Login successful")
+  }
+
+  const handleOnChange = (inputKey, text) => {
+    setInputs(prevState => ({...prevState, [inputKey]: text}))
+  };
+
+  const handleError = (inputKey, error) => {
+    setErrors(prevState => ({...prevState, [inputKey]: error}))
+  }
 
   // Keeps a reference to help switch from Username input to Password input
   const refPasswordInput = useRef();
@@ -129,19 +167,31 @@ function LandingScreen() {
           <Text style={styles.logo}>icebreak</Text>
 
           <TextInput 
+            container={{marginBottom: 10}}
             style={[styles.textInput, styles.component]}
-            onChangeText={onChangeUsername}
-            value={username}
-            placeholder="Username"
+            borderColor='#cccccc'
+            onChangeText={text => {
+                // whenever we type, we set email hook and clear errors
+                handleOnChange("email", text);
+                handleError("email", null);
+              }
+            }
+            error={errors.email}
+            placeholder="Email"
             onSubmitEditing={() => { refPasswordInput.current.focus(); }}
           />
 
           <TextInput 
-            ref={ refPasswordInput }
+            ref={refPasswordInput}
             style={[styles.textInput, styles.component]}
-            onChangeText={onChangePassword}
+            borderColor='#cccccc'
+            onChangeText={text => {
+                handleOnChange("password", text)
+                handleError("password", null);
+              }
+            }
+            error={errors.password}
             secureTextEntry
-            value={password}
             placeholder="Password"
           />
 
@@ -151,7 +201,7 @@ function LandingScreen() {
 
           <Button 
             title="Log In" 
-            onPress={handleOnLoginWithGoogle}
+            onPress={validateInput}
             underlayColor="#0e81c4"
             fontColor="#ffffff"
             fontWeight="bold"
