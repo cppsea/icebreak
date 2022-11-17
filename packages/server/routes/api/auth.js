@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client, UserRefreshClient } = require('google-auth-library');
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -11,19 +11,8 @@ const { response } = require("express");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
-const crypto = require ("crypto");
+const crypto = require('crypto');
 
-const algorithm = "aes-256-cbc"; 
-
-const message = "This is a secret message";
-
-const initVector = crypto.randomBytes(16);
-
-const Securitykey = crypto.randomBytes(32);
-
-const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
-
-let encryptedPassword = cipher.update(message, "utf-8", "hex");
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -139,7 +128,14 @@ router.post("/register", (request, response) => {
 
     const hash = crypto.createHash('sha256'); // encrypt the user password
     hash.update(password);
-    const encriptedPassword = hash.digest('hex');
+    const encryptedPassword = hash.digest('hex');
+
+    const user = user.create({
+        first_name,
+        last_name,
+        email: email.toLowerCase(),
+        password: encryptedPassword,
+    });
     
     const newToken = token.generate({ email, encryptedPassword}); // create a signed jwt token
     
@@ -157,9 +153,44 @@ router.post("/register", (request, response) => {
   }
 });
 
-
 router.post("/login", (request, response) => {
-  
+
+  try {
+    
+    const { email, password } =  request.body;
+    const rows  = postgres.query(`SELECT * FROM Users WHERE user_id='${email}'`);
+
+    if(!(email && password)){
+      throw new Error("All inputs are required");
+    }
+
+    const hash = crypto.createHash('sha256'); // encrypt the user password
+    hash.update(password);
+    const encryptedPassword = hash.digest('hex');
+
+    if(rows.length > 1 && (encryptedPassword == user.password)){ // check if email is already in the database
+      const token = jwt.sign(
+        { user_id: user._id, email },
+        process.env.TOKEN_KEY,
+        {
+          expiresIn: "2h",
+        }
+      );
+
+      user.token = token;
+      response.status(200).json(user);
+
+    }        
+      response.status(400).send("Invalid Credentials");
+  }
+
+    catch(error){
+      console.log(error);
+      }
+});
+
+/*
+router.post("/test", (request, response) => {
   try{
     
     // Get user input
