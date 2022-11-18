@@ -1,6 +1,6 @@
 import React, { useCallback, useRef } from 'react';
 import axios from 'axios';
-import { StyleSheet, View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert} from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert, TouchableOpacity} from 'react-native';
 import * as WebBroswer from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 
@@ -76,6 +76,8 @@ function LandingScreen() {
       backgroundColor: "#ebebeb",
       borderWidth: 1,
       paddingLeft: 10,
+      paddingRight: 10,
+      justifyContent: 'space-between'
     },
     loginButton: {
       borderColor: '#0b91e0',
@@ -89,6 +91,8 @@ function LandingScreen() {
     textButton: {
       color: "#0b91e0", 
       fontWeight: "bold", 
+    },
+    forgotPassContainer: {
       alignSelf: 'flex-end'
     },
     lineDivider: {
@@ -168,9 +172,9 @@ function LandingScreen() {
 
           <TextInput 
             container={{marginBottom: 10}}
-            style={[styles.textInput, styles.component]}
+            style={[styles.component, styles.textInput]}
             borderColor='#cccccc'
-            onChangeText={text => {
+            onChangeText={(text) => {
                 // whenever we type, we set email hook and clear errors
                 handleOnChange("email", text);
                 handleError("email", null);
@@ -183,7 +187,7 @@ function LandingScreen() {
 
           <TextInput 
             ref={refPasswordInput}
-            style={[styles.textInput, styles.component]}
+            style={[styles.component, styles.textInput]}
             borderColor='#cccccc'
             onChangeText={text => {
                 handleOnChange("password", text)
@@ -191,13 +195,22 @@ function LandingScreen() {
               }
             }
             error={errors.password}
-            secureTextEntry
+            password
             placeholder="Password"
           />
 
-          <Text 
-            style={styles.textButton} 
-            onPress={handleOnLoginWithGoogle}>Forgot password?</Text>
+          <TouchableOpacity 
+            onPress={
+              // TODO: Forgot password code here.
+              handleOnLoginWithGoogle
+            }
+            style={styles.forgotPassContainer}
+            >
+            <Text 
+              style={styles.textButton} 
+              >Forgot password?</Text>
+          </TouchableOpacity>
+
 
           <Button 
             title="Log In" 
@@ -230,9 +243,15 @@ function LandingScreen() {
 
         <Text>Don't have an account? </Text>
 
-        <Text 
-          style={styles.textButton} 
-          onPress={handleOnLoginWithGoogle}>Sign Up.</Text>
+        <TouchableOpacity
+          onPress={
+            // TODO: Navigate to signup screen.
+            handleOnLoginWithGoogle
+          }>
+          <Text 
+            style={styles.textButton} >Sign Up.</Text>
+        </TouchableOpacity>
+
         
       </View>
     </Screen>

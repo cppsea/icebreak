@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput as RNTextInput, StyleSheet, Text, View} from 'react-native';
+import { TextInput as RNTextInput, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
 const styles = StyleSheet.create({
     container: {
@@ -11,23 +11,49 @@ const styles = StyleSheet.create({
     error: {
         color: "#f54242", 
         fontSize: 12
+    },
+    textField: {
+        flexDirection: 'row',
+        alignItems: 'flex-start'
+    },
+    input: {
+        height: "100%",
+        flex: 1
     }
 });
 
 function TextInput(props) {
+    const [hidePassword, setHidePassword] = React.useState(props.password)
 
     return(
         <View style={[styles.container, props.container]}>
-            <RNTextInput 
-                {...props}
-                ref={props.ref}
-                borderColor = {props.error ? "#f54242" : props.borderColor}
-            />
+
+            <View 
+                style={[styles.textField, props.style]}
+                borderColor= {props.error ? "#f54242" : props.borderColor}>
+                <RNTextInput 
+                    style={styles.input}
+                    onChangeText={props.onChangeText}
+                    onSubmitEditing={props.onSubmitEditing}
+                    placeholder = {props.placeholder}
+                    secureTextEntry={hidePassword}
+                    ref={props.ref}/>
+
+                {props.password && 
+                    <TouchableOpacity onPress={() => setHidePassword(!hidePassword)}>
+                        <Image 
+                        source={hidePassword ? require('@app/assets/eye-line.png') : require('@app/assets/eye-off-line.png')}/>
+                    </TouchableOpacity>
+                }
+            </View>
+            
+
             {props.error && (
                 <Text style={styles.error}>
                 {props.error}
                 </Text>
             )}
+            
         </View>
 
     );
