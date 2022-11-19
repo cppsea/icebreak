@@ -12,6 +12,7 @@ const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
 const crypto = require('node:crypto');
+const bcrypt = require('bcrypt');
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -117,7 +118,7 @@ router.post("/register", (request, response) => {
   try{
     const { email, password, } = request.body;
     
-    if(!email.includes("@")){ // check if email is valid
+    if(!email.includes("@") || email.includes(" ")){ // check if email is valid
       throw new Error("Email is invalid.");
     }
     
@@ -125,17 +126,29 @@ router.post("/register", (request, response) => {
       throw new Error("User already exists with this email");
     }
 
-    const hash = crypto.createHash('sha256'); // encrypt the user password
+    /*
+    const hash = crypto.createHash('sha256'); // encrypt the user password using sha256
     hash.update(password);
     const encriptedPassword = hash.digest('hex');
+    */
+
+    // encrypt the user password using bcrypt
+    const saltRounds = 10;
+
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+      bcrypt.hash(password, salt, function(err, hash) {
+          // Store hash in your password DB.
+          const newToken = token.generate({ email, hash}); // create a signed jwt token
+          
+          response.send({  // send jwt token
+            success: true,
+            newToken
+            }
+          ); 
+      });
+    });
+
     
-    const newToken = token.generate({ email, encriptedPassword}); // create a signed jwt token
-    
-    response.send({  // send jwt token
-      success: true,
-      newToken
-      }
-    ); 
   }
   catch(error){
     response.status(403).send({
