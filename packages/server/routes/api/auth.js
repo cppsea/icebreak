@@ -117,6 +117,8 @@ router.post("/register", (request, response) => {
 
   try{
     const { email, password, } = request.body;
+
+    
     
     if(!email.includes("@")){ // check if email is valid
       throw new Error("Email is invalid.");
@@ -130,16 +132,9 @@ router.post("/register", (request, response) => {
     hash.update(password);
     const encryptedPassword = hash.digest('hex');
 
-    const user = user.create({
-        first_name,
-        last_name,
-        email: email.toLowerCase(),
-        password: encryptedPassword,
-    });
-    
     const newToken = token.generate({ email, encryptedPassword}); // create a signed jwt token
     
-    response.send({  // send jwt token
+    response.status(200).send({  // send jwt token
       success: true,
       newToken
       }
@@ -158,7 +153,7 @@ router.post("/login", (request, response) => {
   try {
     
     const { email, password } =  request.body;
-    const rows  = postgres.query(`SELECT * FROM Users WHERE user_id='${email}'`);
+   // const rows  = postgres.query(`SELECT * FROM Users WHERE user_id='${email}'`);
 
     if(!(email && password)){
       throw new Error("All inputs are required");
@@ -168,25 +163,26 @@ router.post("/login", (request, response) => {
     hash.update(password);
     const encryptedPassword = hash.digest('hex');
 
-    if(rows.length > 1 && (encryptedPassword == user.password)){ // check if email is already in the database
-      const token = jwt.sign(
-        { user_id: user._id, email },
-        process.env.TOKEN_KEY,
-        {
-          expiresIn: "2h",
+    if(rows.length > 1 && token.verify({email, encryptedPassword})){ // check if email is already in the database
+      
+      const newToken = token.generate({ email, encryptedPassword}); // create a signed jwt token
+
+      response.status(200).send({  // send jwt token
+        success: true,
+        newToken
         }
       );
-
-      user.token = token;
-      response.status(200).json(user);
-
-    }        
+    }
       response.status(400).send("Invalid Credentials");
+    
   }
 
-    catch(error){
-      console.log(error);
-      }
+  catch(error){
+    response.status(403).send({
+      message: error.message,
+      success: false
+    });
+  }
 });
 
 /*
@@ -237,7 +233,7 @@ router.post("/test", (request, response) => {
   });
 }
 });
+*/
 
 
-
-module.exports = router;
+module.exports = router; 
