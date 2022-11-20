@@ -5,7 +5,8 @@ CREATE TABLE users (
   first_name varchar(50) NOT NULL,
   last_name varchar(50) NOT NULL,
   email varchar(255) UNIQUE NOT NULL,
-  avatar varchar(255) NOT NULL
+  avatar varchar(255) NOT NULL,
+  password TEXT
 );
 
 CREATE TABLE Guild (
