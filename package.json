@@ -22,8 +22,5 @@
   "main": "index.js",
   "author": "SEA",
   "license": "MIT",
-  "packageManager": "yarn@3.2.3",
-  "dependencies": {
-    "bcrypt": "^5.1.0"
-  }
+  "packageManager": "yarn@3.2.3"
 }

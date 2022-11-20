@@ -11,7 +11,7 @@ const { response } = require("express");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
-const crypto = require('node:crypto');
+//const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
 
 passport.use(new GoogleStrategy({
@@ -132,14 +132,19 @@ router.post("/register", (request, response) => {
     const encriptedPassword = hash.digest('hex');
     */
 
-    // encrypt the user password using bcrypt
     const saltRounds = 10;
 
     bcrypt.genSalt(saltRounds, function(err, salt) {
-      bcrypt.hash(password, salt, function(err, hash) {
-          // Store hash in your password DB.
+      bcrypt.hash(password, salt, async function(err, hash) { // encrypt the user password using bcrypt
+
+          // Error caused, schema not yet declared to include password
+          await postgres.query(`
+            INSERT INTO Users (email, password)
+            VALUES ('${email}', '${password}');
+          `); // create new user in DB
+
           const newToken = token.generate({ email, hash}); // create a signed jwt token
-          
+
           response.send({  // send jwt token
             success: true,
             newToken
