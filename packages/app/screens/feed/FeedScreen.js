@@ -18,6 +18,7 @@ function Card(props) {
       <Text>{start_date}</Text>
       <Text>{end_date}</Text>
       <Text>{location}</Text>
+      <Text>{start_date}</Text>
     </View>
   );
 }
@@ -81,9 +82,9 @@ function FeedScreen() {
       </Screen>
 
       <FlatList
-        refreshing={onRefresh}
+        onRefresh={onRefresh}
+        refreshing={isRefreshed}
         data={events}
-        state={isRefreshed}
         renderItem={({ item }) => <Card {...item} />}
         keyExtractor={(item) => item.event_id}
       />
@@ -96,18 +97,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 100,
-  },
-});
-
-const styles2 = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 50,
-  },
-  item: {
-    padding: 20,
-    fontSize: 15,
-    marginTop: 5,
   },
 });
 
