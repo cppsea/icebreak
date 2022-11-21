@@ -66,6 +66,7 @@ function LandingScreen() {
         eventTitle="College Survival Guide"
         location="BLDG 8 @ Cal Poly Pomona"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        onPress={console.log("Hello World!")}
       />
     </Screen>
   );
