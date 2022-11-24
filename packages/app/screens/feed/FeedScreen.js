@@ -13,7 +13,7 @@ function Card(props) {
   const { title, description, start_date, end_date, location } = props;
   return (
     <View>
-      <Text>{title}</Text>
+      <Text style={styles.h1}>{title}</Text>
       <Text>{description}</Text>
       <Text>{start_date}</Text>
       <Text>{end_date}</Text>
@@ -25,6 +25,8 @@ function Card(props) {
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
+  const [events, setEvents] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const handleOnLogout = useCallback(async () => {
     console.log("logout");
@@ -33,21 +35,6 @@ function FeedScreen() {
       isLoggedIn: false,
     });
   }, [setUser]);
-
-  const handleGetAllUsers = useCallback(async () => {
-    const token = await AsyncStorage.getItem("token");
-    const response = await axios.get("http://localhost:5050/api/users/", {
-      withCredentials: true,
-      headers: {
-        Authorization: token,
-      },
-    });
-    console.log(response.data);
-  }, []);
-
-  const [events, setEvents] = useState([]);
-
-  const [isRefreshed, setIsRefreshed] = React.useState(false);
 
   const getEvents = async () => {
     const token = await AsyncStorage.getItem("token");
@@ -59,17 +46,16 @@ function FeedScreen() {
     });
     setEvents(response.data);
   };
+
   useEffect(() => {
     getEvents();
-  }, [isRefreshed]);
+  }, [refreshing]);
 
-  const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-  const onRefresh = async () => {
-    setIsRefreshed(true);
-    await sleep(2000);
-    setIsRefreshed(false);
-  };
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await getEvents();
+    setRefreshing(false);
+  }, []);
 
   return (
     <>
@@ -78,12 +64,11 @@ function FeedScreen() {
         <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
         <Text>{JSON.stringify(user)}</Text>
         <Button onPress={handleOnLogout} title="logout" />
-        <Button onPress={handleGetAllUsers} title="get all users" />
       </Screen>
 
       <FlatList
         onRefresh={onRefresh}
-        refreshing={isRefreshed}
+        refreshing={refreshing}
         data={events}
         renderItem={({ item }) => <Card {...item} />}
         keyExtractor={(item) => item.event_id}
@@ -98,6 +83,9 @@ const styles = StyleSheet.create({
     height: 80,
     borderRadius: 100,
   },
+  h1: {
+    fontWeight: "bold"
+  }
 });
 
 export default FeedScreen;
