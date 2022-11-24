@@ -7,23 +7,6 @@ const { OAuth2Client } = require('google-auth-library');
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const AuthController = require("../../controllers/auth");
-const { response } = require("express");
-const postgres = require("../../utils/postgres");
-const user = require("../../controllers/users");
-
-const crypto = require ("crypto");
-
-const algorithm = "aes-256-cbc"; 
-
-const message = "This is a secret message";
-
-const initVector = crypto.randomBytes(16);
-
-const Securitykey = crypto.randomBytes(32);
-
-const cipher = crypto.createCipheriv(algorithm, Securitykey, initVector);
-
-let encryptedPassword = cipher.update(message, "utf-8", "hex");
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -123,90 +106,5 @@ router.get("/google/callback", passport.authenticate("google", {
   const newToken = token.generate(request.user);
   response.redirect(`icebreak://login?token=${newToken}`);
 });
-
-router.post("/register", (request, response) => {
-
-  try{
-    const { email, password, } = request.body;
-    
-    if(!email.includes("@")){ // check if email is valid
-      throw new Error("Email is invalid.");
-    }
-    
-    if(user.getUserByEmail(email) === null){ // check if email is already in the database
-      throw new Error("User already exists with this email");
-    }
-
-    const hash = crypto.createHash('sha256'); // encrypt the user password
-    hash.update(password);
-    const encriptedPassword = hash.digest('hex');
-    
-    const newToken = token.generate({ email, encryptedPassword}); // create a signed jwt token
-    
-    response.send({  // send jwt token
-      success: true,
-      newToken
-      }
-    ); 
-  }
-  catch(error){
-    response.status(403).send({
-      message: error.message,
-      success: false
-    });
-  }
-});
-
-
-router.post("/login", (request, response) => {
-  
-  try{
-    
-    // Get user input
-    const { email, password } =  request.body;
-
-    // Validate credentials
-    if(!(email && password)){
-      throw new Error("All inputs are required");
-    }
-
-    // Validate if email is in database
-    if(user.getUserByEmail(email) === null){ // check if email is already in the database
-      throw new Error("User already exists with this email");
-
-    }else{
-
-      // Decryptes password in database
-      const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
-
-      let decryptedPW = decipher.update(encryptedPassword, "hex", "utf-8");
-
-      decryptedPW += decipher.final("utf8");
-
-      if(password === decryptedPW && email === user.getUserByEmail()){
-        // Create token
-        const token = jwt.sign(
-          { user_id: user.id, email },
-          process.env.TOKEN_KEY,
-          {
-            expiresIn: "2h",
-          }
-        );
-
-        user.token = token;
-        response.status(200).json(user);
-      }
-
-    }
-
-} catch(error){
-  response.status(400).send({
-    message: error.message,
-    success: false
-  });
-}
-});
-
-
 
 module.exports = router;
