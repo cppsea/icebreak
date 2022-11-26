@@ -175,42 +175,23 @@ router.post("/login", (request, response) => {
     }
 
     // Validate if email is in database
-    if(user.getUserByEmail(email) === null){ // check if email is already in the database
-      throw new Error("User already exists with this email");
-
-    }else{
-
-      // Decryptes password in database
-      const decipher = crypto.createDecipheriv(algorithm, Securitykey, initVector);
-
-      let decryptedPW = decipher.update(encryptedPassword, "hex", "utf-8");
-
-      decryptedPW += decipher.final("utf8");
-
-      if(password === decryptedPW && email === user.getUserByEmail()){
+    if(user.getUserByEmail && bcrypt.compare(password, password)){ // check if email is already in the database
         // Create token
-        const token = jwt.sign(
-          { user_id: user.id, email },
-          process.env.TOKEN_KEY,
-          {
-            expiresIn: "2h",
+        const newToken = token.generate({ email, password});
+        response.send({  // send jwt token
+          success: true,
+          newToken
           }
-        );
-
-        user.token = token;
-        response.status(200).json(user);
+        ); 
       }
-
+      //res.status(400).send("Invalid Credentials");
     }
-
-} catch(error){
+    catch(error){
   response.status(400).send({
     message: error.message,
     success: false
   });
 }
 });
-*/
-
 
 module.exports = router; 

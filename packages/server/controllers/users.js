@@ -20,5 +20,4 @@ module.exports = {
   getUser,
   getAllUsers,
   getUserByEmail
-  
 }
