@@ -1,7 +1,8 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
-import FeedScreen from './FeedScreen';
+// import FeedScreen from './FeedScreen';
+import FeedDrawer from './FeedDrawer';
 
 const Feed = createNativeStackNavigator();
 
@@ -10,7 +11,7 @@ function FeedStack() {
     <Feed.Navigator
       screenOptions={{ headerShown: false }}
       initialRouteName="LandingScreen">
-      <Feed.Screen name="FeedScreen" component={FeedScreen} />
+      <Feed.Screen name="FeedDrawer" component={FeedDrawer} />
     </Feed.Navigator>
   );
 }
