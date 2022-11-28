@@ -38,6 +38,9 @@ CREATE TABLE Event (
 CREATE TABLE user_guild (
   user_id VARCHAR(255),
   guild_id VARCHAR(255),
+  user_role VARCHAR(255),
+  points SMALLINT,
+  rank SMALLINT
   FOREIGN KEY(user_id)
     REFERENCES users(user_id)
     ON UPDATE CASCADE
@@ -47,9 +50,6 @@ CREATE TABLE user_guild (
     ON UPDATE CASCADE
     ON DELETE SET NULL,
   PRIMARY KEY(user_id, guild_id),
-  user_role VARCHAR(255),
-  points SMALLINT,
-  user_admin SMALLINT
 );
 
 CREATE TABLE members_pending (
