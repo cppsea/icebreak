@@ -122,7 +122,7 @@ router.post("/register", (request, response) => {
       throw new Error("Email is invalid.");
     }
     
-    if(user.getUserByEmail(email) === null){ // check if email is already in the database
+    if(user.getUserByEmail(email).length === 0){ // check if email is already in the database
       throw new Error("User already exists with this email");
     }
 
@@ -137,10 +137,9 @@ router.post("/register", (request, response) => {
     bcrypt.genSalt(saltRounds, function(err, salt) {
       bcrypt.hash(password, salt, async function(err, hash) { // encrypt the user password using bcrypt
 
-          // Error caused, schema not yet declared to include password
           await postgres.query(`
-            INSERT INTO Users (email, password)
-            VALUES ('${email}', '${password}');
+            INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
+            VALUES (0, 'firstName', 'lastName', '${email}', 'avatar', '${password}');
           `); // create new user in DB
 
           const newToken = token.generate({ email, hash}); // create a signed jwt token
