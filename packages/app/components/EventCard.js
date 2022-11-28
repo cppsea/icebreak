@@ -84,6 +84,7 @@ function Faces(props){
 
 function EventCard(props){
   
+
   return (
     <Card containerStyle={styles.card}>
       <Image 
