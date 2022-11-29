@@ -13,6 +13,7 @@ const user = require("../../controllers/users");
 
 //const crypto = require('node:crypto');
 const bcrypt = require('bcrypt');
+const uniqid = require('uniqid'); 
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -137,18 +138,21 @@ router.post("/register", (request, response) => {
     bcrypt.genSalt(saltRounds, function(err, salt) {
       bcrypt.hash(password, salt, async function(err, hash) { // encrypt the user password using bcrypt
 
-          await postgres.query(`
-            INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
-            VALUES (0, 'firstName', 'lastName', '${email}', 'avatar', '${password}');
-          `); // create new user in DB
+        // create unique User ID as bytes (18 byte)
+        const user_id = uniqid();
 
-          const newToken = token.generate({ email, hash}); // create a signed jwt token
+        await postgres.query(`
+          INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
+          VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${password}');
+        `); // create new user in DB
 
-          response.send({  // send jwt token
-            success: true,
-            newToken
-            }
-          ); 
+        const newToken = token.generate({ email, hash}); // create a signed jwt token
+
+        response.send({  // send jwt token
+          success: true,
+          newToken
+          }
+        ); 
       });
     });
   }
