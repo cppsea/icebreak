@@ -123,17 +123,11 @@ router.post("/register", async (request, response) => {
       throw new Error("Email is invalid.");
     }
 
-    const ifExist = await user.getUserByEmail(email)
+    const ifExist = await user.getUserByEmail(email);
 
     if(ifExist?.email == email){ // check if email is already in the database
       throw new Error("User already exists with this email.");
     }
-
-    /*
-    const hash = crypto.createHash('sha256'); // encrypt the user password using sha256
-    hash.update(password);
-    const encriptedPassword = hash.digest('hex');
-    */
 
     const saltRounds = 10;
 
@@ -167,12 +161,14 @@ router.post("/register", async (request, response) => {
 });
 
 
-router.post("/login", (request, response) => {
+router.post("/login", async (request, response) => {
   
   try{
     
     // Get user input
     const { email, password } =  request.body;
+    const ifExist = await user.getUserByEmail(email);
+    const hashedPassword = ifExist.password;
 
     // Validate credentials
     if(!(email && password)){
@@ -180,16 +176,16 @@ router.post("/login", (request, response) => {
     }
 
     // Validate if email is in database
-    if(user.getUserByEmail && bcrypt.compare(password, password)){ // check if email is already in the database
+    if(user.getUserByEmail(email) && bcrypt.compare(password, hashedPassword)){ // check if email is already in the database
         // Create token
-        const newToken = token.generate({ email, password});
+        const newToken = token.generate({ email, hashedPassword});
         response.send({  // send jwt token
           success: true,
           newToken
           }
         ); 
       }
-      //res.status(400).send("Invalid Credentials");
+      res.status(400).send("Invalid Credentials");
     }
     catch(error){
   response.status(400).send({
