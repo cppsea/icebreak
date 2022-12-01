@@ -114,7 +114,7 @@ router.get("/google/callback", passport.authenticate("google", {
   response.redirect(`icebreak://login?token=${newToken}`);
 });
 
-router.post("/register", (request, response) => {
+router.post("/register", async (request, response) => {
 
   try{
     const { email, password, } = request.body;
@@ -122,9 +122,11 @@ router.post("/register", (request, response) => {
     if(!email.includes("@") || email.includes(" ")){ // check if email is valid
       throw new Error("Email is invalid.");
     }
-    
-    if(user.getUserByEmail(email).length === 0){ // check if email is already in the database
-      throw new Error("User already exists with this email");
+
+    const ifExist = await user.getUserByEmail(email)
+
+    if(ifExist?.email == email){ // check if email is already in the database
+      throw new Error("User already exists with this email.");
     }
 
     /*
