@@ -176,7 +176,7 @@ router.post("/login", async (request, response) => {
     }
 
     // Validate if email is in database
-    if(user.getUserByEmail(email) && bcrypt.compare(password, hashedPassword)){ // check if email is already in the database
+    if(user.getUserByEmail(email) && await bcrypt.compare(password, hashedPassword)){ // check if email is already in the database
         // Create token
         const newToken = token.generate({ email, hashedPassword});
         response.send({  // send jwt token
@@ -184,9 +184,10 @@ router.post("/login", async (request, response) => {
           newToken
           }
         ); 
-      }
-      res.status(400).send("Invalid Credentials");
+      }else{
+      response.status(403).send("Wrong email and/or password.");
     }
+  }
     catch(error){
   response.status(400).send({
     message: error.message,
