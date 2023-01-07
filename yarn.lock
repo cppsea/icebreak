@@ -3455,10 +3455,10 @@ expo-asset@~8.6.1:
     path-browserify "^1.0.0"
     url-parse "^1.5.9"
 
-expo-auth-session@~3.7.1:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/expo-auth-session/-/expo-auth-session-3.7.1.tgz#6c76d12220e2914998e030203afddc24b994a6a0"
-  integrity sha512-sUOdXBclpYSZEvOkaSbOpLhhtGUQ485ltPfq0sQi+24wh33rKLH2yBocL5QeU/yq/8bafHEWQvkKaUIA2Qq+dA==
+expo-auth-session@~3.7.4:
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/expo-auth-session/-/expo-auth-session-3.7.4.tgz#5161d22909852ef7c5f927cfd89cb9474db95b94"
+  integrity sha512-FsQ7smuLT+U2Y52Lt6U5m2N1kD+t3OmJG2ZOgCV7h3U8HrQ8omCA2Hn67kHzNaMNTHknsnFdJwEuvnvdysjWWQ==
   dependencies:
     expo-constants "~13.2.0"
     expo-crypto "~11.0.0"

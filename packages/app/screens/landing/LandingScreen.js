@@ -6,7 +6,7 @@ import * as Google from 'expo-auth-session/providers/google';
 
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
-import EventCard from '@app/components/EventCard';
+import EventCard from '@app/components/EventCard/EventCard';
 
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
@@ -62,12 +62,14 @@ function LandingScreen() {
         title="login with google"
       />
       <EventCard 
+        eventBanner={require("@app/components/EventCard/eventcard_test/test_card_banner.png")}
         timeBegin="11:00AM" timeEnd="12:00PM"
         eventTitle="College Survival Guide"
         location="BLDG 8 @ Cal Poly Pomona"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        onPress={console.log("Hello World!")}
+        registerFunction={console.log("This is a test message!")}
       />
+      <Button title='Test' onPress={() => console.log('Hello mom!')} />
     </Screen>
   );
 }
