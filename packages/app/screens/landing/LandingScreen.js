@@ -67,9 +67,7 @@ function LandingScreen() {
         eventTitle="College Survival Guide"
         location="BLDG 8 @ Cal Poly Pomona"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        registerFunction={console.log("This is a test message!")}
       />
-      <Button title='Test' onPress={() => console.log('Hello mom!')} />
     </Screen>
   );
 }

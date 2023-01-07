@@ -3,7 +3,8 @@ import { StyleSheet, Button, View } from "react-native";
 import { Icon } from "react-native-elements";
 import FaceIcon from "./FaceIcon";
 
-const sampleList = [0,1,2,3,5,6,7,8];
+// Sample array for testing
+const sampleArray = [0,1];
 
 const styles = StyleSheet.create({
   buttonView: {
@@ -25,6 +26,8 @@ const styles = StyleSheet.create({
 }); 
 
 export default function RegisterButton(props) {
+  const { register } = props;
+  
   return (
     <View style={{ flexDirection: 'row' }}>
       <View style={styles.buttonView}>
@@ -32,13 +35,13 @@ export default function RegisterButton(props) {
           icon={<Icon color='#3498db' />}
           buttonStyle={styles.button}
           title='Going'
-          onPress={() => props.registerFunction}
+          onPress={register}
         />
       </View>
       <View style={styles.faceView}>
-        {sampleList.slice(0,4).map(x => {
+        {sampleArray.slice(0,4).map(x => {
           return <FaceIcon
-          key={sampleList.indexOf(x)} 
+          key={sampleArray.indexOf(x)} 
           index={x}
           source={require("@app/components/EventCard/eventcard_test/profile-pic.jpg")}
         />

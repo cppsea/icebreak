@@ -27,6 +27,10 @@ const styles = StyleSheet.create({
 });
 
 function EventCard(props){
+  const onRegisterClicked = () => {
+    alert("Register button works!");
+  }
+  
   return (
     <Card containerStyle={styles.card}>
       { props.eventBanner ? <Image source={props.eventBanner} style={styles.banner}/> : '' }           
@@ -38,7 +42,7 @@ function EventCard(props){
           location={props.location}
           description={props.description}
         />
-        <EventRegistration />
+        <EventRegistration register={onRegisterClicked} />
       </Divider>
     </Card>
   );
