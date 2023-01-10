@@ -119,7 +119,10 @@ router.post("/register", async (request, response) => {
   try{
     const { email, password, } = request.body;
     
-    if(!email.includes("@") || email.includes(" ")){ // check if email is valid
+    let emailCheck = /@/;
+    let whitespaceCheck = /\s/;
+
+    if(!emailCheck.test(email) || whitespaceCheck.test(email)){ // check if email is valid, doesn't include or no spaces
       throw new Error("Email is invalid.");
     }
 
