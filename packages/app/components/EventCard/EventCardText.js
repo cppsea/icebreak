@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function EventText(props) {
+export default function EventCardText(props) {
   return (
     <View>
       <Text style={styles.smallText}>

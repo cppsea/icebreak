@@ -4,7 +4,7 @@ import { Icon } from "react-native-elements";
 import FaceIcon from "./FaceIcon";
 
 // Sample array for testing
-const sampleArray = [0,1];
+const sampleArray = [0,1,2,3];
 
 const styles = StyleSheet.create({
   buttonView: {
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
   }
 }); 
 
-export default function RegisterButton(props) {
+export default function EventCardRegistration(props) {
   const { register } = props;
   
   return (

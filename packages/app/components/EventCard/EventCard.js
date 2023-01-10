@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState} from 'react';
 import { View, Image, Text, FlatList, StyleSheet } from 'react-native';
 import { Card, ListItem, Icon, Divider } from 'react-native-elements';
-import EventText from './EventText';
-import EventRegistration from './EventRegistration';
+import EventCardText from './EventCardText';
+import EventCardRegistration from './EventCardRegistration';
 
 
 
@@ -35,14 +35,14 @@ function EventCard(props){
     <Card containerStyle={styles.card}>
       { props.eventBanner ? <Image source={props.eventBanner} style={styles.banner}/> : '' }           
       <Divider style={{ padding: 10, marginBottom: 0 }}>
-        <EventText 
+        <EventCardText 
           eventTitle={props.eventTitle}
           timeBegin={props.timeBegin}
           timeEnd={props.timeEnd}
           location={props.location}
           description={props.description}
         />
-        <EventRegistration register={onRegisterClicked} />
+        <EventCardRegistration register={onRegisterClicked} />
       </Divider>
     </Card>
   );
