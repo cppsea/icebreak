@@ -2,18 +2,18 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
-const { OAuth2Client, UserRefreshClient } = require('google-auth-library');
+const {OAuth2Client, UserRefreshClient } = require('google-auth-library');
+//const crypto = require('node:crypto');
+const bcrypt = require('bcrypt');
+const uniqid = require('uniqid'); 
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const AuthController = require("../../controllers/auth");
-const { response } = require("express");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
-//const crypto = require('node:crypto');
-const bcrypt = require('bcrypt');
-const uniqid = require('uniqid'); 
+
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -125,7 +125,7 @@ router.post("/register", async (request, response) => {
 
     const ifExist = await user.getUserByEmail(email);
 
-    if(ifExist?.email == email){ // check if email is already in the database
+    if(ifExist?.email === email){ // check if email is already in the database
       throw new Error("User already exists with this email.");
     }
 
@@ -172,7 +172,7 @@ router.post("/login", async (request, response) => {
 
     // Validate credentials
     if(!(email && password)){
-      throw new Error("All inputs are required");
+      response.status(403).send("All inputs are required");
     }
 
     // Validate if email is in database
