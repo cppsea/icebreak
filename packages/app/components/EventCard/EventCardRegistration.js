@@ -32,7 +32,7 @@ export default function EventCardRegistration(props) {
     <View style={{ flexDirection: 'row' }}>
       <View style={styles.buttonView}>
         <Button
-          icon={<Icon color='#3498db' />}
+          icon={<Icon />}
           buttonStyle={styles.button}
           title='Going'
           onPress={register}

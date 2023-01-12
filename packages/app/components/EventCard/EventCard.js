@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState} from 'react';
-import { View, Image, Text, FlatList, StyleSheet } from 'react-native';
-import { Card, ListItem, Icon, Divider } from 'react-native-elements';
+import React from 'react';
+import { Image, StyleSheet, Dimensions } from 'react-native';
+import { Card, Divider } from 'react-native-elements';
 import EventCardText from './EventCardText';
 import EventCardRegistration from './EventCardRegistration';
 
@@ -8,7 +8,7 @@ import EventCardRegistration from './EventCardRegistration';
 
 const styles = StyleSheet.create({
   banner: {
-    width: 360,
+    width: '100%',
     height: 144,
     borderTopLeftRadius: 10,
     borderTopRightRadius: 10
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   }
 });
 
-function EventCard(props){
+const EventCard = (props) => {
   const onRegisterClicked = () => {
     alert("Register button works!");
   }
