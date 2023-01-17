@@ -141,8 +141,8 @@ router.post("/register", async (request, response) => {
 
         await postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
-          VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${password}');
-        `); // create new user in DB
+          VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
+        `); // create new user in DB, (DO NOT STORE ACTUAL PASSWORD, STORE HASHED VERSION)
 
         const newToken = token.generate({ email, hash}); // create a signed jwt token
 
