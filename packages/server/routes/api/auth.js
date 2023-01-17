@@ -175,28 +175,32 @@ router.post("/login", async (request, response) => {
 
     // Validate credentials
     if(!(email && password)){
-      response.status(403).send("All inputs are required");
-    }
+      throw new Error("Please enter email and password.");
+  }
 
     // Validate if email is in database
     if(user.getUserByEmail(email) && await bcrypt.compare(password, hashedPassword)){ // check if email is already in the database
         // Create token
-        const newToken = token.generate({ email, hashedPassword});
+        const newToken = token.generate({email});
+
+        //send jwt token
         response.send({  // send jwt token
           success: true,
           newToken
           }
         ); 
       }else{
-      response.status(403).send("Wrong email and/or password.");
-    }
+        throw new Error("Invalid email or password.");
   }
-    catch(error){
-  response.status(400).send({
+  }
+
+  catch(error){
+  response.status(403).send({
     message: error.message,
     success: false
   });
 }
+
 });
 
 module.exports = router; 
