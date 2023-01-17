@@ -139,12 +139,12 @@ router.post("/register", async (request, response) => {
         // create unique User ID as bytes (18 byte)
         const user_id = uniqid();
 
-        /*
+        
         await postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
           VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
         `); // create new user in DB, (DO NOT STORE ACTUAL PASSWORD, STORE HASHED VERSION)
-        */
+        
         const newToken = token.generate({ email}); // create a signed jwt token
 
         response.send({  // send jwt token
