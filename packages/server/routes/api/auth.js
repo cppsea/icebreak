@@ -117,7 +117,7 @@ router.get("/google/callback", passport.authenticate("google", {
 router.post("/register", async (request, response) => {
 
   try{
-    const { email, password, } = request.body;
+    const { email, password } = request.body;
     
     let emailCheckRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
 
@@ -139,7 +139,6 @@ router.post("/register", async (request, response) => {
         // create unique User ID as bytes (18 byte)
         const user_id = uniqid();
 
-        
         await postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
           VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
@@ -170,28 +169,41 @@ router.post("/login", async (request, response) => {
     
     // Get user input
     const { email, password } =  request.body;
+    let emailCheckRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+    if(!emailCheckRegex.test(email)){ // check if email is valid, doesn't include or no spaces
+      throw new Error("Email is invalid.");
+    }
+
     const ifExist = await user.getUserByEmail(email);
-    const hashedPassword = ifExist.password;
 
-    // Validate credentials
-    if(!(email && password)){
-      throw new Error("Please enter email and password.");
-  }
+    if(ifExist?.email !== email){ // check if email is in the database
+      throw new Error("Email does not exist.");
+    }
+    
+    const saltRounds = 10;
 
-    // Validate if email is in database
-    if(user.getUserByEmail(email) && await bcrypt.compare(password, hashedPassword)){ // check if email is already in the database
-        // Create token
-        const newToken = token.generate({email});
-
-        //send jwt token
-        response.send({  // send jwt token
+    bcrypt.genSalt(saltRounds, function(err, salt) {
+      bcrypt.hash(password, salt, async function(err, hash) { // encrypt the user password using bcrypt
+        const match = await bcrypt.compare(password, ifExist.password); 
+        if(match){
+         // Create token
+            const newToken = token.generate({email});
+            //send jwt token
+        response.send({  
           success: true,
           newToken
-          }
-        ); 
-      }else{
-        throw new Error("Invalid email or password.");
-  }
+          }); 
+        }
+        else{
+      
+          response.send({
+            message: "Password was incorrect.",
+            success: false
+          });
+        }
+    });   
+  });
   }
 
   catch(error){
@@ -199,8 +211,7 @@ router.post("/login", async (request, response) => {
     message: error.message,
     success: false
   });
-}
-
+  }
 });
 
 module.exports = router; 
