@@ -9,7 +9,10 @@
     "web": "expo start --web",
     "dev": "ttab expo start",
     "test": "jest"
+    
   },
+
+  
   "dependencies": {
     "@react-native-async-storage/async-storage": "~1.17.3",
     "@react-navigation/bottom-tabs": "^6.4.0",

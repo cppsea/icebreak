@@ -1,39 +1,57 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { render, screen, fireEvent } from '@testing-library/react-native';
-
 import FeedDrawer from '../screens/feed/FeedDrawer';
+import { render, fireEvent } from '@testing-library/react-native';
+import { NavigationContainer } from '@react-navigation/native';
 
-describe('Testing react navigation', () => {
-  test('screen contains a button linking to the notifications page', async () => {
-    const component = (
-      <NavigationContainer>
-        <FeedDrawer />
-      </NavigationContainer>
-    );
+// This section is used to mock the user data information within the FeedScreen. 
+// Without this, Jest does not recognize the user data and throws an error.
+jest.mock('@app/utils/UserContext');
 
-    render(component);
-    const button = await screen.findByText('Go to notifications');
+const getItem = jest.fn();
+const mockedValue = {
+  user: {
+    isLoggedIn: true,
+    data: {
+      firstName: "Bob",
+      lastName: "Larry"
+      // some other data here ( just trying to at least make user.data be not undefined )
+    }
+  }
+};
 
-    expect(button).toBeTruthy();
+jest.mock('@app/utils/UserContext', () => ({
+  ...jest.requireActual('@app/utils/UserContext'),
+  useUserContext: () => mockedValue
+}));
+
+// This section is the actual test of the FeedDrawer component
+
+test('FeedDrawer is visible', () => {
+  const { getByTestId, queryByText } = render(
+    <NavigationContainer>
+      {<FeedDrawer />}
+    </NavigationContainer>
+  );
+
+  // Test if the drawer is able to be visible by default
+  expect(queryByText('Home')).toBeTruthy();
+
+});
+
+// This section is used to mock the FlatList component within the FeedScreen. Without this, the render() function will throw an error.
+jest.mock("react-native", () => {
+  const React = jest.requireActual("react");
+  const actual = jest.requireActual("react-native");
+  const View = actual.View;
+  function MockedFlatList(props) {
+      return (
+          <View>
+              Mocked FlatList
+          </View>
+      );
+  }
+  Object.defineProperty(actual, "FlatList", {
+      get: () => MockedFlatList,
   });
-
-  test('clicking on the button takes you to the notifications screen', async () => {
-    const component = (
-      <NavigationContainer>
-        <FeedDrawer />
-      </NavigationContainer>
-    );
-
-    render(component);
-    const oldScreen = screen.queryByText('Welcome!');
-    const button = await screen.findByText('Go to notifications');
-
-    expect(oldScreen).toBeTruthy();
-
-    fireEvent(button, 'press');
-    const newScreen = await screen.findByText('This is the notifications screen');
-
-    expect(newScreen).toBeTruthy();
-  });
+  return actual;
 });

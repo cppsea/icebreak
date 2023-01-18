@@ -13,12 +13,12 @@ const Feed = createDrawerNavigator();
 
 function FeedDrawer(props) {
   return (
-    <Feed.Navigator
+    <Feed.Navigator testID="navigation-drawer"
       useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}
     >
-
       <Feed.Screen 
+        testID="navigation-drawer-item"
         name="Feed" 
         component={FeedScreen} 
         options={{ 
