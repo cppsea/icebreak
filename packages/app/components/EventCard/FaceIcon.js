@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, StyleSheet, Image } from "react-native";
+import { StyleSheet, Image } from "react-native";
 
 export default function FaceIcon(props) {
   const styles = StyleSheet.create({
@@ -9,5 +9,5 @@ export default function FaceIcon(props) {
     transform: [{translateX: 30 - props.index * 20}]
   });
 
-  return <Image source={props.source} key={props.index} style={styles} />;
+  return <Image source={{ uri: props.iconUrl }} key={props.index} style={styles} />;
 }

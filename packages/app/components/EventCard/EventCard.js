@@ -1,6 +1,5 @@
 import React from 'react';
-import { Image, StyleSheet, Dimensions } from 'react-native';
-import { Card, Divider } from 'react-native-elements';
+import { Image, StyleSheet, View } from 'react-native';
 import EventCardText from './EventCardText';
 import EventCardRegistration from './EventCardRegistration';
 
@@ -10,14 +9,15 @@ const styles = StyleSheet.create({
   banner: {
     width: '100%',
     height: 144,
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    margin: 0
   },
   card: {
-    borderRadius: 10,
-    borderColor: 'white',
-    elevation: 0,
-    padding: 0
+    borderRadius: 15,
+    padding: 0,
+    margin: 20,
+    backgroundColor: 'white',
   },
   faceIcon: {
     flex: 1,
@@ -32,19 +32,19 @@ const EventCard = (props) => {
   }
   
   return (
-    <Card containerStyle={styles.card}>
-      { props.eventBanner ? <Image source={props.eventBanner} style={styles.banner}/> : '' }           
-      <Divider style={{ padding: 10, marginBottom: 0 }}>
+    <View style={styles.card}>
+      { props.banner ? <Image source={props.banner} style={styles.banner}/> : '' }           
+      <View style={{ padding: 10, marginBottom: 0 }}>
         <EventCardText 
-          eventTitle={props.eventTitle}
+          title={props.title}
           timeBegin={props.timeBegin}
           timeEnd={props.timeEnd}
           location={props.location}
           description={props.description}
         />
         <EventCardRegistration register={onRegisterClicked} />
-      </Divider>
-    </Card>
+      </View>
+    </View>
   );
 };
 

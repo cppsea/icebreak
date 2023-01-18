@@ -23,7 +23,7 @@ export default function EventCardText(props) {
         {props.timeBegin} - {props.timeEnd}
       </Text>
       <Text style={styles.eventTitle}>
-        {props.eventTitle}
+        {props.title}
       </Text>
       <Text style={styles.smallText}>
         📌 {props.location}

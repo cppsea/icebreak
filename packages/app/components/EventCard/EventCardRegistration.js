@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, Button, View } from "react-native";
-import { Icon } from "react-native-elements";
 import FaceIcon from "./FaceIcon";
 
 // Sample array for testing
@@ -10,10 +9,8 @@ const styles = StyleSheet.create({
   buttonView: {
     flex: 7,
     justifyContent: 'center',
-    borderRadius: 100
   },
   button: {
-    borderRadius: 10,
     marginBottom: 0,
     marginLeft: 0,
     marginRight: 0,
@@ -32,8 +29,7 @@ export default function EventCardRegistration(props) {
     <View style={{ flexDirection: 'row' }}>
       <View style={styles.buttonView}>
         <Button
-          icon={<Icon />}
-          buttonStyle={styles.button}
+          style={styles.button}
           title='Going'
           onPress={register}
         />
@@ -43,7 +39,7 @@ export default function EventCardRegistration(props) {
           return <FaceIcon
           key={sampleArray.indexOf(x)} 
           index={x}
-          source={require("@app/components/EventCard/eventcard_test/profile-pic.jpg")}
+          iconUrl={"https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
         />
         })}
       </View>

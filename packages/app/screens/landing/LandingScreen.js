@@ -62,9 +62,9 @@ function LandingScreen() {
         title="login with google"
       />
       <EventCard 
-        eventBanner={require("@app/components/EventCard/eventcard_test/test_card_banner.png")}
+        banner={require("@app/components/EventCard/eventcard_test/test_card_banner.png")}
         timeBegin="11:00AM" timeEnd="12:00PM"
-        eventTitle="College Survival Guide"
+        title="College Survival Guide"
         location="BLDG 8 @ Cal Poly Pomona"
         description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       />
