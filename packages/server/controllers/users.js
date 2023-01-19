@@ -15,7 +15,6 @@ async function getUserByEmail(email){
   return query.rows[0];
 }
 
-
 module.exports = {
   getUser,
   getAllUsers,
