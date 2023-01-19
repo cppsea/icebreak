@@ -2,7 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
-const {OAuth2Client } = require('google-auth-library');
+const { OAuth2Client } = require('google-auth-library');
 const bcrypt = require('bcrypt');
 const uniqid = require('uniqid'); 
 
