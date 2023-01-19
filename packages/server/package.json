@@ -11,7 +11,6 @@
     "dev": "ttab yarn start"
   },
   "dependencies": {
-    "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.0.2",
@@ -21,8 +20,7 @@
     "jsonwebtoken": "^8.5.1",
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
-    "pg": "^8.8.0",
-    "uniqid": "^5.4.0"
+    "pg": "^8.8.0"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
