@@ -2,8 +2,7 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
-const {OAuth2Client, UserRefreshClient } = require('google-auth-library');
-//const crypto = require('node:crypto');
+const {OAuth2Client } = require('google-auth-library');
 const bcrypt = require('bcrypt');
 const uniqid = require('uniqid'); 
 
@@ -12,8 +11,6 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const AuthController = require("../../controllers/auth");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
-
-
 
 passport.use(new GoogleStrategy({
   clientID: process.env.CLIENT_ID,
@@ -68,11 +65,6 @@ router.get('/user', AuthController.authenticate, (request, response) => {
   }
 });
 
-// router.get("/google", passport.authenticate("google", {
-//   scope: ["profile", "email"],
-//   prompt: 'select_account',
-// }));
-
 router.post("/google", AuthController.login, async (request, response) => {
   try {
 
@@ -115,26 +107,32 @@ router.get("/google/callback", passport.authenticate("google", {
 });
 
 router.post("/register", async (request, response) => {
-
-  try{
+  try {
     const { email, password } = request.body;
-    
-    let emailCheckRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
 
-    if(!emailCheckRegex.test(email)){ // check if email is valid, doesn't include or no spaces
+    if (email == undefined || password == undefined) {
+      return response.status(400).send({
+        message: "Email and Passsword must be provided.",
+        success: false
+      });
+    }
+
+    let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+    if(!emailRegex.test(email)){ // check if email is valid, doesn't include or no spaces
       throw new Error("Email is invalid.");
     }
 
-    const ifExist = await user.getUserByEmail(email);
+    const requestedUser = await user.getUserByEmail(email);
 
-    if(ifExist?.email === email){ // check if email is already in the database
+    if(requestedUser?.email === email){ // check if email is already in the database
       throw new Error("User already exists with this email.");
     }
 
     const saltRounds = 10;
 
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-      bcrypt.hash(password, salt, async function(err, hash) { // encrypt the user password using bcrypt
+    bcrypt.genSalt(saltRounds, function(error, salt) {
+      bcrypt.hash(password, salt, async function(error, hash) { // encrypt the user password using bcrypt
 
         // create unique User ID as bytes (18 byte)
         const user_id = uniqid();
@@ -144,17 +142,16 @@ router.post("/register", async (request, response) => {
           VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
         `); // create new user in DB, (DO NOT STORE ACTUAL PASSWORD, STORE HASHED VERSION)
         
-        const newToken = token.generate({ email}); // create a signed jwt token
+        const newToken = token.generate({ email }); // create a signed jwt token
 
-        response.send({  // send jwt token
+        response.send({
           success: true,
           newToken
-          }
-        ); 
+        }); 
+
       });
     });
-  }
-  catch(error){
+  } catch(error) {
     response.status(403).send({
       message: error.message,
       success: false
@@ -164,53 +161,48 @@ router.post("/register", async (request, response) => {
 
 
 router.post("/login", async (request, response) => {
-  
-  try{
-    
+  try {
     // Get user input
     const { email, password } =  request.body;
-    let emailCheckRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
 
-    if(!emailCheckRegex.test(email)){ // check if email is valid, doesn't include or no spaces
+    if (email == undefined || password == undefined) {
+      return response.status(400).send({
+        message: "email and passsword must be provided.",
+        success: false
+      });
+    }
+
+    let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+    if(!emailRegex.test(email)){ // check if email is valid, doesn't include or no spaces
       throw new Error("Email is invalid.");
     }
 
-    const ifExist = await user.getUserByEmail(email);
+    const requestedUser = await user.getUserByEmail(email);
 
-    if(ifExist?.email !== email){ // check if email is in the database
+    if(requestedUser?.email !== email){ // check if email is in the database
       throw new Error("Email does not exist.");
     }
     
-    const saltRounds = 10;
+    const isValidPassword = await bcrypt.compare(password, requestedUser.password); 
+    if (isValidPassword) {
+      const newToken = token.generate({ email });
+      response.send({  
+        success: true,
+        newToken
+      }); 
+    } else {
+      response.send({
+        message: "Password was incorrect.",
+        success: false
+      });
+    }
 
-    bcrypt.genSalt(saltRounds, function(err, salt) {
-      bcrypt.hash(password, salt, async function(err, hash) { // encrypt the user password using bcrypt
-        const match = await bcrypt.compare(password, ifExist.password); 
-        if(match){
-         // Create token
-            const newToken = token.generate({email});
-            //send jwt token
-        response.send({  
-          success: true,
-          newToken
-          }); 
-        }
-        else{
-      
-          response.send({
-            message: "Password was incorrect.",
-            success: false
-          });
-        }
-    });   
-  });
-  }
-
-  catch(error){
-  response.status(403).send({
-    message: error.message,
-    success: false
-  });
+  } catch(error) {
+    response.status(403).send({
+      message: error.message,
+      success: false
+    });
   }
 });
 
