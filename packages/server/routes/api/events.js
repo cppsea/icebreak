@@ -25,7 +25,7 @@ router.get("/all-events", async (request, response) => {
  */
 router.get(
   "/:cursor?",
-  // AuthController.authenticate,
+  AuthController.authenticate,
   async (request, response) => {
     try {
       if (request.query.limit && isNaN(request.query.limit)) {
@@ -38,7 +38,11 @@ router.get(
         ? Buffer.from(request.params.cursor, "base64").toString()
         : "";
       const [currentPage, action, eventId] = requestCursor.split("___");
-      const events = await EventController.getEvents(eventLimit, action, eventId);
+      const events = await EventController.getEvents(
+        eventLimit,
+        action,
+        eventId
+      );
 
       if (events.length === 0) {
         throw new Error("Tried to access nonexistent page");
@@ -88,7 +92,7 @@ router.get(
 
 router.get(
   "/:eventId",
-  // AuthController.authenticate,
+  AuthController.authenticate,
   async (request, response) => {
     try {
       console.log("@user", request.user);
