@@ -118,8 +118,13 @@ function LandingScreen() {
   const [inputs, setInputs] = React.useState({email: '', password: ''})
   const [errors, setErrors] = React.useState({})
 
-  const validateInput = () => {
+  const isValidEmail = (email) => {
     const emailRE = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+    return email.match(emailRE);
+  }
+
+  const validateInput = () => {
+    
     let isValid = true;
 
     // Reset the error message
@@ -130,7 +135,7 @@ function LandingScreen() {
     if (!inputs.email) {
       handleError('email', 'Please enter an email.');
       isValid = false;
-    } else if (!inputs.email.match(emailRE)) {
+    } else if (!isValidEmail(inputs.email)) {
       handleError('email', 'Please enter a valid email.');
       isValid = false;
     }
