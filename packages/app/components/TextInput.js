@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
     }
 });
 
-function TextInput(props) {
+const TextInput = React.forwardRef((props, ref) => {
     const [hidePassword, setHidePassword] = React.useState(props.password)
 
     return(
@@ -37,7 +37,7 @@ function TextInput(props) {
                     onSubmitEditing={props.onSubmitEditing}
                     placeholder = {props.placeholder}
                     secureTextEntry={hidePassword}
-                    ref={props.ref}/>
+                    ref={ref}/>
 
                 {props.password && 
                     <TouchableOpacity onPress={() => setHidePassword(!hidePassword)}>
@@ -57,6 +57,6 @@ function TextInput(props) {
         </View>
 
     );
-}
+})
 
 export default TextInput;
