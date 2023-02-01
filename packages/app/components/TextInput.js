@@ -1,6 +1,9 @@
 import React from 'react';
 import { TextInput as RNTextInput, StyleSheet, Text, View, Image, TouchableOpacity} from 'react-native';
 
+import EyeOff from '@app/assets/eye-line-off';
+import EyeOn from '@app/assets/eye-line-on';
+
 const styles = StyleSheet.create({
     container: {
         height: "auto",
@@ -41,8 +44,9 @@ const TextInput = React.forwardRef((props, ref) => {
 
                 {props.password && 
                     <TouchableOpacity onPress={() => setHidePassword(!hidePassword)}>
-                        <Image 
-                        source={hidePassword ? require('@app/assets/eye-line.png') : require('@app/assets/eye-off-line.png')}/>
+                        {
+                            hidePassword ? <EyeOff /> : <EyeOn />
+                        }
                     </TouchableOpacity>
                 }
             </View>

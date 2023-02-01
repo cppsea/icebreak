@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableHighlight, View, Image, Text } from 'react-native';
 
+
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
@@ -19,10 +20,9 @@ function Button(props) {
         {...props}>
         <View 
             style={styles.container}>
-            <Image 
-              source={props.source}
-              style={props.imageStyle}
-            />
+
+            { props.icon }
+
             <Text style=
               {[
                 {

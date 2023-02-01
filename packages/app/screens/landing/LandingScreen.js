@@ -7,10 +7,12 @@ import * as Google from 'expo-auth-session/providers/google';
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
 import TextInput from '@app/components/TextInput';
+import GoogleIcon from '@app/assets/google-icon';
 
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
+
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -51,68 +53,6 @@ function LandingScreen() {
       console.log(error.message);
     }
   }, [user, setUser, request]);
-
-  // Style sheet to keep all the styles in one place
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      alignItems: "center",
-      justifyContent: "center",
-      width: "100%",
-      paddingLeft: 20,
-      paddingRight: 20,
-    },
-    signupContainer: {
-      flexDirection: "row"
-    },
-    component: {
-      height: 50,
-      width: "100%",
-      borderRadius: 10,
-      alignItems: 'center',
-      justifyContent: 'center'
-    },
-    textInput: {
-      backgroundColor: "#ebebeb",
-      borderWidth: 1,
-      paddingLeft: 10,
-      paddingRight: 10,
-      justifyContent: 'space-between'
-    },
-    loginButton: {
-      borderColor: '#0b91e0',
-      backgroundColor: '#0b91e0',
-      marginTop: 30
-    },
-    googleButton: {
-      borderWidth: 1,
-      borderColor: '#a3a3a3'
-    },
-    textButton: {
-      color: "#0b91e0", 
-      fontWeight: "bold", 
-    },
-    forgotPassContainer: {
-      alignSelf: 'flex-end'
-    },
-    lineDivider: {
-      backgroundColor: "#c4c4c4", 
-      height: 1, 
-      width: "100%",
-      marginTop: 20,
-      marginBottom: 20
-    },
-    imageStyle: {
-      height: 20,
-      width: 20,
-      marginRight: 10
-    },    
-    logo: {
-      margin: 20, 
-      fontWeight: "bold", 
-      fontSize: 40
-    },
-  });
 
   // State to change the variable with the TextInput
   const [inputs, setInputs] = React.useState({email: '', password: ''})
@@ -202,6 +142,7 @@ function LandingScreen() {
             error={errors.password}
             password
             placeholder="Password"
+            onSubmitEditing={validateInput}
           />
 
           <TouchableOpacity 
@@ -235,7 +176,11 @@ function LandingScreen() {
             style={[styles.googleButton, styles.component]} 
             fontWeight="bold"
             imageStyle={styles.imageStyle}
-            source={require("@app/assets/google-icon.png")}
+            icon={ 
+              <GoogleIcon 
+                height={25}
+              />
+            }
           />
 
         </KeyboardAvoidingView>
@@ -262,5 +207,68 @@ function LandingScreen() {
     </Screen>
   );
 }
+
+// Style sheet to keep all the styles in one place
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    width: "100%",
+    paddingLeft: 20,
+    paddingRight: 20,
+  },
+  signupContainer: {
+    flexDirection: "row"
+  },
+  component: {
+    height: 50,
+    width: "100%",
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+  textInput: {
+    backgroundColor: "#ebebeb",
+    borderWidth: 1,
+    paddingLeft: 10,
+    paddingRight: 10,
+    justifyContent: 'space-between',
+    marginBottom: 7
+  },
+  loginButton: {
+    borderColor: '#0b91e0',
+    backgroundColor: '#0b91e0',
+    marginTop: 30
+  },
+  googleButton: {
+    borderWidth: 1,
+    borderColor: '#a3a3a3'
+  },
+  textButton: {
+    color: "#0b91e0", 
+    fontWeight: "bold"
+  },
+  forgotPassContainer: {
+    alignSelf: 'flex-end'
+  },
+  lineDivider: {
+    backgroundColor: "#c4c4c4", 
+    height: 1, 
+    width: "100%",
+    marginTop: 20,
+    marginBottom: 20
+  },
+  imageStyle: {
+    height: 20,
+    width: 20,
+    marginRight: 10
+  },    
+  logo: {
+    margin: 20, 
+    fontWeight: "bold", 
+    fontSize: 40
+  },
+});
 
 export default LandingScreen;
