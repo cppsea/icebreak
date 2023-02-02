@@ -1,18 +1,19 @@
 CREATE TABLE users (
-  user_id varchar(255) UNIQUE PRIMARY KEY NOT NULL,
+  user_id varchar(255) PRIMARY KEY NOT NULL,
   joined_date TIMESTAMP,
   last_login TIMESTAMP,
   first_name varchar(50) NOT NULL,
   last_name varchar(50) NOT NULL,
   email varchar(255) UNIQUE NOT NULL,
-  avatar varchar(255) NOT NULL
+  avatar varchar(255) NOT NULL,
+  password varchar(255)
 );
 
 CREATE TABLE Guild (
   guild_id VARCHAR(255),
   name VARCHAR(100),
   handler VARCHAR(50),
-  description VARCHAR(255),
+  description TEXT,
   media TEXT[],
   invite_only BOOLEAN,
   PRIMARY KEY(guild_id)
@@ -30,6 +31,36 @@ CREATE TABLE Event (
   PRIMARY KEY(event_id),
   FOREIGN KEY(guild_id)
     REFERENCES Guild(guild_id) 
+    ON UPDATE CASCADE
+    ON DELETE SET NULL
+);
+
+CREATE TABLE user_guild (
+  user_id VARCHAR(255),
+  guild_id VARCHAR(255),
+  user_role VARCHAR(255),
+  points SMALLINT,
+  rank SMALLINT
+  FOREIGN KEY(user_id)
+    REFERENCES users(user_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  FOREIGN KEY(guild_id)
+    REFERENCES Guild(guild_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  PRIMARY KEY(user_id, guild_id),
+);
+
+CREATE TABLE members_pending (
+  user_id VARCHAR(255),
+  event_id VARCHAR(255),
+  FOREIGN KEY(user_id)
+    REFERENCES users(user_id)
+    ON UPDATE CASCADE
+    ON DELETE SET NULL,
+  FOREIGN KEY(event_id)
+    REFERENCES Event(event_id)
     ON UPDATE CASCADE
     ON DELETE SET NULL
 );

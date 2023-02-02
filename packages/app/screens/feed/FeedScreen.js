@@ -38,13 +38,22 @@ function FeedScreen() {
 
   const getEvents = async () => {
     const token = await AsyncStorage.getItem("token");
+    console.log("@token", token);
     const response = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,
       headers: {
         Authorization: token,
       },
     });
-    setEvents(response.data);
+
+    const serializeEvents = response.data.events.map(event => {
+      return {
+        ...event,
+        key: event.event_id
+      }
+    });
+
+    setEvents(serializeEvents);
   };
 
   useEffect(() => {
@@ -65,13 +74,12 @@ function FeedScreen() {
         <Text>{JSON.stringify(user)}</Text>
         <Button onPress={handleOnLogout} title="logout" />
       </Screen>
-
       <FlatList
         onRefresh={onRefresh}
         refreshing={refreshing}
         data={events}
         renderItem={({ item }) => <Card {...item} />}
-        keyExtractor={(item) => item.event_id}
+        keyExtractor={(item) => item.key}
       />
     </>
   );
