@@ -6,11 +6,11 @@ import * as Google from 'expo-auth-session/providers/google';
 
 import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
-import EventCard from '@app/components/EventCard/EventCard';
 
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -39,6 +39,8 @@ function LandingScreen() {
         token: id_token
       };
 
+      AsyncStorage.setItem("token", id_token);
+
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {
         setUser({
@@ -60,13 +62,6 @@ function LandingScreen() {
         disabled={!request}
         onPress={handleOnLoginWithGoogle}
         title="login with google"
-      />
-      <EventCard 
-        banner={require("@app/components/EventCard/eventcard_test/test_card_banner.png")}
-        timeBegin="11:00AM" timeEnd="12:00PM"
-        title="College Survival Guide"
-        location="BLDG 8 @ Cal Poly Pomona"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
       />
     </Screen>
   );

@@ -12,6 +12,7 @@
     "app:ios": "yarn workspace app ios",
     "app:android": "yarn workspace app android",
     "app:start": "yarn workspace app start",
+    "app:test": "yarn workspace app test",
     "app:link": "cd packages/app/ios; pod install;",
     "server:start": "yarn workspace server start",
     "port:forward": "yarn workspace server forward",

@@ -3,8 +3,6 @@ import { Image, StyleSheet, View } from 'react-native';
 import EventCardText from './EventCardText';
 import EventCardRegistration from './EventCardRegistration';
 
-
-
 const styles = StyleSheet.create({
   banner: {
     width: '100%',
@@ -33,7 +31,7 @@ const EventCard = (props) => {
   
   return (
     <View style={styles.card}>
-      { props.banner ? <Image source={props.banner} style={styles.banner}/> : '' }           
+      { props.banner ? <Image source={props.banner} style={styles.banner}/> : null}
       <View style={{ padding: 10, marginBottom: 0 }}>
         <EventCardText 
           title={props.title}
