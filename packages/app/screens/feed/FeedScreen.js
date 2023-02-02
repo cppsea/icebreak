@@ -5,23 +5,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
+import CardEvent from "@app/components/EventCard/EventCard";
+
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
-
-function Card(props) {
-  const { title, description, start_date, end_date, location } = props;
-  return (
-    <View>
-      <Text style={styles.h1}>{title}</Text>
-      <Text>{description}</Text>
-      <Text>{start_date}</Text>
-      <Text>{end_date}</Text>
-      <Text>{location}</Text>
-      <Text>{start_date}</Text>
-    </View>
-  );
-}
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -66,6 +54,18 @@ function FeedScreen() {
     setRefreshing(false);
   }, []);
 
+  const handleRenderItem = useCallback(({ item }) => {
+    return (
+      <CardEvent
+        title={item.title}
+        description={item.description}
+        location={item.location}
+        timeBegin={item.start_date}
+        timeEnd={item.end_date}
+      />
+    );
+  }, []);
+
   return (
     <>
       <Screen>
@@ -78,7 +78,7 @@ function FeedScreen() {
         onRefresh={onRefresh}
         refreshing={refreshing}
         data={events}
-        renderItem={({ item }) => <Card {...item} />}
+        renderItem={handleRenderItem}
         keyExtractor={(item) => item.key}
       />
     </>
