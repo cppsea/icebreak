@@ -25,7 +25,7 @@ router.get("/all-events", async (request, response) => {
  */
 router.get(
   "/:cursor?",
-  AuthController.authenticate,
+  // AuthController.authenticate,
   async (request, response) => {
     try {
       if (request.query.limit && isNaN(request.query.limit)) {
