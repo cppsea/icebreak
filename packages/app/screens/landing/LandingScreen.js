@@ -112,8 +112,6 @@ function LandingScreen() {
   // Keeps a reference to help switch from Username input to Password input
   const refPasswordInput = useRef();
 
-  const onPress = jest.fn();
-
   return (
     <Screen style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
