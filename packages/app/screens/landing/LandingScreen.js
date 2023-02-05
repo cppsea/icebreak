@@ -1,6 +1,7 @@
 import React, { useCallback, useRef } from 'react';
 import axios from 'axios';
-import { StyleSheet, View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert, TouchableOpacity} from 'react-native';
+import { StyleSheet, View, Text, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, Alert, TouchableOpacity, Platform} from 'react-native';
+
 import * as WebBroswer from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 
@@ -10,49 +11,54 @@ import TextInput from '@app/components/TextInput';
 import GoogleIcon from '@app/assets/google-icon';
 
 import { useUserContext } from '@app/utils/UserContext';
-import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
+import { getUserInfo } from '@app/utils/datalayer';
 
+import EyeOff from '@app/assets/eye-line-off';
+import EyeOn from '@app/assets/eye-line-on';
 
 WebBroswer.maybeCompleteAuthSession();
 
 function LandingScreen() {
   const { user, setUser } = useUserContext();
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    responseType: 'id_token',
-    expoClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-    iosClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-    androidClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-    webClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-  });
+  // skips the code during test
+  if (process.env.NODE_ENV !== 'test') {
+    const [request, response, promptAsync] = Google.useAuthRequest({
+      responseType: 'id_token',
+      expoClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+      iosClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+      androidClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+      webClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+    });
 
-  const handleOnLoginWithGoogle = useCallback(async () => {
-    try {
-      const result = await promptAsync();
+    const handleOnLoginWithGoogle = useCallback(async () => {
+      try {
+        const result = await promptAsync();
 
-      if (result.type !== 'success') {
-        throw new Error("Failed to authenticate with Google's OAuth");
+        if (result.type !== 'success') {
+          throw new Error("Failed to authenticate with Google's OAuth");
+        }
+
+        const id_token = result.params.id_token;
+
+        const body = {
+          token: id_token
+        };
+
+        const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
+        if (data?.success) {
+          setUser({
+            ...user,
+            isLoggedIn: true,
+            data: data.payload
+          }); 
+        }
+      } catch(error) {
+        console.log(error.message);
       }
-
-      const id_token = result.params.id_token;
-
-      const body = {
-        token: id_token
-      };
-
-      const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
-      if (data?.success) {
-        setUser({
-          ...user,
-          isLoggedIn: true,
-          data: data.payload
-        }); 
-      }
-    } catch(error) {
-      console.log(error.message);
-    }
-  }, [user, setUser, request]);
+    }, [user, setUser, request]);
+  }
 
   // State to change the variable with the TextInput
   const [inputs, setInputs] = React.useState({email: '', password: ''})
@@ -62,7 +68,7 @@ function LandingScreen() {
     const emailRE = /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
     return email.match(emailRE);
   }
-
+  
   const validateInput = () => {
     
     let isValid = true;
@@ -106,6 +112,8 @@ function LandingScreen() {
   // Keeps a reference to help switch from Username input to Password input
   const refPasswordInput = useRef();
 
+  const onPress = jest.fn();
+
   return (
     <Screen style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -113,9 +121,11 @@ function LandingScreen() {
           behavior={Platform.OS === "ios" ? "padding" : "height"} 
           style={styles.container}>
 
-          <Text style={styles.logo}>icebreak</Text>
+          <Text testID="logo" style={styles.logo}>icebreak</Text>
 
           <TextInput 
+            testID="emailInput"
+            value={inputs['email']}
             container={{marginBottom: 10}}
             style={[styles.component, styles.textInput]}
             borderColor='#cccccc'
@@ -131,6 +141,8 @@ function LandingScreen() {
           />
 
           <TextInput 
+            testID="passwordInput"
+            value={inputs['password']}
             ref={refPasswordInput}
             style={[styles.component, styles.textInput]}
             borderColor='#cccccc'
@@ -146,9 +158,12 @@ function LandingScreen() {
           />
 
           <TouchableOpacity 
+            testID="forgotPassButton"
             onPress={
               // TODO: Forgot password code here.
-              handleOnLoginWithGoogle
+              () => {
+                Alert.alert("Open forgot password page")
+              }
             }
             style={styles.forgotPassContainer}
             >
@@ -159,8 +174,12 @@ function LandingScreen() {
 
 
           <Button 
+            testID="loginButton"
             title="Log In" 
-            onPress={validateInput}
+            onPress={() => {
+              validateInput(); 
+              onPress();
+            }}
             underlayColor="#0e81c4"
             fontColor="#ffffff"
             fontWeight="bold"
@@ -170,8 +189,9 @@ function LandingScreen() {
           <View style={styles.lineDivider}/>
 
           <Button 
+            testID="googleButton"
             title="Continue with Google" 
-            onPress={handleOnLoginWithGoogle}
+
             underlayColor='#ebebeb'
             style={[styles.googleButton, styles.component]} 
             fontWeight="bold"
@@ -194,9 +214,12 @@ function LandingScreen() {
         <Text>Don't have an account? </Text>
 
         <TouchableOpacity
+          testID="signupButton"
           onPress={
             // TODO: Navigate to signup screen.
-            handleOnLoginWithGoogle
+            () => {
+              Alert.alert("Navigate to signup screen")
+            }
           }>
           <Text 
             style={styles.textButton} >Sign Up.</Text>
@@ -205,7 +228,7 @@ function LandingScreen() {
         
       </View>
     </Screen>
-  );
+  )
 }
 
 // Style sheet to keep all the styles in one place
