@@ -22,6 +22,8 @@ WebBroswer.maybeCompleteAuthSession();
 function LandingScreen() {
   const { user, setUser } = useUserContext();
 
+  let handleOnLoginWithGoogle;
+
   // skips the code during test
   if (process.env.NODE_ENV !== 'test') {
     const [request, response, promptAsync] = Google.useAuthRequest({
@@ -32,7 +34,7 @@ function LandingScreen() {
       webClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
     });
 
-    const handleOnLoginWithGoogle = useCallback(async () => {
+    handleOnLoginWithGoogle = useCallback(async () => {
       try {
         const result = await promptAsync();
 
@@ -176,7 +178,6 @@ function LandingScreen() {
             title="Log In" 
             onPress={() => {
               validateInput(); 
-              onPress();
             }}
             underlayColor="#0e81c4"
             fontColor="#ffffff"
@@ -189,7 +190,7 @@ function LandingScreen() {
           <Button 
             testID="googleButton"
             title="Continue with Google" 
-
+            onPress={ handleOnLoginWithGoogle}
             underlayColor='#ebebeb'
             style={[styles.googleButton, styles.component]} 
             fontWeight="bold"
