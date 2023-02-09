@@ -25,6 +25,7 @@
     "uniqid": "^5.4.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.19"
+    "nodemon": "^2.0.19",
+    "prisma": "^4.10.1"
   }
 }
