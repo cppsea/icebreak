@@ -1,12 +1,12 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Keychain from '@react-native-keychain';
 
 const server = axios.create({
   baseURL: 'http://localhost:5050/api',
 });
 
 export async function getUserInfo() {
-  const token = await AsyncStorage.getItem('token');
+  const token = await Keychain.getGenericPassword();
   const user = await server.get('/auth/user', {
     headers: {
       Authorization: token,
@@ -17,5 +17,5 @@ export async function getUserInfo() {
 }
 
 export async function logoutUser() {
-  await AsyncStorage.removeItem('token');
+  await Keychain.resetGenericPassword();
 }
