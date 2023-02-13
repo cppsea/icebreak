@@ -10,7 +10,7 @@ import Screen from '@app/components/Screen';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Keychain from '@react-native-keychain';
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -39,7 +39,7 @@ function LandingScreen() {
         token: id_token
       };
 
-      AsyncStorage.setItem("token", id_token);
+      Keychain.setGenericPassword("token", id_token);
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {

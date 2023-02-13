@@ -6,7 +6,7 @@ const server = axios.create({
 });
 
 export async function getUserInfo() {
-  const token = await Keychain.getGenericPassword();
+  const token = await Keychain.getGenericPassword("token");
   const user = await server.get('/auth/user', {
     headers: {
       Authorization: token,

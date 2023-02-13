@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import Keychain from '@react-native-keychain';
 
 import { UserProvider, useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
@@ -33,7 +33,7 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
-    const token = await AsyncStorage.getItem('token');
+    const token = await Keychain.getGenericPassword("token");
     if (token) {
       const payload = await getUserInfo();
       setUser({

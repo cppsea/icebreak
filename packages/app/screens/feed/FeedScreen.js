@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Text, Image, StyleSheet, View, FlatList } from "react-native";
 import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
@@ -10,6 +9,7 @@ import CardEvent from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
+import Keychain from '@react-native-keychain';
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -25,7 +25,7 @@ function FeedScreen() {
   }, [setUser]);
 
   const getEvents = async () => {
-    const token = await AsyncStorage.getItem("token");
+    const token = await Keychain.getGenericPassword("token");
     console.log("@token", token);
     const response = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,
