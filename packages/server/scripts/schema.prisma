@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -8,4 +5,60 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model event {
+  eventId         String            @map("event_id") @id @db.VarChar(255)
+  guildId         String?           @map("guild_id") @db.VarChar(255)
+  title           String?           @db.VarChar(255)
+  description     String?           @db.VarChar(255)
+  startDate       DateTime?         @map("start_date") @db.Timestamp(6)
+  endDate         DateTime?         @map("end_date") @db.Timestamp(6)
+  location        String?           @db.VarChar(255)
+  thumbnail       String?           @db.VarChar(255)
+  guild           guild?            @relation(fields: [guildId], references: [guildId])
+}
+
+model guild {
+  guildId         String            @map("guild_id") @id @db.VarChar(255)
+  name            String?           @db.VarChar(100)
+  handler         String?           @db.VarChar(50)
+  description     String?           
+  media           String[]
+  inviteOnly      Boolean?          @map("invite_only")
+  event           event[]
+  user_guild      user_guild[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model members_pending {
+  userId          String?           @map("user_id") @db.VarChar(255)
+  eventId         String?           @map("event_id") @db.VarChar(255)
+  event           event?            @relation(fields: [eventId], references: [eventId])
+  users           users?            @relation(fields: [userId], references: [userId])
+
+  @@ignore
+}
+
+model user_guild {
+  userId          String            @map("user_id") @db.VarChar(255)
+  guildId         String            @map("guild_id") @db.VarChar(255)
+  user_role       String?           @db.VarChar(255)
+  points          Int?              @db.SmallInt
+  rank            Int?              @db.SmallInt
+  guild           guild             @relation(fields: [guildId], references: [guildId], onDelete: SetNull)
+  users           users             @relation(fields: [userId], references: [userId], onDelete: SetNull)
+
+  @@id([userId, guildId])
+}
+
+model users {
+  userId          String            @map("user_id") @id @db.VarChar(255)
+  joinedDate      DateTime?         @map("joined_date") @db.Timestamp(6)
+  lastLogin       DateTime?         @map("last_login") @db.Timestamp(6)
+  firstName       String            @map("first_name") @db.VarChar(50)
+  lastName        String            @map("last_name") @db.VarChar(50)
+  email           String            @unique @db.VarChar(255)
+  avatar          String            @db.VarChar(255)
+  password        String?           @db.VarChar(255)
 }
