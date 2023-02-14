@@ -16,21 +16,35 @@ const styles = StyleSheet.create({
   }
 });
 
-export default function EventCardText(props) {
+export type EventTextProps = {
+  timeBegin: string;
+  timeEnd: string;
+  title: string;
+  location: string;
+  description: string;
+}
+
+
+const EventCardText: React.FC<EventTextProps> = ({
+  timeBegin, timeEnd, title, location, description
+}) => {
+
   return (
     <View>
-      <Text style={styles.smallText}>
-        {props.timeBegin} - {props.timeEnd}
+      <Text style={styles.smallText}> 
+        {timeBegin} - {timeEnd}
       </Text>
       <Text style={styles.eventTitle}>
-        {props.title}
+        {title}
       </Text>
       <Text style={styles.smallText}>
-        📌 {props.location}
+        📌 {location}
       </Text>
       <Text style={styles.description} numberOfLines={3}>
-        {props.description}
+        {description}
       </Text>
     </View>
   )
-}
+};
+
+export default EventCardText;

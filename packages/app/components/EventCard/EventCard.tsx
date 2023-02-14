@@ -1,8 +1,9 @@
 import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
+import { GestureResponderEvent, Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
 import EventCardText from './EventCardText';
 import EventCardRegistration from './EventCardRegistration';
 
+// Stylesheet for the EventCard component
 const styles = StyleSheet.create({
   banner: {
     width: '100%',
@@ -24,21 +25,32 @@ const styles = StyleSheet.create({
   }
 });
 
-const EventCard = (props) => {
+export type EventCardProps = {
+  banner: ImageSourcePropType,
+  title: string,
+  timeBegin: string,
+  timeEnd: string,
+  location: string,
+  description: string,
+}
+
+const EventCard: React.FC<EventCardProps> = ({
+  banner, title, timeBegin, timeEnd, location, description
+}) => {
   const onRegisterClicked = () => {
     alert("Register button works!");
   }
   
   return (
     <View style={styles.card}>
-      { props.banner ? <Image source={props.banner} style={styles.banner}/> : null}
+      { banner ? <Image source={banner} style={styles.banner}/> : null}
       <View style={{ padding: 10, marginBottom: 0 }}>
         <EventCardText 
-          title={props.title}
-          timeBegin={props.timeBegin}
-          timeEnd={props.timeEnd}
-          location={props.location}
-          description={props.description}
+          title={title}
+          timeBegin={timeBegin}
+          timeEnd={timeEnd}
+          location={location}
+          description={description}
         />
         <EventCardRegistration register={onRegisterClicked} />
       </View>

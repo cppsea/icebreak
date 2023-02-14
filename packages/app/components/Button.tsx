@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button as RNButton } from 'react-native';
 
-function Button(props) {
+function Button(props: any) {
   return <RNButton {...props} />;
 }
 

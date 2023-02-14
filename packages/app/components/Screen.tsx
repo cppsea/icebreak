@@ -1,7 +1,7 @@
 import React from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
 
-function Screen(props) {
+function Screen(props: any) {
   const { children, ...rest } = props;
 
   return (

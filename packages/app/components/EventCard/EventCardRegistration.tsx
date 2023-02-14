@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Button, View } from "react-native";
+import { StyleSheet, Button, View, GestureResponderEvent } from "react-native";
 import FaceIcon from "./FaceIcon";
 
 // Sample array for testing
@@ -30,14 +30,16 @@ const sampleArray = [0,1,2,3];
 //   )
 // };
 
-const EventCardRegistration: React.FC<Props> = (props: any) => {
-  const { register } = props;
+export type EventCardRegistrationProps = {
+  register: () => void;
+}
+
+const EventCardRegistration: React.FC<EventCardRegistrationProps> = ({register}) => {
 
   return (
     <View style={{ flexDirection: 'row' }}>
       <View style={styles.buttonView}>
         <Button
-          style={styles.button}
           title='Going'
           onPress={register}
         />
