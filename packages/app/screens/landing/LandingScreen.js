@@ -11,6 +11,7 @@ import EventCard from '@app/components/EventCard/EventCard';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -38,6 +39,8 @@ function LandingScreen() {
       const body = {
         token: id_token
       };
+
+      AsyncStorage.setItem("token", id_token);
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {
