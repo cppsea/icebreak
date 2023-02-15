@@ -6,7 +6,8 @@ const server = axios.create({
 });
 
 export async function getUserInfo() {
-  const token = await AsyncStorage.getItem('token');
+  const token = await AsyncStorage.getItem('token') ?? "";
+  // Defaults to empty string instead of null to be compatible with types
   const user = await server.get('/auth/user', {
     headers: {
       Authorization: token,

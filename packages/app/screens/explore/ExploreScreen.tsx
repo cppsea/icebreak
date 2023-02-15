@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text } from 'react-native';
 
-import Screen from '@app/components/Screen';
+import Screen from '../../components/Screen';
 
 function ExploreScreen() {
   return (
