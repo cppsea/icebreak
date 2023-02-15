@@ -16,7 +16,7 @@ model event {
   endDate         DateTime?         @map("end_date") @db.Timestamp(6)
   location        String?           @db.VarChar(255)
   thumbnail       String?           @db.VarChar(255)
-  guild           guild?            @relation(fields: [guildId], references: [guildId])
+  guild           guild?            @relation(fields: [guildId], references: [guildId], onUpdate: Cascade, onDelete: SetNull)
 }
 
 model guild {
@@ -41,13 +41,13 @@ model members_pending {
 }
 
 model user_guild {
-  userId          String            @map("user_id") @db.VarChar(255)
-  guildId         String            @map("guild_id") @db.VarChar(255)
+  userId          String?           @map("user_id") @db.VarChar(255)
+  guildId         String?           @map("guild_id") @db.VarChar(255)
   user_role       String?           @db.VarChar(255)
   points          Int?              @db.SmallInt
   rank            Int?              @db.SmallInt
-  guild           guild             @relation(fields: [guildId], references: [guildId], onDelete: SetNull)
-  users           users             @relation(fields: [userId], references: [userId], onDelete: SetNull)
+  guild           guild             @relation(fields: [guildId], references: [guildId], onUpdate: Cascade, onDelete: SetNull)
+  users           users             @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: SetNull)
 
   @@id([userId, guildId])
 }
