@@ -2,9 +2,10 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
-const { OAuth2Client } = require('google-auth-library');
+const { OAuth2Client, JWT } = require('google-auth-library');
 const bcrypt = require('bcrypt');
 const uniqid = require('uniqid'); 
+const tokenList = {};
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -186,10 +187,12 @@ router.post("/login", async (request, response) => {
     
     const isValidPassword = await bcrypt.compare(password, requestedUser.password); 
     if (isValidPassword) {
-      const newToken = token.generate({ email });
+      const newToken = token.generate({email} );
+      const refreshToken = token.generate({email, expiresIn: "10s"});
       response.send({  
         success: true,
-        newToken
+        newToken,
+        refreshToken
       }); 
     } else {
       response.send({
@@ -197,12 +200,40 @@ router.post("/login", async (request, response) => {
         success: false
       });
     }
+    tokenList[refreshToken] = response;
 
   } catch(error) {
     response.status(403).send({
       message: error.message,
       success: false
     });
+  }
+});
+
+router.post("/token", async (request, response) => {
+  try{
+      const {email } = request.body;
+      const loggedUser = await user.getUserByEmail(email);
+      
+      if((loggedUser.refreshToken) && (loggedUser.refreshToken in tokenList)) {
+      const token = token.generate(email,  {expiresIn: "300s"});
+      tokenList[loggedUser.refreshToken].token = token;
+        response.send({
+            token
+        });
+      }else {
+        response.send({
+          message: "Invalid Request",
+          success: false
+
+      });
+    }
+    } catch(error) {
+      response.status(403).send({
+        message: error.message,
+        success: false
+      });
+
   }
 });
 
