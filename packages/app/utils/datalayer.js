@@ -17,5 +17,5 @@ export async function getUserInfo() {
 }
 
 export async function logoutUser() {
-  await Keychain.resetGenericPassword();
+  await SecureStore.deleteItemAsync();
 }
