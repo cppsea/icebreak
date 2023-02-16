@@ -1,12 +1,12 @@
 import axios from 'axios';
-import Keychain from '@react-native-keychain';
+import SecureStore from '@expo-secure-store';
 
 const server = axios.create({
   baseURL: 'http://localhost:5050/api',
 });
 
 export async function getUserInfo() {
-  const token = await Keychain.getGenericPassword("token");
+  const token = await SecureStore.getItemAsync("token");
   const user = await server.get('/auth/user', {
     headers: {
       Authorization: token,

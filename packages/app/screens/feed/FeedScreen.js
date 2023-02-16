@@ -9,7 +9,9 @@ import CardEvent from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
-import Keychain from '@react-native-keychain';
+
+import SecureStore from '@expo-secure-store';
+
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -25,7 +27,7 @@ function FeedScreen() {
   }, [setUser]);
 
   const getEvents = async () => {
-    const token = await Keychain.getGenericPassword("token");
+    const token = await SecureStore.getItemAsync("token");
     console.log("@token", token);
     const response = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,

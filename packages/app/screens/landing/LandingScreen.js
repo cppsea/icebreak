@@ -10,7 +10,7 @@ import Screen from '@app/components/Screen';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
-import Keychain from '@react-native-keychain';
+import SecureStore from '@expo-secure-store';
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -39,7 +39,8 @@ function LandingScreen() {
         token: id_token
       };
 
-      Keychain.setGenericPassword("token", id_token);
+      SecureStore.setItemAsync("token", id_token);
+      
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {
