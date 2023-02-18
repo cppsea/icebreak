@@ -6,6 +6,8 @@ const { OAuth2Client, JWT } = require('google-auth-library');
 const bcrypt = require('bcrypt');
 const uniqid = require('uniqid'); 
 const tokenList = {};
+const jwt = require('jsonwebtoken');
+
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -160,7 +162,6 @@ router.post("/register", async (request, response) => {
   }
 });
 
-
 router.post("/login", async (request, response) => {
   try {
     // Get user input
@@ -187,8 +188,9 @@ router.post("/login", async (request, response) => {
     
     const isValidPassword = await bcrypt.compare(password, requestedUser.password); 
     if (isValidPassword) {
-      const newToken = token.generate({email} );
-      const refreshToken = token.generate({email, expiresIn: "10s"});
+      const newToken = jwt.sign({email}, process.env.CLIENT_SECRET, { expiresIn: '1h'} );
+      const refreshToken = jwt.sign({email}, process.env.TOKEN_SECRET, {expiresIn: '1h'});
+      tokenList[refreshToken] = response;
       response.send({  
         success: true,
         newToken,
@@ -200,7 +202,6 @@ router.post("/login", async (request, response) => {
         success: false
       });
     }
-    tokenList[refreshToken] = response;
 
   } catch(error) {
     response.status(403).send({
@@ -212,12 +213,17 @@ router.post("/login", async (request, response) => {
 
 router.post("/token", async (request, response) => {
   try{
-      const {email } = request.body;
-      const loggedUser = await user.getUserByEmail(email);
+
+      const {email, refreshToken} = request.body;
+      //const getUser = await user.getUserByEmail(email);
+
+      //if the refresh token exists
+      if((refreshToken) && (refreshToken in tokenList)) {
       
-      if((loggedUser.refreshToken) && (loggedUser.refreshToken in tokenList)) {
-      const token = token.generate(email,  {expiresIn: "300s"});
-      tokenList[loggedUser.refreshToken].token = token;
+      //creates new token
+      const token = jwt.sign({email}, process.env.CLIENT_SECRET,  {expiresIn: '1h'});
+      //updates token in the list 
+      tokenList[refreshToken].token = token;
         response.send({
             token
         });
