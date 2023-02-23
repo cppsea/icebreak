@@ -1,9 +1,11 @@
 import React from "react";
 import { Text, View, StyleSheet, Image } from "react-native";
 
-import GroupHeaderIcon from "./GroupIcon.js";
+import GroupIcon from "./GroupIcon";
 
 function GroupHeader() {
+  const bannerHeight = 122;
+
   const styles = StyleSheet.create({
     headerContainer: {
       width: "100%",
@@ -11,7 +13,7 @@ function GroupHeader() {
       borderBottomColor: "grey",
       borderBottomWidth: StyleSheet.hairlineWidth,
     },
-    bannerStyle: { width: "100%", height: 122 },
+    bannerStyle: { width: "100%", height: bannerHeight },
   });
 
   return (
@@ -21,10 +23,11 @@ function GroupHeader() {
           source={require("@app/assets/test-club-banner.png")}
           style={styles.bannerStyle}
         />
-        <GroupHeaderIcon
+        <GroupIcon
           icon={require("@app/assets/test-club-icon.png")}
           size={62}
           backgroundColor={"#0E131F"}
+          bannerHeight={bannerHeight}
         />
       </View>
     </View>

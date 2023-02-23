@@ -1,11 +1,11 @@
 import React from "react";
-import { View, StyleSheet, Image, Text } from "react-native";
+import { View, StyleSheet, Image } from "react-native";
 
-function GroupHeaderIcon(props) {
+function GroupIcon(props) {
   const styles = StyleSheet.create({
     iconContainer: {
       position: "absolute",
-      top: 91,
+      top: props.bannerHeight - props.size / 2,
       left: 12,
       alignItems: "center",
       justifyContent: "center",
@@ -31,4 +31,4 @@ function GroupHeaderIcon(props) {
   );
 }
 
-export default GroupHeaderIcon;
+export default GroupIcon;
