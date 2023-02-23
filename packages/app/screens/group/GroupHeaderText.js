@@ -23,6 +23,15 @@ const styles = StyleSheet.create({
   },
 });
 
+/**
+ * A component for GroupHeader that displays an organization's name, handler, and description.
+ *
+ * @param {object} props - Object that contains properties of this component.
+ * @param {number} props.anchor - Height of org banner, used to properly align components.
+ * @param {number} props.name - Name of org.
+ * @param {string} props.handler - Handler of org, implementation already includes '@'.
+ * @param {string} props.description - Description of org.
+ */
 function GroupHeaderText(props) {
   return (
     <View style={styles.containerStyle}>
