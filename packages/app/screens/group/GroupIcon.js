@@ -1,32 +1,51 @@
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
-function GroupIcon(props) {
-  const styles = StyleSheet.create({
-    iconContainer: {
-      position: "absolute",
-      top: props.bannerHeight - props.size / 2,
-      left: 12,
-      alignItems: "center",
-      justifyContent: "center",
-    },
-    iconStyle: {
-      resizeMode: "cover",
-      width: props.size,
-      height: props.size,
-      borderRadius: 5,
-      backgroundColor: props.backgroundColor,
-    },
-    iconImage: {
-      position: "absolute",
-      top: 0,
-      left: 0,
-    },
-  });
+const styles = StyleSheet.create({
+  iconContainer: {
+    position: "absolute",
+    left: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconStyle: {
+    resizeMode: "cover",
+    borderRadius: 5,
+  },
+  iconImage: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+  },
+});
 
+/**
+ * A component for GroupHeader that displays an icon for an organization.
+ * It is currently coded specifically for the Group Screen (regarding its position)
+ *
+ * @param {object} props - Object that contains properties of this component.
+ * @param {number} props.anchor - Height of org banner, used to properly align component.
+ * @param {number} props.size - Size of icon in pixels
+ * @param {string} props.backgroundColor - Background color of icon.
+ * @param {string} props.icon - Icon image source.
+ */
+function GroupIcon(props) {
   return (
-    <View style={styles.iconContainer}>
-      <Image source={props.icon} style={[styles.iconStyle, styles.iconImage]} />
+    <View
+      style={[styles.iconContainer, { top: props.anchor - props.size / 2 }]}
+    >
+      <Image
+        source={props.icon}
+        style={[
+          styles.iconStyle,
+          {
+            width: props.size,
+            height: props.size,
+            backgroundColor: props.backgroundColor,
+          },
+          styles.iconImage,
+        ]}
+      />
     </View>
   );
 }
