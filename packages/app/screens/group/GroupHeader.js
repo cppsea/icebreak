@@ -1,25 +1,34 @@
 import React from "react";
-import { Text, View, StyleSheet, Image } from "react-native";
+import { Dimensions, View, StyleSheet, Image } from "react-native";
 
 import GroupIcon from "./GroupIcon";
 import GroupHeaderInfo from "./GroupHeaderInfo";
 import GroupMediaIcon from "./GroupMediaIcon";
 
-const bannerHeight = 122; // main anchor for component positioning
+const bannerHeight = 110;
+const headerHeight = Dimensions.get("window").height * 0.4;
 const iconSize = 62;
-const headerHeight = bannerHeight + 268; // for testing purposes
+
 const exampleDescription =
   "The Software Engineering Association (SEA) teaches and encourages the professional skills needed to be a Software Engineer, including code review, unit testing, communication, and software design. Our online and in-meeting exercises allow anyone, novice or professional, to sharpen and practice these skills.";
 const exampleDescription2 =
-  "The Software Engineering Association (SEA) teaches skills needed to be a Software Engineer.";
+  "The Software Engineering Association (SEA) teaches skills needed to be a Software Engineer, obviously.";
+
 const styles = StyleSheet.create({
   headerContainer: {
-    width: "100%",
     height: headerHeight,
-    borderBottomColor: "grey",
-    borderBottomWidth: StyleSheet.hairlineWidth,
   },
-  bannerStyle: { width: "100%", height: bannerHeight },
+  textContainer: {
+    marginHorizontal: 12,
+    marginTop: iconSize / 2 - iconSize, // rfc
+    flexDirection: "row",
+  },
+  mediaIconContainer: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    backgroundColor: "gold",
+  },
+  bannerStyle: { width: "100%", height: bannerHeight, resizeMode: "cover" },
 });
 
 function GroupHeader() {
@@ -29,22 +38,20 @@ function GroupHeader() {
         source={require("@app/assets/test-club-banner.png")}
         style={styles.bannerStyle}
       />
+      <GroupMediaIcon size={17} />
 
-      <GroupIcon
-        icon={require("@app/assets/test-club-icon.png")}
-        size={iconSize}
-        backgroundColor={"#0E131F"}
-        anchor={bannerHeight}
-      />
-
-      <GroupMediaIcon anchor={bannerHeight} size={17} />
-
-      <GroupHeaderInfo
-        name={"Software Engineering Association"}
-        handler={"cppsea"}
-        description={exampleDescription2}
-        anchor={bannerHeight}
-      />
+      <View style={styles.textContainer}>
+        <GroupIcon
+          icon={require("@app/assets/test-club-icon.png")}
+          size={iconSize}
+          backgroundColor={"#0E131F"}
+        />
+        <GroupHeaderInfo
+          name={"Software Engineering Association"}
+          handler={"cppsea"}
+          description={exampleDescription}
+        />
+      </View>
     </View>
   );
 }
