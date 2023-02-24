@@ -8,6 +8,16 @@ import GroupMediaIcon from "./GroupMediaIcon";
 const bannerHeight = 110;
 const headerHeight = Dimensions.get("window").height * 0.4;
 const iconSize = 62;
+const orgTags = [
+  "cs",
+  "software",
+  "tech",
+  "engineering",
+  "programming",
+  "algorithms",
+  "development",
+  "code",
+]; // string[]
 
 const exampleDescription =
   "The Software Engineering Association (SEA) teaches and encourages the professional skills needed to be a Software Engineer, including code review, unit testing, communication, and software design. Our online and in-meeting exercises allow anyone, novice or professional, to sharpen and practice these skills.";
@@ -50,6 +60,10 @@ function GroupHeader() {
           name={"Software Engineering Association"}
           handler={"cppsea"}
           description={exampleDescription}
+          location={"Pomona, CA"}
+          members={100}
+          url={"https://cppsea.com"}
+          tags={orgTags}
         />
       </View>
     </View>
