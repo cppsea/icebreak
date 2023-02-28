@@ -10,7 +10,7 @@ import Screen from '@app/components/Screen';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
-import SecureStore from '@expo-secure-store';
+import SecureStore from "@app/utils/SecureStore";
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -39,7 +39,7 @@ function LandingScreen() {
         token: id_token
       };
 
-      SecureStore.setItemAsync("token", id_token);
+      SecureStore.save("token", id_token);
       
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);

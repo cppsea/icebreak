@@ -10,7 +10,7 @@ import LandingStack from '@app/screens/landing/LandingStack';
 import FeedStack from '@app/screens/feed/FeedStack';
 import GroupStack from '@app/screens/group/GroupStack';
 import ExploreStack from '@app/screens/explore/ExploreStack';
-import SecureStore from '@expo-secure-store';
+import SecureStore from "@app/utils/SecureStore";
 
 const LINKING_CONFIG = {
   prefixes: ['icebreak://'],
@@ -33,7 +33,7 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
-    const token = await SecureStore.getItemAsync("token");
+    const token = await SecureStore.getValueFor("token");
     if (token) {
       const payload = await getUserInfo();
       setUser({

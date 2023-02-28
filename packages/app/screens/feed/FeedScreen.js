@@ -27,7 +27,7 @@ function FeedScreen() {
   }, [setUser]);
 
   const getEvents = async () => {
-    const token = await SecureStore.getItemAsync("token");
+    const token = await SecureStore.getValueFor("token");
     console.log("@token", token);
     const response = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,
