@@ -10,7 +10,7 @@ import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
 
-import SecureStore from '@expo-secure-store';
+import SecureStore from "@app/utils/SecureStore";
 
 
 function FeedScreen() {
