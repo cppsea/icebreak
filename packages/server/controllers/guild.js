@@ -1,16 +1,20 @@
-const postgres = require("../utils/postgres");
+const prisma = require("../utils/prisma");
 
 async function getAllGuild() {
-  const query = await postgres.query('SELECT * FROM guild');
-  return query.rows;
+  const query = await prisma.guild.findMany();
+  return query;
 }
 
 async function getGuild(guildId) {
-  const query = await postgres.query(`SELECT * FROM guild WHERE guild_id='${guildId}'`);
-  return query.rows[0];
+  const query = await prisma.guild.findFirst({
+    where: {
+      guildId: guildId,
+    },
+  });
+  return query;
 }
 
 module.exports = {
   getGuild,
   getAllGuild,
-}
+};
