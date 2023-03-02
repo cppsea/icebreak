@@ -8,7 +8,7 @@ datasource db {
 }
 
 model event {
-  eventId         String            @map("event_id") @id @db.VarChar(255)
+  eventId         String            @id @map("event_id") @db.VarChar(255)
   guildId         String?           @map("guild_id") @db.VarChar(255)
   title           String?           @db.VarChar(255)
   description     String?           @db.VarChar(255)
@@ -17,43 +17,42 @@ model event {
   location        String?           @db.VarChar(255)
   thumbnail       String?           @db.VarChar(255)
   guild           guild?            @relation(fields: [guildId], references: [guildId], onUpdate: Cascade, onDelete: SetNull)
+  members_pending members_pending[]
 }
 
 model guild {
-  guildId         String            @map("guild_id") @id @db.VarChar(255)
-  name            String?           @db.VarChar(100)
-  handler         String?           @db.VarChar(50)
-  description     String?           
-  media           String[]
-  inviteOnly      Boolean?          @map("invite_only")
-  event           event[]
-  user_guild      user_guild[]
+  guildId     String       @id @map("guild_id") @db.VarChar(255)
+  name        String?      @db.VarChar(100)
+  handler     String?      @db.VarChar(50)
+  description String?
+  media       String[]
+  inviteOnly  Boolean?     @map("invite_only")
+  event       event[]
+  user_guild  user_guild[]
 }
 
-/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
 model members_pending {
-  userId          String?           @map("user_id") @db.VarChar(255)
-  eventId         String?           @map("event_id") @db.VarChar(255)
-  event           event?            @relation(fields: [eventId], references: [eventId])
-  users           users?            @relation(fields: [userId], references: [userId])
-
-  @@ignore
+  id      Int    @id @default(autoincrement())
+  userId  String @map("user_id") @db.VarChar(255)
+  eventId String @map("event_id") @db.VarChar(255)
+  event   event? @relation(fields: [eventId], references: [eventId])
+  users   users? @relation(fields: [userId], references: [userId])
 }
 
 model user_guild {
-  userId          String?           @map("user_id") @db.VarChar(255)
-  guildId         String?           @map("guild_id") @db.VarChar(255)
-  user_role       String?           @db.VarChar(255)
-  points          Int?              @db.SmallInt
-  rank            Int?              @db.SmallInt
-  guild           guild             @relation(fields: [guildId], references: [guildId], onUpdate: Cascade, onDelete: SetNull)
-  users           users             @relation(fields: [userId], references: [userId], onUpdate: Cascade, onDelete: SetNull)
+  userId    String  @default("undefined") @map("user_id") @db.VarChar(255)
+  guildId   String  @default("undefined") @map("guild_id") @db.VarChar(255)
+  user_role String? @db.VarChar(255)
+  points    Int?    @db.SmallInt
+  rank      Int?    @db.SmallInt
+  guild     guild   @relation(fields: [guildId], references: [guildId], onDelete: SetDefault)
+  users     users   @relation(fields: [userId], references: [userId], onDelete: SetDefault)
 
   @@id([userId, guildId])
 }
 
 model users {
-  userId          String            @map("user_id") @id @db.VarChar(255)
+  userId          String            @id @map("user_id") @db.VarChar(255)
   joinedDate      DateTime?         @map("joined_date") @db.Timestamp(6)
   lastLogin       DateTime?         @map("last_login") @db.Timestamp(6)
   firstName       String            @map("first_name") @db.VarChar(50)
@@ -61,4 +60,6 @@ model users {
   email           String            @unique @db.VarChar(255)
   avatar          String            @db.VarChar(255)
   password        String?           @db.VarChar(255)
+  members_pending members_pending[]
+  user_guild      user_guild[]
 }
