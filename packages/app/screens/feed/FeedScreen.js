@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Text, Image, StyleSheet, View, FlatList } from "react-native";
 import axios from "axios";
-import * as SecureStore from "@app/utils/SecureStore";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
@@ -10,8 +9,7 @@ import CardEvent from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
-
-import SecureStore from "@app/utils/SecureStore";
+import * as SecureStore from '@app/utils/SecureStore';
 
 
 function FeedScreen() {
