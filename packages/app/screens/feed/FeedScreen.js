@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Text, Image, StyleSheet, View, FlatList } from "react-native";
 import axios from "axios";
+import * as SecureStore from "@app/utils/SecureStore";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
@@ -27,7 +28,7 @@ function FeedScreen() {
   }, [setUser]);
 
   const getEvents = async () => {
-    const token = await SecureStore.getValueFor("token");
+    const token = await SecureStore.getValueFor('token');
     console.log("@token", token);
     const response = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,

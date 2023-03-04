@@ -10,7 +10,7 @@ import Screen from '@app/components/Screen';
 import { useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
-import SecureStore from "@app/utils/SecureStore";
+import * as SecureStore from '@app/utils/SecureStore';
 
 WebBroswer.maybeCompleteAuthSession();
 
@@ -40,7 +40,6 @@ function LandingScreen() {
       };
 
       SecureStore.save("token", id_token);
-      
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {

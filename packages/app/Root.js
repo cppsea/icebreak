@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import * as SecureStore from './SecureStore';
 
 import { UserProvider, useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
@@ -33,7 +34,7 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
-    const token = await SecureStore.getValueFor("token");
+    const token = await SecureStore.getValueFor('token');
     if (token) {
       const payload = await getUserInfo();
       setUser({

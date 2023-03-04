@@ -1,12 +1,12 @@
 import axios from 'axios';
-import SecureStore from "@app/utils/SecureStore";
+import * as SecureStore from './SecureStore';
 
 const server = axios.create({
   baseURL: 'http://localhost:5050/api',
 });
 
 export async function getUserInfo() {
-  const token = await SecureStore.getValueFor("token");
+  const token = await SecureStore.getValueFor('token');
   const user = await server.get('/auth/user', {
     headers: {
       Authorization: token,
@@ -17,5 +17,5 @@ export async function getUserInfo() {
 }
 
 export async function logoutUser() {
-  await SecureStore.remove();
+  await SecureStore.remove('token');
 }
