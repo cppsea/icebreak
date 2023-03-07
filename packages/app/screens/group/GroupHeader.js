@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Dimensions, View, StyleSheet, Image } from "react-native";
 
 import GroupIcon from "./GroupIcon";
@@ -6,7 +6,6 @@ import GroupHeaderInfo from "./GroupHeaderInfo";
 import GroupMediaIcon from "./GroupMediaIcon";
 
 const bannerHeight = 110;
-const headerHeight = Dimensions.get("window").height * 0.4;
 const iconSize = 62;
 const orgTags = [
   "cs",
@@ -26,17 +25,16 @@ const exampleDescription2 =
 
 const styles = StyleSheet.create({
   headerContainer: {
-    height: headerHeight,
+    height: "auto",
   },
   textContainer: {
     marginHorizontal: 12,
-    marginTop: iconSize / 2 - iconSize, // rfc
+    marginTop: -0.5 * iconSize,
     flexDirection: "row",
   },
   mediaIconContainer: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    backgroundColor: "gold",
   },
   bannerStyle: { width: "100%", height: bannerHeight, resizeMode: "cover" },
 });
