@@ -14,7 +14,7 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 15,
     padding: 0,
-    margin: 20,
+    margin: 5,
     backgroundColor: 'white',
   },
   faceIcon: {
@@ -30,7 +30,7 @@ const EventCard = (props) => {
   }
   
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, props.style]}>
       { props.banner ? <Image source={props.banner} style={styles.banner}/> : null}
       <View style={{ padding: 10, marginBottom: 0 }}>
         <EventCardText 
