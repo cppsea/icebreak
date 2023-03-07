@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { SafeAreaView, StatusBar } from 'react-native';
 
-function Screen(props: any) {
+type ScreenProps = {
+  children: ReactNode
+}
+
+function Screen(props: ScreenProps ) {
   const { children, ...rest } = props;
 
   return (

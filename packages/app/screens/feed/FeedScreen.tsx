@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, Image, StyleSheet, View, FlatList } from "react-native";
+import { Text, Image, ImageProps as DefaultImageProps, ImageURISource, StyleSheet, View, FlatList } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -10,6 +10,30 @@ import CardEvent from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
+
+type EventType = {
+  event_id: string,
+  guild_id: string,
+  title: string,
+  description: string,
+  start_date: number,
+  end_date: number,
+  location: string,
+  thumbnail: string
+}
+
+type ItemType = {
+  banner: string,
+  title: string,
+  description: string,
+  location: string,
+  start_date: string,
+  end_date: string
+}
+
+type ImageProps = DefaultImageProps & {
+  source: ImageURISource;
+};
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -30,11 +54,11 @@ function FeedScreen() {
     const response = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,
       headers: {
-        Authorization: token,
+        Authorization: token ?? "",
       },
     });
 
-    const serializeEvents = response.data.events.map(event => {
+    const serializeEvents = response.data.events.map((event: EventType) => {
       return {
         ...event,
         key: event.event_id
@@ -54,9 +78,10 @@ function FeedScreen() {
     setRefreshing(false);
   }, []);
 
-  const handleRenderItem = useCallback(({ item }) => {
+  const handleRenderItem = useCallback(( item: ItemType ) => {
     return (
       <CardEvent
+        banner={item.banner}
         title={item.title}
         description={item.description}
         location={item.location}

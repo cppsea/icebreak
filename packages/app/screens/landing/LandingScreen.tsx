@@ -8,7 +8,7 @@ import Button from '@app/components/Button';
 import Screen from '@app/components/Screen';
 import EventCard from '@app/components/EventCard/EventCard';
 
-import { useUserContext } from '@app/utils/UserContext';
+import { UserProvider, useUserContext } from '@app/utils/UserContext';
 import { getUserInfo } from '@app/utils/datalayer';
 import { ENDPOINT } from '@app/utils/constants';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -16,7 +16,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 WebBroswer.maybeCompleteAuthSession();
 
 function LandingScreen() {
-  const { user, setUser } = useUserContext();
+  const user = useUserContext();
+  const setUser = UserProvider(user);
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     responseType: 'id_token',
@@ -50,8 +51,10 @@ function LandingScreen() {
           data: data.payload
         }); 
       }
-    } catch(error) {
-      console.log(error.message);
+    } catch(error: any) {
+      let message = 'Unknown Error';
+      if (error instanceof Error) message = error.message;
+      console.log(message);
     }
   }, [user, setUser, request]);
 

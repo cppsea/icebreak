@@ -5,7 +5,7 @@ import GroupScreen from './GroupScreen';
 
 const Group = createNativeStackNavigator();
 
-function GroupStack() {
+function GroupStack(): JSX.Element {
   return (
     <Group.Navigator
       screenOptions={{ headerShown: false }}
