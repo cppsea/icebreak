@@ -16,8 +16,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 WebBroswer.maybeCompleteAuthSession();
 
 function LandingScreen() {
-  const user = useUserContext();
-  const setUser = UserProvider(user);
+  const { user, setUser } = useUserContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     responseType: 'id_token',

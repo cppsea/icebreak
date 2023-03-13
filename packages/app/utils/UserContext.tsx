@@ -1,15 +1,40 @@
 import React, { createContext, useContext, useMemo, useState, ReactElement } from 'react';
 
-type UserContext = {
-  isLoggedIn: boolean
+type Payload = {
+  userId: string,
+  firstName: string,
+  lastName: string,
+  avatar: string,
+  email: string,
+  joinedDate: string,
+  lastLogin: string
 }
 
-const initialState = {
+type State = {
+  isLoggedIn: boolean,
+  data: Payload
+}
+
+type userContextType = {
+  user: State,
+  setUser: React.Dispatch<React.SetStateAction<State>>
+}
+
+const initialState: State = {
   isLoggedIn: false,
+  data: {
+    userId: "",
+    firstName: "",
+    lastName: "",
+    avatar: "",
+    email: "",
+    joinedDate: "",
+    lastLogin: ""
+  } 
 };
 
 
-const UserContext = createContext<UserContext>(initialState);
+const UserContext = createContext<userContextType | null>(null);
 
 
 export function useUserContext() {
@@ -30,8 +55,5 @@ export function UserProvider(children: ReactElement) {
     return {user, setUser};
   }, [user]);
 
-  return <UserContext.Provider value={value.user}>{children}</UserContext.Provider>;
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
-
-
-

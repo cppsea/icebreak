@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, Image, ImageProps as DefaultImageProps, ImageURISource, StyleSheet, View, FlatList } from "react-native";
+import { Text, Image, ImageProps as DefaultImageProps, ImageURISource, ImageSourcePropType, StyleSheet, View, FlatList } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -23,7 +23,7 @@ type EventType = {
 }
 
 type ItemType = {
-  banner: string,
+  banner: ImageSourcePropType,
   title: string,
   description: string,
   location: string,
