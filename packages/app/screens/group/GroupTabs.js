@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { View, Text, TouchableWithoutFeedback, Animated, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -22,28 +22,68 @@ const tabs = [
 ]
 
 
+
 function GroupTabs() {
     const [activeTab, setActiveTab] = useState(tabs[0]);
+    const [scrollOffset, setScrollOffset] = useState(0);
+    const blueViewPosition = new Animated.ValueXY({ x: 0, y: 0 });
 
-    
+    // viewRefs.current to access the list
+    // viewRefs.current[index].current to access the view
+    const viewRefs = useRef([]);
 
-    function setTab(tab) {
+    useEffect(() => {
+        // Initialize viewRefs list with a ref for each view
+        viewRefs.current = tabs.map(() => React.createRef());
+    }, [tabs])
+
+    function selectTab(tab) {
         setActiveTab(tab); 
-        console.log("Active tab: " + activeTab.screen);
+        for (let index = 0; index < tabs.length; index++) {
+            if (tabs[index] == activeTab && viewRefs.current[index].current) {
+                viewRefs.current[index].current.measure((x, y, width, height, pageX, pageY) => {
+                    // x is the top left, so use (x + width / 2) for the middle
+                    console.log("Position of " + index.toString() + ": " + ( (x + width) / 2 + scrollOffset ).toString());
+
+                    // This is running recursively?
+                    // Animated.spring(blueViewPosition, {
+                    //     toValue: { x: ( (x + width) / 2 + scrollOffset ), y: blueViewPosition.y },
+                    //     useNativeDriver: false
+                    // }).start();
+                })
+                
+                break;
+            }
+        }
     }
+
+    function handleScroll(event) {
+        setScrollOffset(event.nativeEvent.contentOffset.x);
+    }
+
     return (
         <View>
-            <ScrollView style={styles.tabGroup} horizontal showsHorizontalScrollIndicator={false}>
+            <ScrollView 
+                style={styles.tabGroup} 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+                scrollEventThrottle={1000}
+                onScroll={handleScroll}
+                >
                 <View style={styles.innerTabView}>
                     {tabs.map((tab, index) => (
-                        <TouchableWithoutFeedback key={index} onPress={() => setTab(tab)}>
-                            <View style={{ alignItems: 'center' }}>
-                                <Text style={[styles.tab, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
+                        <TouchableWithoutFeedback key={index} onPress={() => selectTab(tab)} >
+                            <View style={{alignItems: 'center'}} ref={viewRefs.current[index]}>
+                                <View style={{ alignItems: 'center' }}>
+                                    <Text style={[styles.tab, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
+                                </View>
                             </View>
                         </TouchableWithoutFeedback>
                     ))}
                 </View>
             </ScrollView>
+
+            <Animated.View style={[blueViewPosition.getLayout(), styles.blueView]}/>
             
             { activeTab.screen && <activeTab.screen /> }
         </View>
@@ -64,6 +104,13 @@ const styles = StyleSheet.create({
     innerTabView: {
         flexDirection: 'row',
     },
+    blueView: {
+        width: 60, 
+        height: 3, 
+        backgroundColor: '#3498DB',
+        marginTop: -2,
+        borderRadius: 2
+    }
 });
 
 
