@@ -5,9 +5,13 @@ const postgres = new PostgresClient({
   user: process.env.DB_USER,
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
-  port: process.env.DB_PORT
+  port: process.env.DB_PORT,
 });
 
 postgres.connect();
 
-module.exports = postgres;
+function closePostgres() {
+  postgres.end();
+}
+
+module.exports = { postgres, closePostgres };
