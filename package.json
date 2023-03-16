@@ -15,6 +15,7 @@
     "app:test": "yarn workspace app test",
     "app:link": "cd packages/app/ios; pod install;",
     "server:start": "yarn workspace server start",
+    "server:test": "yarn workspace server test",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
     "dev": "node ./scripts/run.js"
