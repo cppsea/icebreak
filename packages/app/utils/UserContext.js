@@ -13,6 +13,9 @@ export function UserProvider({ children }) {
     return {
       user,
       setUser,
+      onboardingCompleted: () => {
+        setUser((prevUser) => ({ ...prevUser, isLoggedIn: true }));
+      },
     };
   }, [user]);
 
