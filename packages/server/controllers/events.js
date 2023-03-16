@@ -1,4 +1,4 @@
-const postgres = require("../utils/postgres");
+// const postgres = require("../utils/postgres");
 const prisma = require("../utils/prisma");
 
 async function getAllEvents() {
@@ -53,7 +53,6 @@ async function getEvents(limit, action, eventId) {
       });
       break;
     // first request made for first page, no action in cursor present
-    case undefined:
     default:
       // query = await postgres.query(
       //   `SELECT * FROM event ORDER BY event_id ASC LIMIT ${limit}`
@@ -77,7 +76,7 @@ async function getPages(limit) {
   // let { count: totalEvents } = query.rows[0];
   // const totalPages = Math.ceil(parseInt(totalEvents) / limit);
   const totalEvents = await prisma.event.count();
-  const totalPages = Math.ceil(parseInt(totalEvents) / limit);
+  const totalPages = Math.ceil(totalEvents / limit);
   return totalPages;
 }
 
