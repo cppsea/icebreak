@@ -22,13 +22,12 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.8.0",
-    "prisma": "^4.11.0",
     "uniqid": "^5.4.0"
   },
   "devDependencies": {
     "@prisma/client": "^4.11.0",
     "nodemon": "^2.0.19",
-    "prisma": "^4.10.1"
+    "prisma": "^4.11.0"
   },
   "prisma": {
     "schema": "scripts/schema.prisma"

@@ -2,10 +2,11 @@
 const prisma = require("../utils/prisma");
 
 async function getAllEvents() {
-  const query = await postgres.query(
-    "SELECT * FROM event ORDER BY event_id ASC"
-  );
-  return query.rows;
+  // const query = await postgres.query(
+  //   "SELECT * FROM event ORDER BY event_id ASC"
+  // );
+  // return query.rows;
+  return prisma.event.findMany();
 }
 
 async function getEvents(limit, action, eventId) {
