@@ -1,3 +1,7 @@
+// prisma client initialization once we migrate backend to TypeScript
+// delete "prisma.js" and rename this file to "prisma.ts" once migrated to
+// TypeScript
+
 import { PrismaClient } from "@prisma/client";
 
 declare global {

@@ -24,8 +24,8 @@ router.get("/all-events", async (request, response) => {
  * (3 underscores separator)
  */
 router.get(
-  "/:cursor?",
-  // AuthController.authenticate,
+  "/pages/:cursor?",
+  AuthController.authenticate,
   async (request, response) => {
     try {
       if (request.query.limit && isNaN(request.query.limit)) {
@@ -37,7 +37,8 @@ router.get(
       const requestCursor = request.params.cursor
         ? Buffer.from(request.params.cursor, "base64").toString()
         : "";
-      const [currentPage, action, eventId] = requestCursor.split("___");
+      let [currentPage, action, eventId] = requestCursor.split("___");
+      currentPage = parseInt(currentPage) || 1;
       const events = await EventController.getEvents(
         eventLimit,
         action,
@@ -49,8 +50,10 @@ router.get(
       }
 
       // generate cursors for previous and next pages
-      const firstEventId = events[0].event_id;
-      const lastEventId = events[events.length - 1].event_id;
+      // const firstEventId = events[0].event_id;
+      // const lastEventId = events[events.length - 1].event_id;
+      const firstEventId = events[0].eventId;
+      const lastEventId = events[events.length - 1].eventId;
       const prevCursor = Buffer.from(
         `${currentPage - 1}___prev___${firstEventId}`
       ).toString("base64");
@@ -63,8 +66,8 @@ router.get(
         response.send({
           events: events,
           cursor: {
-            previous_page: `http://localhost:5050/api/events/${prevCursor}?limit=${eventLimit}`,
-            next_page: `http://localhost:5050/api/events/${nextCursor}?limit=${eventLimit}`,
+            previous_page: `http://localhost:5050/api/events/pages/${prevCursor}?limit=${eventLimit}`,
+            next_page: `http://localhost:5050/api/events/pages/${nextCursor}?limit=${eventLimit}`,
           },
         });
       } else {
@@ -77,7 +80,7 @@ router.get(
           total_pages: totalPages,
           cursor: {
             previous_page: null,
-            next_page: `http://localhost:5050/api/events/${nextCursor}?limit=${eventLimit}`,
+            next_page: `http://localhost:5050/api/events/pages/${nextCursor}?limit=${eventLimit}`,
           },
         });
       }
