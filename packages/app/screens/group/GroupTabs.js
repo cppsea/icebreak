@@ -21,45 +21,74 @@ const tabs = [
      screen: NewsletterScreen},
 ]
 
-
+const tabGroupMargin = 5;
+const tabPadding = 10;
+const blueViewWidth = 60;
+const blueViewPosition = new Animated.ValueXY({ x: tabGroupMargin + tabPadding / 2, y: 0 });
 
 function GroupTabs() {
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [scrollOffset, setScrollOffset] = useState(0);
-    const blueViewPosition = new Animated.ValueXY({ x: 0, y: 0 });
+
+    useEffect(() => {
+        getPosition().then((position) => {
+            console.log("Position:" + position.toString())
+            blueViewPosition.setValue({ x: position, y: 0 });
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, []);
 
     // viewRefs.current to access the list
     // viewRefs.current[index].current to access the view
     const viewRefs = useRef([]);
 
+
     useEffect(() => {
         // Initialize viewRefs list with a ref for each view
-        viewRefs.current = tabs.map(() => React.createRef());
+        viewRefs.current = tabs.map(() => React.createRef())
     }, [tabs])
+
+    
+    useEffect(() => {
+        getPosition().then((position) => {
+            Animated.spring(blueViewPosition, {
+                toValue: { x: (position), y: blueViewPosition.y },
+                useNativeDriver: false
+                }).start();
+        }).catch((error) => {
+            console.log(error);
+        });
+    }, [activeTab, scrollOffset])
+
+
+    function getPosition() {
+        return new Promise((resolve, reject) => {
+            for (let index = 0; index < tabs.length; index++) {
+                if (tabs[index] == activeTab && viewRefs.current[index].current) {
+                    let position;
+                    viewRefs.current[index].current.measure((x, y, width, height, pageX, pageY) => {
+                    position = x + width / 2 - scrollOffset - blueViewWidth / 2;
+                    resolve(position);
+                    });
+                    return;
+                }
+            }
+            reject(new Error('Could not find active tab or view ref'));
+        });
+    }
+
 
     function selectTab(tab) {
         setActiveTab(tab); 
-        for (let index = 0; index < tabs.length; index++) {
-            if (tabs[index] == activeTab && viewRefs.current[index].current) {
-                viewRefs.current[index].current.measure((x, y, width, height, pageX, pageY) => {
-                    // x is the top left, so use (x + width / 2) for the middle
-                    console.log("Position of " + index.toString() + ": " + ( (x + width) / 2 + scrollOffset ).toString());
-
-                    // This is running recursively?
-                    // Animated.spring(blueViewPosition, {
-                    //     toValue: { x: ( (x + width) / 2 + scrollOffset ), y: blueViewPosition.y },
-                    //     useNativeDriver: false
-                    // }).start();
-                })
-                
-                break;
-            }
-        }
     }
+
 
     function handleScroll(event) {
         setScrollOffset(event.nativeEvent.contentOffset.x);
+        console.log("Scroll Offset: " + scrollOffset.toString())
     }
+
 
     return (
         <View>
@@ -67,12 +96,17 @@ function GroupTabs() {
                 style={styles.tabGroup} 
                 horizontal 
                 showsHorizontalScrollIndicator={false}
-                scrollEventThrottle={1000}
+                scrollEventThrottle={100}
                 onScroll={handleScroll}
                 >
                 <View style={styles.innerTabView}>
                     {tabs.map((tab, index) => (
-                        <TouchableWithoutFeedback key={index} onPress={() => selectTab(tab)} >
+                        <TouchableWithoutFeedback 
+                            key={index} 
+                            onPress={() => {
+                                selectTab(tab)
+                            }} 
+                        >
                             <View style={{alignItems: 'center'}} ref={viewRefs.current[index]}>
                                 <View style={{ alignItems: 'center' }}>
                                     <Text style={[styles.tab, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
@@ -93,19 +127,19 @@ function GroupTabs() {
 const styles = StyleSheet.create({
     tab: {
         fontWeight: '600',
-        padding: 10
+        padding: tabPadding
     },
     tabGroup: {
         borderBottomColor: '#E4E4E4',
         borderBottomWidth: 3,
-        marginLeft: 5,
-        marginRight: 5
+        marginLeft: tabGroupMargin,
+        marginRight: tabGroupMargin
     },
     innerTabView: {
         flexDirection: 'row',
     },
     blueView: {
-        width: 60, 
+        width: blueViewWidth, 
         height: 3, 
         backgroundColor: '#3498DB',
         marginTop: -2,
