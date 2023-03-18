@@ -17,10 +17,25 @@ const mockData = [
     }
 ]
 
-function EventsScreen() {
+
+function EventsScreen(props) {
+    const sectionListRef = useRef(null);
+    const {handleScrollDown, handleScrollToTop} = props
+
+    function handleScroll(event) {
+        const offsetY = event.nativeEvent.contentOffset.y;
+        if (offsetY <= 0) {
+          handleScrollToTop()
+        } else if (offsetY > 0) {
+            handleScrollDown()
+        }
+    }
+
     return(
-        <View style={styles.container}>
+        <View style={[props.style, styles.container]}>
             <SectionList
+                ref={sectionListRef}
+                onScroll={handleScroll}
                 stickySectionHeadersEnabled={false}
                 sections={mockData}
                 keyExtractor={(item, index) => item + index}
@@ -47,7 +62,6 @@ function EventsScreen() {
 const styles = StyleSheet.create({
     container: {
         margin: 10,
-        height: 450
     },
     header: {
         fontSize: 20,

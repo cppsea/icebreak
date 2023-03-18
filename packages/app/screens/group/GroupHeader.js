@@ -23,23 +23,30 @@ const exampleDescription =
 const exampleDescription2 =
   "The Software Engineering Association (SEA) teaches skills needed to be a Software Engineer, obviously.";
 
-const styles = StyleSheet.create({
-  headerContainer: {
-    height: "auto",
-  },
-  textContainer: {
-    marginHorizontal: 12,
-    marginTop: -0.5 * iconSize,
-    flexDirection: "row",
-  },
-  mediaIconContainer: {
-    flexDirection: "row",
-    justifyContent: "flex-end",
-  },
-  bannerStyle: { width: "100%", height: bannerHeight, resizeMode: "cover" },
-});
 
-function GroupHeader() {
+
+
+
+
+
+function GroupHeader(props) {
+
+  const styles = StyleSheet.create({
+    headerContainer: {
+      height: 'auto',
+    },
+    textContainer: {
+      marginHorizontal: 12,
+      marginTop: -0.5 * iconSize,
+      flexDirection: "row",
+    },
+    mediaIconContainer: {
+      flexDirection: "row",
+      justifyContent: "flex-end",
+    },
+    bannerStyle: { width: "100%", height: bannerHeight, resizeMode: "cover" },
+  });
+
   return (
     <View style={styles.headerContainer}>
       <Image

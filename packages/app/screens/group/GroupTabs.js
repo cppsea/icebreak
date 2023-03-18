@@ -29,10 +29,11 @@ const tabGroupMargin = 5;
 const blueViewPosition = new Animated.ValueXY({ x: tabTextPadding + tabGroupMargin, y: -1 });
 const staticBlueViewPosition = blueViewPosition.getLayout().top.toString + "px";
 
-function GroupTabs() {
+function GroupTabs(props) {
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+    const {handleScrollDown, handleScrollToTop} = props
     
 
     // viewRefs.current to access the list
@@ -110,40 +111,42 @@ function GroupTabs() {
 
 
     return (
-        <View>
-            <ScrollView 
-                style={styles.tabGroup} 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-                scrollEventThrottle={100}
-                onScroll={handleScroll}
-                >
-                <View style={styles.innerTabView}>
-                    {tabs.map((tab, index) => (
-                        <TouchableWithoutFeedback 
-                            key={index} 
-                            onPress={() => {
-                                selectTab(tab)
-                            }} 
-                        >
-                            <View style={styles.tab} ref={viewRefs.current[index]}>
-                                <View style={{ alignItems: 'center' }}>
-                                    <Text style={[styles.tabText, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
+        <View style={props.style}>
+            <View>
+                <ScrollView 
+                    style={styles.tabScrollView} 
+                    horizontal 
+                    showsHorizontalScrollIndicator={false}
+                    scrollEventThrottle={100}
+                    onScroll={handleScroll}
+                    >
+                    <View style={styles.innerTabView}>
+                        {tabs.map((tab, index) => (
+                            <TouchableWithoutFeedback 
+                                key={index} 
+                                onPress={() => {
+                                    selectTab(tab)
+                                }} 
+                            >
+                                <View style={styles.tab} ref={viewRefs.current[index]}>
+                                    <View style={{ alignItems: 'center' }}>
+                                        <Text style={[styles.tabText, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
+                                    </View>
+
+                                    {(activeTab.name == tab.name) && <View style={[styles.staticBlueView, isAnimationComplete ? {} : {opacity: 0}]} />}
                                 </View>
+                            </TouchableWithoutFeedback>
+                            
+                        ))}
+                    </View>
+                </ScrollView>
 
-                                {(activeTab.name == tab.name) && <View style={[styles.staticBlueView, isAnimationComplete ? {} : {opacity: 0}]} />}
-                            </View>
-                        </TouchableWithoutFeedback>
-                        
-                    ))}
-                </View>
-            </ScrollView>
+                <Animated.View style={[{ transform: blueViewPosition.getTranslateTransform(), left: 0, right: 0 }, styles.blueView, isAnimationComplete ? {opacity: 0} : { }]} />
 
-            <Animated.View style={[{ transform: blueViewPosition.getTranslateTransform(), left: 0, right: 0 }, styles.blueView, isAnimationComplete ? {opacity: 0} : { }]} />
-
-            <View style={styles.bottomBorder}/>
+                <View style={styles.bottomBorder}/>
+            </View>
             
-            { activeTab.screen && <activeTab.screen /> }
+            { activeTab.screen && <activeTab.screen style={styles.screen} handleScrollDown={handleScrollDown} handleScrollToTop={handleScrollToTop}/> }
         </View>
     );
 }
@@ -159,9 +162,10 @@ const styles = StyleSheet.create({
         paddingLeft: tabTextPadding,
         paddingRight: tabTextPadding,
     },
-    tabGroup: {
+    tabScrollView: {
         marginLeft: tabGroupMargin,
         marginRight: tabGroupMargin,
+        
     },
     innerTabView: {
         flexDirection: 'row',
@@ -185,7 +189,10 @@ const styles = StyleSheet.create({
         height: 3,
         width: '100%',
         backgroundColor: '#E4E4E4'
-    }
+    },
+    screen: {
+        flex: 1,
+    },
 });
 
 export default GroupTabs;

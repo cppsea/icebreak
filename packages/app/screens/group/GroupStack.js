@@ -5,6 +5,14 @@ import GroupScreen from './GroupScreen';
 
 const Group = createNativeStackNavigator();
 
+function handleScrollToTop() {
+  console.log("success")
+}
+
+function handleScrollDown() {
+  console.log("asdasdasd")
+}
+
 function GroupStack() {
   return (
     <Group.Navigator
