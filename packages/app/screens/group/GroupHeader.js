@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Dimensions, View, StyleSheet, Image } from "react-native";
+import React from "react";
+import { View, StyleSheet, Image } from "react-native";
 
 import GroupIcon from "./GroupIcon";
 import GroupHeaderInfo from "./GroupHeaderInfo";
@@ -22,18 +22,14 @@ const exampleDescription =
   "The Software Engineering Association (SEA) teaches and encourages the professional skills needed to be a Software Engineer, including code review, unit testing, communication, and software design. Our online and in-meeting exercises allow anyone, novice or professional, to sharpen and practice these skills.";
 const exampleDescription2 =
   "The Software Engineering Association (SEA) teaches skills needed to be a Software Engineer, obviously.";
-
-
-
-
-
-
+const testURL = "https://cppsea.com";
+const testURL2 =
+  "https://asdsds8dasdasdsadasdsadasdadasdasdasdasdasdsasaasdasdsadasasdasdasdasdasasdasasdasa";
 
 function GroupHeader(props) {
-
   const styles = StyleSheet.create({
     headerContainer: {
-      height: 'auto',
+      height: "auto",
     },
     textContainer: {
       marginHorizontal: 12,
@@ -67,7 +63,7 @@ function GroupHeader(props) {
           description={exampleDescription}
           location={"Pomona, CA"}
           members={100}
-          url={"https://cppsea.com"}
+          url={testURL}
           tags={orgTags}
         />
       </View>

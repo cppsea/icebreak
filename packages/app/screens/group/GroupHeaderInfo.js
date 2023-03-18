@@ -1,5 +1,5 @@
 import React from "react";
-import { View, StyleSheet, Text, Linking } from "react-native";
+import { View, StyleSheet, Text, Linking, Dimensions } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import GroupTag from "./GroupTag";
@@ -16,23 +16,24 @@ const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 18,
     fontWeight: "700",
+    color: "#2C2C2C",
   },
   handlerContainer: {
-    marginTop: -6,
+    marginTop: -4,
   },
   handlerStyle: {
     fontSize: 13,
-    color: "grey",
+    color: "#6C6C6C",
   },
   descriptionContainer: {
-    marginTop: 12,
+    marginTop: 6,
   },
   descriptionStyle: {
     fontSize: 13, // NOTE: Default font family; change later?
   },
   dataContainer: {
-    marginLeft: 3,
     marginTop: 6,
+    marginRight: 10,
     flexDirection: "row",
     alignItems: "center",
   },
@@ -82,23 +83,31 @@ function GroupHeaderInfo(props) {
         </Text>
       </View>
 
-      <View style={{ flexDirection: "row" }}>
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         <View style={styles.dataContainer}>
           <Ionicons name="location-sharp" size={16} color="#6C6C6C" />
           <Text style={styles.dataTextStyle}>{props.location || "N/A"}</Text>
         </View>
 
-        <View style={[styles.dataContainer, { marginLeft: 10 }]}>
+        <View style={styles.dataContainer}>
           <Ionicons name="person" size={16} color="#6C6C6C" />
           <Text style={styles.dataTextStyle}>
             {props.members > 0 ? props.members : 0} members
           </Text>
         </View>
 
-        <View style={[styles.dataContainer, { marginLeft: 10 }]}>
+        <View style={styles.dataContainer}>
           <Ionicons name="link-sharp" size={16} color="#6C6C6C" />
           <Text
-            style={[styles.dataTextStyle, { color: "#3498DB" }]}
+            style={[
+              styles.dataTextStyle,
+              {
+                color: "#3498DB",
+                flexShrink: 1,
+              },
+            ]}
+            numberOfLines={1}
+            ellipsizeMode="tail"
             onPress={() => Linking.openURL(props.url)}
           >
             {props.url}
