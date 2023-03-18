@@ -1,5 +1,11 @@
-import React from "react";
-import { View, StyleSheet, Text, Linking, Dimensions } from "react-native";
+import React, { useState } from "react";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Linking,
+  TouchableWithoutFeedback,
+} from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 import GroupTag from "./GroupTag";
@@ -63,6 +69,12 @@ const styles = StyleSheet.create({
  * @param {string[]} props.tags - String array of tags related to org.
  */
 function GroupHeaderInfo(props) {
+  const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(true);
+
+  const toggleDescriptionTruncation = () => {
+    setIsDescriptionTruncated(!isDescriptionTruncated);
+  };
+
   return (
     <View style={styles.containerStyle}>
       <View style={styles.titleContainer}>
@@ -74,13 +86,15 @@ function GroupHeaderInfo(props) {
       </View>
 
       <View style={styles.descriptionContainer}>
-        <Text
-          style={styles.descriptionStyle}
-          numberOfLines={3}
-          ellipsizeMode="tail"
-        >
-          {props.description}
-        </Text>
+        <TouchableWithoutFeedback onPress={toggleDescriptionTruncation}>
+          <Text
+            style={styles.descriptionStyle}
+            numberOfLines={isDescriptionTruncated ? 3 : undefined}
+            ellipsizeMode={isDescriptionTruncated ? "tail" : undefined}
+          >
+            {props.description}
+          </Text>
+        </TouchableWithoutFeedback>
       </View>
 
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
