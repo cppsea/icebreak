@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { Platform } from 'react-native';
 import { View, Text, TouchableWithoutFeedback, Animated, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
@@ -21,13 +22,18 @@ const tabs = [
      screen: NewsletterScreen},
 ]
 
+
 const blueViewWidth = 60;
-const blueViewPosition = new Animated.ValueXY({ x: 0, y: -1 });
+const tabTextPadding = 10;
+const tabGroupMargin = 5;
+const blueViewPosition = new Animated.ValueXY({ x: tabTextPadding + tabGroupMargin, y: -1 });
+const staticBlueViewPosition = blueViewPosition.getLayout().top.toString + "px";
 
 function GroupTabs() {
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+    
 
     // viewRefs.current to access the list
     // viewRefs.current[index].current to access the view
@@ -40,18 +46,16 @@ function GroupTabs() {
     }, [tabs])
 
     
+    // Move the blue view whenever activeTab or scrollOffset changed
     useEffect(() => {
         getPosition().then((position) => {
             Animated.spring(blueViewPosition, {
                 toValue: { x: position, y: blueViewPosition.y },
-                useNativeDriver: false,
-                config: {
-                    speed: 1
-                }
+                useNativeDriver: true
             }).start(() => {
                 setTimeout(() => {
                     setIsAnimationComplete(true);
-                }, 700)
+                }, 200)
             });
         }).catch((error) => {
             console.log(error);
@@ -60,20 +64,39 @@ function GroupTabs() {
 
 
     function getPosition() {
-        return new Promise((resolve, reject) => {
-            for (let index = 0; index < tabs.length; index++) {
-                if (tabs[index] == activeTab && viewRefs.current[index].current) {
-                    let position;
-                    viewRefs.current[index].current.measure((x, y, width, height, pageX, pageY) => {
-                    position = (x + width / 2 - scrollOffset - blueViewWidth / 2) + 5;
-                    resolve(position);
-                    });
-                    return;
+        // measureInWindow worked better in Android and measure worked better on iOS
+        if (Platform.OS === 'ios') {
+            return new Promise((resolve, reject) => {
+                for (let index = 0; index < tabs.length; index++) {
+                    if (tabs[index] == activeTab && viewRefs.current[index].current) {
+                        let position;
+                        viewRefs.current[index].current.measure((x, y, width, height, pageX, pageY) => {
+                        position = (x + width / 2 - scrollOffset - blueViewWidth / 2) + 3;
+                        resolve(position);
+                        });
+                        return;
+                    }
                 }
-            }
-            reject(new Error('Could not find active tab or view ref'));
-        });
+                reject(new Error('Could not find active tab or view ref'));
+            });
+        } else {
+            return new Promise((resolve, reject) => {
+                for (let index = 0; index < tabs.length; index++) {
+                    if (tabs[index] == activeTab && viewRefs.current[index].current) {
+                        let position;
+                        viewRefs.current[index].current.measureInWindow((x, y, width, height, pageX, pageY) => {
+                        position = (x + width / 2 - scrollOffset - blueViewWidth / 2) + 5;
+                        resolve(position);
+                        });
+                        return;
+                    }
+                }
+                reject(new Error('Could not find active tab or view ref'));
+            });
+        }
+        
     }
+
 
     function selectTab(tab) {
         setActiveTab(tab); 
@@ -103,12 +126,12 @@ function GroupTabs() {
                                 selectTab(tab)
                             }} 
                         >
-                            <View style={{alignItems: 'center'}} ref={viewRefs.current[index]}>
+                            <View style={styles.tab} ref={viewRefs.current[index]}>
                                 <View style={{ alignItems: 'center' }}>
-                                    <Text style={[styles.tab, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
+                                    <Text style={[styles.tabText, {color: activeTab.name === tab.name ? '#2C2C2C' : '#717171'}]}>{tab.name}</Text>
                                 </View>
 
-                                {activeTab == tab && <View style={[styles.staticBlueView, isAnimationComplete ? {} : {opacity: 0}]} />}
+                                {(activeTab.name == tab.name) && <View style={[styles.staticBlueView, isAnimationComplete ? {} : {opacity: 0}]} />}
                             </View>
                         </TouchableWithoutFeedback>
                         
@@ -116,7 +139,9 @@ function GroupTabs() {
                 </View>
             </ScrollView>
 
-            <Animated.View style={[blueViewPosition.getLayout(), styles.blueView, isAnimationComplete ? {opacity: 0} : { }]}/>
+            <Animated.View style={[{ transform: blueViewPosition.getTranslateTransform(), left: 0, right: 0 }, styles.blueView, isAnimationComplete ? {opacity: 0} : { }]} />
+
+            <View style={styles.bottomBorder}/>
             
             { activeTab.screen && <activeTab.screen /> }
         </View>
@@ -125,14 +150,18 @@ function GroupTabs() {
 
 const styles = StyleSheet.create({
     tab: {
+        alignItems: 'center',
+        paddingTop: 10,
+        paddingBottom: 10
+    },
+    tabText: {
         fontWeight: '600',
-        padding: 10
+        paddingLeft: tabTextPadding,
+        paddingRight: tabTextPadding,
     },
     tabGroup: {
-        borderBottomColor: '#E4E4E4',
-        borderBottomWidth: 3,
-        marginLeft: 5,
-        marginRight: 5
+        marginLeft: tabGroupMargin,
+        marginRight: tabGroupMargin,
     },
     innerTabView: {
         flexDirection: 'row',
@@ -148,8 +177,14 @@ const styles = StyleSheet.create({
         width: blueViewWidth, 
         height: 3, 
         backgroundColor: '#3498DB',
-        marginBottom: -15,
+        marginBottom: -10,
         borderRadius: 2,
+        transform: [{translateY: 7}]
+    },
+    bottomBorder: {
+        height: 3,
+        width: '100%',
+        backgroundColor: '#E4E4E4'
     }
 });
 
