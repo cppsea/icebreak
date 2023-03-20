@@ -1,5 +1,9 @@
 import React, { createContext, useContext, useMemo, useState, ReactElement } from 'react';
 
+type Props = {
+  children: ReactElement
+}
+
 type Payload = {
   userId: string,
   firstName: string,
@@ -48,7 +52,7 @@ export function useUserContext() {
   return user;
 }
 
-export function UserProvider(children: ReactElement) {
+export function UserProvider({children}: Props) {
   const [user, setUser] = useState(initialState);
 
   const value = useMemo(() => {
