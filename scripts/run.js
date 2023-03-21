@@ -74,7 +74,7 @@ setTimeout(() => {
       if (error) {
         throw error;
       } else {
-        const FILE_PATH = "./packages/app/utils/constants.js";
+        const FILE_PATH = "./packages/app/utils/constants.tsx";
         fs.readFile(FILE_PATH, "utf-8", function (error, data) {
           if (error) throw error;
           const overwrite = data.replace(
