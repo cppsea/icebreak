@@ -1,6 +1,7 @@
 import EventCard from '@app/components/EventCard/EventCard';
 import React, { useRef, useState } from 'react';
-import { View, SectionList, StyleSheet, Text } from 'react-native';
+import { View, SectionList, StyleSheet, Text, PanResponder } from 'react-native';
+import { Platform } from 'react-native';
 
 const mockData = [
     {
@@ -20,12 +21,18 @@ const mockData = [
 
 function EventsScreen(props) {
     const sectionListRef = useRef(null);
-    const {handleScrollDown, handleScrollToTop} = props
+    const {handleScrollDown, handleScrollToTop, getScrollOffset} = props;
+    const [offset, setOffset] = useState(0);
 
     function handleScroll(event) {
         const offsetY = event.nativeEvent.contentOffset.y;
-        if (offsetY <= 0) {
+        setOffset(offsetY);
+
+        getScrollOffset(offsetY)
+        if (offsetY <= -80 && Platform.OS === 'ios') {
           handleScrollToTop()
+        } else if (offset <= 0 && Platform.OS === 'android') {
+            handleScrollToTop()
         } else if (offsetY > 0) {
             handleScrollDown()
         }
@@ -62,6 +69,7 @@ function EventsScreen(props) {
 const styles = StyleSheet.create({
     container: {
         margin: 10,
+        paddingBottom: 350
     },
     header: {
         fontSize: 20,

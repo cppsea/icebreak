@@ -33,7 +33,7 @@ function GroupTabs(props) {
     const [activeTab, setActiveTab] = useState(tabs[0]);
     const [scrollOffset, setScrollOffset] = useState(0);
     const [isAnimationComplete, setIsAnimationComplete] = useState(false);
-    const {handleScrollDown, handleScrollToTop} = props
+    const {handleScrollDown, handleScrollToTop, getScrollOffset} = props
     
 
     // viewRefs.current to access the list
@@ -146,7 +146,7 @@ function GroupTabs(props) {
                 <View style={styles.bottomBorder}/>
             </View>
             
-            { activeTab.screen && <activeTab.screen style={styles.screen} handleScrollDown={handleScrollDown} handleScrollToTop={handleScrollToTop}/> }
+            { activeTab.screen && <activeTab.screen style={styles.screen} handleScrollDown={handleScrollDown} handleScrollToTop={handleScrollToTop} getScrollOffset={getScrollOffset}/> }
         </View>
     );
 }
