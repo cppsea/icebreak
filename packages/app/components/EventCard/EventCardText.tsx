@@ -1,3 +1,4 @@
+import { EventTextProps } from "@app/types/EventCard";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
@@ -15,14 +16,6 @@ const styles = StyleSheet.create({
     color: 'grey'
   }
 });
-
-export type EventTextProps = {
-  timeBegin: string;
-  timeEnd: string;
-  title: string;
-  location: string;
-  description: string;
-}
 
 
 const EventCardText: React.FC<EventTextProps> = ({

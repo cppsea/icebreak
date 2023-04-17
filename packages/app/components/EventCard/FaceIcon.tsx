@@ -1,10 +1,6 @@
+import { FaceIconProps } from "@app/types/EventCard";
 import React from "react";
-import { StyleSheet, Image, ImageSourcePropType } from "react-native";
-
-export type FaceIconProps = {
-  index: number;
-  iconUrl: string
-}
+import { Image } from "react-native";
 
 
 const FaceIcon: React.FC<FaceIconProps> = ({index, iconUrl}) => {

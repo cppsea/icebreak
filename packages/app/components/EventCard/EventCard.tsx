@@ -1,7 +1,8 @@
 import React from 'react';
-import { GestureResponderEvent, Image, ImageSourcePropType, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import EventCardText from './EventCardText';
 import EventCardRegistration from './EventCardRegistration';
+import { EventCardProps } from '@app/types/EventCard';
 
 // Stylesheet for the EventCard component
 const styles = StyleSheet.create({
@@ -25,14 +26,7 @@ const styles = StyleSheet.create({
   }
 });
 
-export type EventCardProps = {
-  banner: ImageSourcePropType,
-  title: string,
-  timeBegin: string,
-  timeEnd: string,
-  location: string,
-  description: string,
-}
+
 
 const EventCard: React.FC<EventCardProps> = ({
   banner, title, timeBegin, timeEnd, location, description

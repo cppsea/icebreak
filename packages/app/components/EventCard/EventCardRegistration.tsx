@@ -1,13 +1,12 @@
 import React from "react";
 import { StyleSheet, Button, View, GestureResponderEvent } from "react-native";
 import FaceIcon from "./FaceIcon";
+import { EventCardRegistrationProps } from "@app/types/EventCard";
 
 // Sample array for testing
 const sampleArray = [0,1,2,3];
 
-export type EventCardRegistrationProps = {
-  register: () => void;
-}
+
 
 const EventCardRegistration: React.FC<EventCardRegistrationProps> = ({register}) => {
 

@@ -52,7 +52,9 @@ function LandingScreen() {
       }
     } catch(error: any) {
       let message = 'Unknown Error';
-      if (error instanceof Error) message = error.message;
+      if (error instanceof Error) { 
+        message = error.message 
+      };
       console.log(message);
     }
   }, [user, setUser, request]);

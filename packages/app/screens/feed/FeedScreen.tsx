@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, Image, ImageProps as DefaultImageProps, ImageURISource, ImageSourcePropType, StyleSheet, View, FlatList } from "react-native";
+import { Text, Image, StyleSheet, FlatList } from "react-native";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -10,30 +10,9 @@ import CardEvent from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
+import { EventType, ItemType } from "@app/types/EventCard";
 
-type EventType = {
-  event_id: string,
-  guild_id: string,
-  title: string,
-  description: string,
-  start_date: number,
-  end_date: number,
-  location: string,
-  thumbnail: string
-}
 
-type ItemType = {
-  banner: ImageSourcePropType,
-  title: string,
-  description: string,
-  location: string,
-  start_date: string,
-  end_date: string
-}
-
-type ImageProps = DefaultImageProps & {
-  source: ImageURISource;
-};
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
