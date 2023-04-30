@@ -8,6 +8,7 @@ import { StyleSheet, View, Text, Image } from 'react-native';
 import FeedScreen from './FeedScreen';
 import { useUserContext } from '@app/utils/UserContext';
 import Button from '@app/components/Button';
+import { CreateGroup } from './CreateGroupForm';
 
 const Feed = createDrawerNavigator();
 
@@ -39,6 +40,13 @@ function FeedDrawer(props) {
         component={Settings} 
         options={{
           headerShown: false
+        }}
+      />
+      <Feed.Screen 
+        name="Create Group" 
+        component={CreateGroup} 
+        options={{ 
+          headerShown: false,
         }}
       />
     </Feed.Navigator>
