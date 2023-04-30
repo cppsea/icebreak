@@ -24,5 +24,11 @@
   "main": "index.js",
   "author": "SEA",
   "license": "MIT",
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.3",
+  "devDependencies": {
+    "eslint": "8.39.0",
+    "eslint-config-prettier": "8.8.0",
+    "prettier": "2.8.8"
+  },
+  "repository": "https://github.com/cppsea/icebreak.git"
 }
