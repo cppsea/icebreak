@@ -7,9 +7,11 @@ import {
     KeyboardAvoidingView, 
     TouchableWithoutFeedback, 
     Keyboard, 
-    Switch } from 'react-native';
+    Switch,
+    Image } from 'react-native';
 import Button from '@app/components/Button';
-// import Dropdown from '@app/components/Dropdown';
+import * as ImagePicker from 'expo-image-picker';
+import Dropdown from '@app/components/Dropdown';
 
 // Create Group Screen
 function CreateGroup( {navigation} ) {
@@ -260,6 +262,44 @@ function CreateGroup( {navigation} ) {
         setGithubLink('');
     }
 
+    const selectBannerImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 5],
+            quality: 1,
+            base64: true, // Enable base64 option
+          });
+
+        const { assets } = result;
+      
+        if (!result.canceled) {
+            // Process the selected image
+            const { base64 } = assets[0];
+            // console.log("Banner image picked: " + base64);
+            setBanner(base64);
+        }
+      };
+
+    const selectIconImage = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 1,
+            base64: true, // Enable base64 option
+          });
+
+        const { assets } = result;
+        
+        if (!result.canceled) {
+            // Process the selected image
+            const { base64 } = assets[0];
+            // console.log("Icon image picked: " + base64);
+            setIcon(base64);
+        }
+    };
+
     switch(activeScreen)
     {
         case 0:
@@ -314,14 +354,31 @@ function CreateGroup( {navigation} ) {
                             <Text style={styles.header}>
                                 Banner<Text style={styles.important}>*</Text>
                             </Text>
-                            <TextInput placeholder="Username" style={styles.input} />
+                            <View style={styles.imageSelectorContainer}>
+                                <Image 
+                                    source={{ uri: `data:image/jpeg;base64,${banner}` }}
+                                    style={styles.imageDisplay}
+                                />
+                                <View style={styles.imageSelectorBtnContainer}>
+                                    <Button title="Select image" onPress={selectBannerImage}  />
+                                </View>
+                            </View>
                         </View>
                         <View>
                             {/* Replace with image/media picker */}
                             <Text style={styles.header}>
                                 Icon<Text style={styles.important}>*</Text>
                             </Text>
-                            <TextInput placeholder="Username" style={styles.input} />
+                            <View style={styles.imageSelectorContainer}>
+                                <Image
+                                    source={{ uri: `data:image/jpeg;base64,${icon}` }}
+                                    style={styles.imageDisplay}
+                                />
+                                <View style={styles.imageSelectorBtnContainer}>
+                                    <Button title="Select image" onPress={selectIconImage}  />
+
+                                </View>
+                            </View>
                         </View>
                         <View style={styles.btnContainer}>
                             <Button title="NEXT" onPress={() => 
@@ -497,8 +554,30 @@ function CreateGroup( {navigation} ) {
     },
     btnContainer: {
         backgroundColor: 'white',
+        textAlign: 'center',
+        justifyContent: 'center',
         marginTop: 6,
+        borderWidth: 2,
+        borderColor: 'black',
     },
+    imageSelectorBtnContainer: {
+        backgroundColor: 'white',
+        textAlign: 'center',
+        justifyContent: 'center',
+        marginTop: 6,
+        borderWidth: 1,
+        borderColor: 'black',
+        height: 50,
+        
+    },
+    imageDisplay: {
+        width: 200,
+        height: 100,
+    },  
+    imageSelectorContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+    }
   });
 
   export {
