@@ -1,13 +1,14 @@
-import axios from 'axios';
-import * as SecureStore from './SecureStore';
+import axios from "axios";
+import * as SecureStore from "./SecureStore";
+import { ENDPOINT } from "./constants";
 
 const server = axios.create({
-  baseURL: 'http://localhost:5050/api',
+  baseURL: ENDPOINT,
 });
 
 export async function getUserInfo() {
-  const token = await SecureStore.getValueFor('token');
-  const user = await server.get('/auth/user', {
+  const token = await SecureStore.getValueFor("token");
+  const user = await server.get("/auth/user", {
     headers: {
       Authorization: token,
     },
@@ -17,5 +18,5 @@ export async function getUserInfo() {
 }
 
 export async function logoutUser() {
-  await SecureStore.remove('token');
+  await SecureStore.remove("token");
 }
