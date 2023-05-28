@@ -40,7 +40,7 @@ function LandingScreen() {
         token: id_token,
       };
 
-      SecureStore.save("token", id_token);
+      SecureStore.save("google_auth_token", id_token);
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {

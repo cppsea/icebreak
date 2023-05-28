@@ -6,8 +6,8 @@ const server = axios.create({
   baseURL: ENDPOINT,
 });
 
-export async function getUserInfo() {
-  const token = await SecureStore.getValueFor("token");
+// get user info for local auth only
+export async function getUserInfo(token) {
   const user = await server.get("/auth/user", {
     headers: {
       Authorization: token,
