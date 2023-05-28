@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import axios from "axios";
 import { Text } from "react-native";
-import * as WebBroswer from "expo-web-browser";
+import Constants from "expo-constants";
+import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 
 import Button from "@app/components/Button";
@@ -12,21 +13,17 @@ import { getUserInfo } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
 
-WebBroswer.maybeCompleteAuthSession();
+WebBrowser.maybeCompleteAuthSession();
 
 function LandingScreen() {
   const { user, setUser } = useUserContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
     responseType: "id_token",
-    expoClientId:
-      "1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com",
-    iosClientId:
-      "1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com",
-    androidClientId:
-      "1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com",
-    webClientId:
-      "1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com",
+    expoClientId: Constants.expoConfig.extra.expoClientId,
+    iosClientId: Constants.expoConfig.extra.iosClientId,
+    androidClientId: Constants.expoConfig.extra.androidClientId,
+    webClientId: Constants.expoConfig.extra.webClientId,
   });
 
   const handleOnLoginWithGoogle = useCallback(async () => {
