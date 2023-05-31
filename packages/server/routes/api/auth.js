@@ -2,9 +2,15 @@ const express = require("express");
 const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
+<<<<<<< HEAD
 const { OAuth2Client } = require("google-auth-library");
 const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
+=======
+const { OAuth2Client, JWT } = require('google-auth-library');
+const bcrypt = require('bcrypt');
+const uniqid = require('uniqid'); 
+>>>>>>> 42785695226fc57e1d77096c2bfc7770dfc7abc3
 const tokenList = {};
 const jwt = require('jsonwebtoken');
 
@@ -200,11 +206,22 @@ router.post("/login", async (request, response) => {
       requestedUser.password
     );
     if (isValidPassword) {
+<<<<<<< HEAD
       const newToken = token.generate({ email });
       response.send({
         success: true,
         newToken,
       });
+=======
+      const newToken = jwt.sign({email}, process.env.CLIENT_SECRET, { expiresIn: '1h'} );
+      const refreshToken = jwt.sign({email}, process.env.TOKEN_SECRET, {expiresIn: '1h'});
+      tokenList[refreshToken] = response;
+      response.send({  
+        success: true,
+        newToken,
+        refreshToken
+      }); 
+>>>>>>> 42785695226fc57e1d77096c2bfc7770dfc7abc3
     } else {
       response.send({
         message: "Password was incorrect.",
@@ -223,6 +240,7 @@ router.post("/token", async (request, response) => {
   try{
 
       const {email, refreshToken} = request.body;
+<<<<<<< HEAD
 
       //if the refresh token exists
       if(refreshToken && refreshToken in tokenList) {
@@ -237,12 +255,33 @@ router.post("/token", async (request, response) => {
       }else {
         response.status(401).send({
           message: "Invalid Refresh Token",
+=======
+      //const getUser = await user.getUserByEmail(email);
+
+      //if the refresh token exists
+      if((refreshToken) && (refreshToken in tokenList)) {
+      
+      //creates new token
+      const token = jwt.sign({email}, process.env.CLIENT_SECRET,  {expiresIn: '1h'});
+      //updates token in the list 
+      tokenList[refreshToken].token = token;
+        response.send({
+            token
+        });
+      }else {
+        response.send({
+          message: "Invalid Request",
+>>>>>>> 42785695226fc57e1d77096c2bfc7770dfc7abc3
           success: false
 
       });
     }
     } catch(error) {
+<<<<<<< HEAD
       response.status(500).send({
+=======
+      response.status(403).send({
+>>>>>>> 42785695226fc57e1d77096c2bfc7770dfc7abc3
         message: error.message,
         success: false
       });
@@ -250,5 +289,9 @@ router.post("/token", async (request, response) => {
   }
 });
 
+<<<<<<< HEAD
 
 module.exports = router;
+=======
+module.exports = router; 
+>>>>>>> 42785695226fc57e1d77096c2bfc7770dfc7abc3
