@@ -5,6 +5,9 @@ const token = require("../../utils/token");
 const { OAuth2Client } = require("google-auth-library");
 const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
+const tokenList = {};
+const jwt = require('jsonwebtoken');
+
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -215,5 +218,37 @@ router.post("/login", async (request, response) => {
     });
   }
 });
+
+router.post("/token", async (request, response) => {
+  try{
+
+      const {email, refreshToken} = request.body;
+
+      //if the refresh token exists
+      if(refreshToken && refreshToken in tokenList) {
+      
+      //creates new token
+      const accessToken = jwt.sign({email}, process.env.CLIENT_SECRET,  {expiresIn: '1h'});
+      //updates token in the list 
+      tokenList[refreshToken] = accessToken;
+        response.send({
+          accessToken
+        });
+      }else {
+        response.status(401).send({
+          message: "Invalid Refresh Token",
+          success: false
+
+      });
+    }
+    } catch(error) {
+      response.status(500).send({
+        message: error.message,
+        success: false
+      });
+
+  }
+});
+
 
 module.exports = router;
