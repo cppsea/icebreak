@@ -199,11 +199,23 @@ router.post("/login", async (request, response) => {
       password,
       requestedUser.password
     );
+
     if (isValidPassword) {
-      const newToken = token.generate({ email });
-      response.send({
+    // Generate a new refresh token
+    const refreshToken = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '7d' });
+
+    // Generate a new access token
+    const accessToken = jwt.sign({ email }, process.env.CLIENT_SECRET, { expiresIn: '1h' });      
+    
+    // Store the refresh token and its associated access token in tokenList
+    tokenList[refreshToken] = {
+      accessToken
+    };
+
+    response.send({
         success: true,
-        newToken,
+        refreshToken,
+        accessToken
       });
     } else {
       response.send({
@@ -212,43 +224,60 @@ router.post("/login", async (request, response) => {
       });
     }
   } catch (error) {
-    response.status(403).send({
+    response.status(500).send({
       message: error.message,
       success: false,
     });
   }
 });
 
-router.post("/token", async (request, response) => {
-  try{
+router.post('/token', async (request, response) => {
+  try {
 
-      const {email, refreshToken} = request.body;
+    const { refreshToken } = request.body;
 
-      //if the refresh token exists
-      if(refreshToken && refreshToken in tokenList) {
-      
-      //creates new token
-      const accessToken = jwt.sign({email}, process.env.CLIENT_SECRET,  {expiresIn: '1h'});
-      //updates token in the list 
-      tokenList[refreshToken] = accessToken;
-        response.send({
-          accessToken
-        });
-      }else {
-        response.status(401).send({
-          message: "Invalid Refresh Token",
-          success: false
+    // Check if refresh token is provided
+    if (refreshToken) {
+      // Verify the refresh token
+      jwt.verify(refreshToken, process.env.TOKEN_SECRET, (err) => {
+        if (err) {
+          response.status(401).send({
+            message: 'Invalid Refresh Token',
+            success: false
+          });
+        } else {
+          // Check if the refresh token exists in tokenList
+          if (refreshToken in tokenList) {
+            // Generate a new access token
+            const accessToken = jwt.sign({ email }, process.env.CLIENT_SECRET, { expiresIn: '1h'  });
 
+            // Update the access token in tokenList
+            tokenList[refreshToken].accessToken = accessToken;
+
+            // Send the new access token in the response
+            response.send({
+              accessToken
+            });
+          } else {
+            response.status(401).send({
+              message: 'Invalid Refresh Token',
+              success: false
+            });
+          }
+        }
       });
-    }
-    } catch(error) {
-      response.status(500).send({
-        message: error.message,
+    } else {
+      response.status(401).send({
+        message: 'Refresh Token Required',
         success: false
       });
-
+    }
+  } catch (error) {
+    response.status(500).send({
+      message: error.message,
+      success: false
+    });
   }
 });
-
 
 module.exports = router;
