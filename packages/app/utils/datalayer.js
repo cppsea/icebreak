@@ -1,13 +1,14 @@
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from "axios";
+import * as SecureStore from "./SecureStore";
+import { ENDPOINT } from "./constants";
 
 const server = axios.create({
-  baseURL: 'http://localhost:5050/api',
+  baseURL: ENDPOINT,
 });
 
-export async function getUserInfo() {
-  const token = await AsyncStorage.getItem('token');
-  const user = await server.get('/auth/user', {
+// get user info for local auth only
+export async function getUserInfo(token) {
+  const user = await server.get("/auth/user", {
     headers: {
       Authorization: token,
     },
@@ -17,5 +18,5 @@ export async function getUserInfo() {
 }
 
 export async function logoutUser() {
-  await AsyncStorage.removeItem('token');
+  await SecureStore.remove("local_auth_token");
 }
