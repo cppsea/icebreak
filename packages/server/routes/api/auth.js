@@ -148,6 +148,18 @@ router.post("/register", async (request, response) => {
         // create unique User ID as bytes (18 byte)
         const user_id = uniqid();
 
+        const { Client: PostgresClient } = require("pg");
+
+        const postgres = new PostgresClient({
+          host: process.env.DB_HOST,
+          user: process.env.DB_USER,
+          database: process.env.DB_NAME,
+          password: process.env.DB_PASSWORD,
+          port: process.env.DB_PORT,
+        });
+
+        await postgres.connect(); 
+
         await postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
           VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
@@ -205,7 +217,7 @@ router.post("/login", async (request, response) => {
     const refreshToken = jwt.sign({ email }, process.env.TOKEN_SECRET, { expiresIn: '7d' });
 
     // Generate a new access token
-    const accessToken = jwt.sign({ email }, process.env.CLIENT_SECRET, { expiresIn: '1h' });      
+    const accessToken = jwt.sign({ email }, process.env.WEB_CLIENT_SECRET, { expiresIn: '1h' });      
     
     // Store the refresh token and its associated access token in tokenList
     tokenList[refreshToken] = {
@@ -234,7 +246,7 @@ router.post("/login", async (request, response) => {
 router.post('/token', async (request, response) => {
   try {
 
-    const { refreshToken } = request.body;
+    const { email, refreshToken } = request.body;
 
     // Check if refresh token is provided
     if (refreshToken) {
@@ -249,7 +261,7 @@ router.post('/token', async (request, response) => {
           // Check if the refresh token exists in tokenList
           if (refreshToken in tokenList) {
             // Generate a new access token
-            const accessToken = jwt.sign({ email }, process.env.CLIENT_SECRET, { expiresIn: '1h'  });
+            const accessToken = jwt.sign({ email }, process.env.WEB_CLIENT_SECRET, { expiresIn: '1h'  });
 
             // Update the access token in tokenList
             tokenList[refreshToken].accessToken = accessToken;
