@@ -17,6 +17,8 @@ import { getUserInfo } from '@app/utils/datalayer';
 import EyeOff from '@app/assets/eye-line-off';
 import EyeOn from '@app/assets/eye-line-on';
 
+import {CLIENT_ID} from '@env'
+
 WebBroswer.maybeCompleteAuthSession();
 
 function LandingScreen() {
@@ -28,10 +30,10 @@ function LandingScreen() {
   if (process.env.NODE_ENV !== 'test') {
     const [request, response, promptAsync] = Google.useAuthRequest({
       responseType: 'id_token',
-      expoClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-      iosClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-      androidClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-      webClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+      expoClientId: CLIENT_ID,
+      iosClientId: CLIENT_ID,
+      androidClientId: CLIENT_ID,
+      webClientId: CLIENT_ID,
     });
 
     handleOnLoginWithGoogle = useCallback(async () => {
