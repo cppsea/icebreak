@@ -6,7 +6,7 @@ const { exec, execSync, spawn } = require("child_process");
 const PORT = 5050;
 const PATH_LIMIT = 1024;
 const SPAWN_SHELL_DELAY = 1000;
-const REWRITE_NGROK_URL_DELAY = 3000;
+const REWRITE_NGROK_URL_DELAY = 2000;
 const NGROK_PATH = process.argv[2];
 const systemType = os.platform();
 
@@ -78,7 +78,7 @@ setTimeout(() => {
         fs.readFile(FILE_PATH, "utf-8", function (error, data) {
           if (error) throw error;
           const overwrite = data.replace(
-            /\b(https:\/\/)\b.*\b(.ngrok.io)\b/,
+            /\b(https:\/\/)\b.*\b(.ngrok.free.app)\b/,
             public_url
           );
 
@@ -89,8 +89,8 @@ setTimeout(() => {
         });
       }
     });
+
+    newTerminal("yarn server:start");
+    newTerminal("yarn app:start");
   });
 }, REWRITE_NGROK_URL_DELAY);
-
-newTerminal("yarn server:start");
-newTerminal("yarn app:start");

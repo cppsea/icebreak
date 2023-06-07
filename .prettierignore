@@ -1,0 +1,5 @@
+**/node_modules/
+.vscode/
+**/.expo/
+**/.expo-shared/
+**/assets/
