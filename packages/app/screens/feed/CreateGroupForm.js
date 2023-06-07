@@ -12,6 +12,7 @@ import {
 import Button from '@app/components/Button';
 import * as ImagePicker from 'expo-image-picker';
 import Dropdown from '@app/components/Dropdown';
+import TagInput from '@app/components/TagInput';
 
 // Create Group Screen
 function CreateGroup( {navigation} ) {
@@ -25,11 +26,14 @@ function CreateGroup( {navigation} ) {
     const [icon, setIcon] = useState('');
 
     // 2nd SCREEN INPUTS
-    const [category, setCategory] = useState([]);
+    const [category, setCategory] = useState('');
     const [tags, setTags] = useState([]);
     const [website, setWebsite] = useState('');
     const [location, setLocation] = useState('');
     const [isInviteOnly, setIsInviteOnly] = useState(false);
+
+    const categoryOptions = ['Sports', 'Education', 'Business', 'Gaming'];
+    const [inputValue, setInputValue] = useState('');
 
     // 3rd SCREEN INPUTS
     const [twitterLink, setTwitterLink] = useState('');
@@ -121,13 +125,54 @@ function CreateGroup( {navigation} ) {
             setDescriptionError(``);
         }
 
+        if(banner.trim() === ``)
+        {
+            setBannerError(`Please pick a banner image`);
+            isValid = false;
+        }
+        else
+        {
+            setBannerError(``);
+        }
 
+        if(icon.trim() === ``)
+        {
+            setIconError(`Please pick a icon image`);
+            isValid = false;
+        }
+        else
+        {
+            setIconError(``);
+        }
+
+        // isValid = true; //for testing
         return isValid;
     }
 
     function handleInputValidationScreen2(){
         let isValid = true;
         const websiteRegex = /^(?!(https?:\/\/)([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$).+$/i
+
+        if (category.trim() === ``)
+        {
+            setCategoryError(`Please select a category`);
+            isValid = false;
+        }
+        else
+        {
+            setCategoryError(``);
+        }
+
+        if (tags.length < 3)
+        {
+            setTagsError(`Please select at least 3 tags`);
+            isValid = false;
+        }
+        else
+        {
+            setTagsError(``);
+        }
+
 
         if (website.trim() === ``)
         {
@@ -251,6 +296,8 @@ function CreateGroup( {navigation} ) {
         setTitle('');
         setHandler('');
         setDescription('');
+        setBanner('');
+        setIcon('');
 
         setLocation('');
         setWebsite('');
@@ -331,48 +378,58 @@ function CreateGroup( {navigation} ) {
                             }}
                             title='BACK'
                         />
+
+
                         <View>
                             <Text style={styles.header}>
                                 Title<Text style={styles.important}>* {titleError}</Text>
                             </Text>
                             <TextInput value={title} placeholder="title" onChangeText={ newText => setTitle(newText) }  style={styles.input} maxLength={20}/>
                         </View>
+
+
                         <View>
                             <Text style={styles.header}>
                                 Handler<Text style={styles.important}>* {handlerError}</Text>
                             </Text>
                             <TextInput value={handler} placeholder="@unique_name" onChangeText={ newText => setHandler(newText) } style={styles.input} maxLength={15}/>
                         </View>
+
+
                         <View>
                             <Text style={styles.header}>
                                 Description<Text style={styles.important}>* {descriptionError}</Text>
                             </Text>
                             <TextInput value={description} placeholder="This is the description." onChangeText={ newText => setDescription(newText) } style={styles.input} maxLength={150} />
                         </View>
+
+
                         <View> 
                             {/* Replace with image/media picker */}
                             <Text style={styles.header}>
-                                Banner<Text style={styles.important}>*</Text>
+                                Banner<Text style={styles.important}>* {bannerError}</Text>
                             </Text>
                             <View style={styles.imageSelectorContainer}>
                                 <Image 
                                     source={{ uri: `data:image/jpeg;base64,${banner}` }}
-                                    style={styles.imageDisplay}
+                                    style={styles.bannerDisplay}
                                 />
                                 <View style={styles.imageSelectorBtnContainer}>
                                     <Button title="Select image" onPress={selectBannerImage}  />
                                 </View>
                             </View>
                         </View>
+
+
                         <View>
                             {/* Replace with image/media picker */}
                             <Text style={styles.header}>
-                                Icon<Text style={styles.important}>*</Text>
+                                Icon<Text style={styles.important}>* {iconError}</Text>
                             </Text>
                             <View style={styles.imageSelectorContainer}>
                                 <Image
                                     source={{ uri: `data:image/jpeg;base64,${icon}` }}
-                                    style={styles.imageDisplay}
+                                    style={styles.iconDisplay}
                                 />
                                 <View style={styles.imageSelectorBtnContainer}>
                                     <Button title="Select image" onPress={selectIconImage}  />
@@ -380,6 +437,8 @@ function CreateGroup( {navigation} ) {
                                 </View>
                             </View>
                         </View>
+
+
                         <View style={styles.btnContainer}>
                             <Button title="NEXT" onPress={() => 
                                 {                            
@@ -392,6 +451,8 @@ function CreateGroup( {navigation} ) {
                                 }
                                 } />
                         </View>
+
+                        
                     </View>
                     </TouchableWithoutFeedback>
                 </KeyboardAvoidingView>
@@ -400,6 +461,7 @@ function CreateGroup( {navigation} ) {
         case 2:
             
             const toggleSwitch = () => setIsInviteOnly(previousState => !previousState);
+
             return (
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -410,30 +472,40 @@ function CreateGroup( {navigation} ) {
                             onPress={() => setActiveScreen(1)}
                             title='BACK'
                         />
+
+                        
                         <View>
                             <Text style={styles.header}>
                                 Category<Text style={styles.important}>* {categoryError} </Text>
                             </Text>
-                            <Dropdown />
+                            <Dropdown options={categoryOptions} value={category} setValue={setCategory}/>
                         </View>
+
+
                         <View>
                             <Text style={styles.header}>
                                 Tags<Text style={styles.important}>* {tagsError} </Text>
                             </Text>
-                            <TextInput placeholder="Username" style={styles.input} />
+                            <TagInput value={inputValue} setValue={setInputValue} tags={tags} setTags={setTags} maxTags={10}/>
                         </View>
+
+                        
                         <View>
                             <Text style={styles.header}>
                                 Location<Text value={website}style={styles.important} onChangeText={ newText => setLocation(newText) }> {locationError} </Text>
                             </Text>
                             <TextInput placeholder="Username" style={styles.input} />
                         </View>
+
+
                         <View>
                             <Text style={styles.header}>
                                 Webite<Text style={styles.important}> {websiteError} </Text>
                             </Text>
                             <TextInput value={website} placeholder="https://example.com" onChangeText={ newText => setWebsite(newText) } style={styles.input} />
                         </View>
+
+
                         <View>
                             <Text style={styles.header}>Invite Only</Text>
                             <Switch
@@ -444,6 +516,8 @@ function CreateGroup( {navigation} ) {
                                 value={isInviteOnly}
                             />
                         </View>
+
+
                         <View style={styles.btnContainer}>
                             <Button title="NEXT" onPress={() => 
                                 {
@@ -451,6 +525,8 @@ function CreateGroup( {navigation} ) {
                                 }
                                 } />
                         </View>
+
+
                     </View>
                     </TouchableWithoutFeedback>
                 </KeyboardAvoidingView>
@@ -570,10 +646,17 @@ function CreateGroup( {navigation} ) {
         height: 50,
         
     },
-    imageDisplay: {
+    bannerDisplay: {
         width: 200,
         height: 100,
+        borderWidth: 1,
     },  
+    iconDisplay: {
+        width: 100,
+        height: 100,
+        borderRadius: 100,
+        borderWidth: 1,
+    },
     imageSelectorContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
