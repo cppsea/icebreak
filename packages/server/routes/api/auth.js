@@ -40,18 +40,20 @@ router.post("/verify", async (request, response) => {
     });
 
     response.send({
-      success: true,
-      payload: {
-        email: payload.email,
-        firstName: payload.given_name,
-        lastName: payload.family_name,
-        picture: payload.picture,
+      status: "success",
+      data: {
+        user: {
+          email: payload.email,
+          firstName: payload.given_name,
+          lastName: payload.family_name,
+          picture: payload.picture,
+        },
       },
     });
   } catch (error) {
     response.send({
+      status: "error",
       message: error.message,
-      success: false,
     });
   }
 });
@@ -61,8 +63,8 @@ router.get("/user", AuthController.authenticate, (request, response) => {
     response.send(request.user);
   } catch (error) {
     response.status(403).send({
+      status: "error",
       message: error.message,
-      success: false,
     });
   }
 });
@@ -80,21 +82,23 @@ router.post("/google", AuthController.login, async (request, response) => {
     } = request.user;
 
     response.send({
-      success: true,
-      payload: {
-        userId: user_id,
-        firstName: first_name,
-        lastName: last_name,
-        avatar: avatar,
-        email: email,
-        joinedDate: joined_date,
-        lastLogin: last_login,
+      status: "success",
+      data: {
+        user: {
+          userId: user_id,
+          firstName: first_name,
+          lastName: last_name,
+          avatar: avatar,
+          email: email,
+          joinedDate: joined_date,
+          lastLogin: last_login,
+        }
       },
     });
   } catch (error) {
     response.status(403).send({
+      status: "error",
       message: error.message,
-      success: false,
     });
   }
 });
@@ -117,8 +121,14 @@ router.post("/register", async (request, response) => {
 
     if (email == undefined || password == undefined) {
       return response.status(400).send({
-        message: "Email and Passsword must be provided.",
-        success: false,
+        status: "fail",
+        data: {
+          user: {
+            email: "Email not provided",
+            password: "Password not provided",
+          },
+        },
+        message: "Validation error.",
       });
     }
 
@@ -153,15 +163,15 @@ router.post("/register", async (request, response) => {
         const newToken = token.generate({ email }); // create a signed jwt token
 
         response.send({
-          success: true,
+          status: "success",
           newToken,
         });
       });
     });
   } catch (error) {
     response.status(403).send({
+      status: "error",
       message: error.message,
-      success: false,
     });
   }
 });
@@ -173,8 +183,14 @@ router.post("/login", async (request, response) => {
 
     if (email == undefined || password == undefined) {
       return response.status(400).send({
-        message: "email and passsword must be provided.",
-        success: false,
+        status: "fail",
+        data: {
+          user: {
+            email: "Email not provided",
+            password: "Password not provided",
+          },
+        },
+        message: "Validation error.",
       });
     }
 
@@ -196,22 +212,28 @@ router.post("/login", async (request, response) => {
       password,
       requestedUser.password
     );
+    
     if (isValidPassword) {
       const newToken = token.generate({ email });
       response.send({
-        success: true,
+        status: "success",
         newToken,
       });
     } else {
       response.send({
-        message: "Password was incorrect.",
-        success: false,
+        status: "fail",
+        data: {
+          user: {
+            password: "Incorrect password",
+          },
+        },
+        message: "Validation error.",
       });
     }
   } catch (error) {
     response.status(403).send({
+      status: "error",
       message: error.message,
-      success: false,
     });
   }
 });
