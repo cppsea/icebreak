@@ -60,7 +60,13 @@ router.post("/verify", async (request, response) => {
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   try {
-    response.send(request.user);
+    response.send(
+      {
+        status: "success",
+        data: {
+          user: request.user,
+        },
+      });
   } catch (error) {
     response.status(403).send({
       status: "error",
@@ -164,7 +170,9 @@ router.post("/register", async (request, response) => {
 
         response.send({
           status: "success",
-          newToken,
+          data: {
+            newToken,
+          },
         });
       });
     });
@@ -178,7 +186,7 @@ router.post("/register", async (request, response) => {
 
 router.post("/login", async (request, response) => {
   try {
-    // Get user input
+    // get user input
     const { email, password } = request.body;
 
     if (email == undefined || password == undefined) {
@@ -217,7 +225,9 @@ router.post("/login", async (request, response) => {
       const newToken = token.generate({ email });
       response.send({
         status: "success",
-        newToken,
+        data: {
+          newToken,
+        },
       });
     } else {
       response.send({
