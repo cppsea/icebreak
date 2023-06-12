@@ -8,10 +8,15 @@ const DEFAULT_EVENT_LIMIT = 10;
 router.get("/all-events", async (request, response) => {
   try {
     const events = await EventController.getAllEvents();
-    response.send(events);
+    response.send({
+      status: "success",
+      data: {
+        events: events,
+      },
+    });
   } catch (error) {
     response.send({
-      success: false,
+      status: "error",
       message: error.message,
     });
   }
@@ -61,10 +66,13 @@ router.get(
       // follow-up request, not first request to api route
       if (currentPage && action && eventId) {
         response.send({
-          events: events,
-          cursor: {
-            previous_page: `http://localhost:5050/api/events/${prevCursor}?limit=${eventLimit}`,
-            next_page: `http://localhost:5050/api/events/${nextCursor}?limit=${eventLimit}`,
+          status: "success",
+          data: {
+            events: events,
+            cursor: {
+              previous_page: `http://localhost:5050/api/events/${prevCursor}?limit=${eventLimit}`,
+              next_page: `http://localhost:5050/api/events/${nextCursor}?limit=${eventLimit}`,
+            },
           },
         });
       } else {
@@ -73,17 +81,20 @@ router.get(
         const totalPages = await EventController.getPages(eventLimit);
 
         response.send({
-          events: events,
-          total_pages: totalPages,
-          cursor: {
-            previous_page: null,
-            next_page: `http://localhost:5050/api/events/${nextCursor}?limit=${eventLimit}`,
+          status: "success",
+          data: {
+            events: events,
+            total_pages: totalPages,
+            cursor: {
+              previous_page: null,
+              next_page: `http://localhost:5050/api/events/${nextCursor}?limit=${eventLimit}`,
+            },
           },
         });
       }
     } catch (error) {
       response.status(403).send({
-        success: false,
+        status: "error",
         message: error.message,
       });
     }
@@ -98,11 +109,16 @@ router.get(
       console.log("@user", request.user);
       const { eventId } = request.params;
       const event = await EventController.getEvent(eventId);
-      response.send(event);
+      response.send({
+        status: "success",
+        data: {
+          event: event,
+        },
+      });
     } catch (error) {
       response.status(403).send({
+        status: "error",
         message: error.message,
-        success: false,
       });
     }
   }
