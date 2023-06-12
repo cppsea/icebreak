@@ -1,0 +1,13 @@
+{
+  "plugins": ["react", "react-native"],
+  "env": {
+    "browser": true,
+    "react-native/react-native": true
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2023,
+    "ecmaFeatures": { "jsx": true }
+  },
+  "extends": "prettier"
+}

@@ -1,4 +1,4 @@
-const postgres = require("../utils/postgres");
+const { postgres } = require("../utils/postgres");
 
 async function getAllEvents() {
   const query = await postgres.query(
