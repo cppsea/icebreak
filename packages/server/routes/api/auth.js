@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
 const tokenList = {};
 const jwt = require('jsonwebtoken');
+const axios = require('axios');
 
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -53,8 +54,8 @@ router.post("/verify", async (request, response) => {
     });
   } catch (error) {
     response.send({
-      message: error.message,
       success: false,
+      message: error.message,
     });
   }
 });
@@ -64,8 +65,8 @@ router.get("/user", AuthController.authenticate, (request, response) => {
     response.send(request.user);
   } catch (error) {
     response.status(403).send({
-      message: error.message,
       success: false,
+      message: error.message,
     });
   }
 });
@@ -96,8 +97,8 @@ router.post("/google", AuthController.login, async (request, response) => {
     });
   } catch (error) {
     response.status(403).send({
-      message: error.message,
       success: false,
+      message: error.message,
     });
   }
 });
@@ -120,8 +121,8 @@ router.post("/register", async (request, response) => {
 
     if (email == undefined || password == undefined) {
       return response.status(400).send({
-        message: "Email and Passsword must be provided.",
         success: false,
+        message: "Email and Passsword must be provided.",
       });
     }
 
@@ -175,8 +176,8 @@ router.post("/register", async (request, response) => {
     });
   } catch (error) {
     response.status(403).send({
-      message: error.message,
       success: false,
+      message: error.message,
     });
   }
 });
@@ -184,12 +185,12 @@ router.post("/register", async (request, response) => {
 router.post("/login", async (request, response) => {
   try {
     // Get user input
-    const { email, password } = request.body;
+    const { email, password } = request.body; 
 
     if (email == undefined || password == undefined) {
       return response.status(400).send({
-        message: "email and passsword must be provided.",
         success: false,
+        message: "email and passsword must be provided.",
       });
     }
 
@@ -214,10 +215,22 @@ router.post("/login", async (request, response) => {
 
     if (isValidPassword) {
     // Generate a new refresh token
-    const refreshToken = token.generate(requestedUser);
+    const refreshToken = token.generate({user_id: requestedUser.user_id});
 
     // Generate a new access token
-    const accessToken = jwt.sign({ requestedUser }, process.env.WEB_CLIENT_SECRET, { expiresIn: '1h' });      
+    const accessToken = jwt.sign( 
+      {
+        user_id: requestedUser.user_id,
+        joined_date: requestedUser.joined_date,
+        last_login: requestedUser.last_login,
+        first_name: requestedUser.first_name,
+        last_name: requestedUser.last_name,
+        avatar: requestedUser.avatar,
+      },
+      process.env.WEB_CLIENT_SECRET, 
+      { 
+      expiresIn: "1h", 
+    });      
     
     // Store the refresh token and its associated access token in tokenList
     tokenList[refreshToken] = {
@@ -227,18 +240,19 @@ router.post("/login", async (request, response) => {
     response.send({
         success: true,
         refreshToken,
-        accessToken
+        accessToken,
+        
       });
     } else {
       response.send({
-        message: "Password was incorrect.",
         success: false,
+        message: "Password was incorrect.",
       });
     }
   } catch (error) {
     response.status(500).send({
-      message: error.message,
       success: false,
+      message: error.message,
     });
   }
 });
@@ -246,44 +260,93 @@ router.post("/login", async (request, response) => {
 router.post('/token', async (request, response) => {
   try {
 
-    const { email, refreshToken } = request.body;
+    const{ email, refreshToken } = request.body;
+    const requestedUser = await user.getUserByEmail(email);
 
     // Check if refresh token is provided
     if (refreshToken) {
+
       // Verify the refresh token
       token.verify(refreshToken);
       
           // Check if the refresh token exists in tokenList
           if (refreshToken in tokenList) {
+
             // Generate a new access token
-            const accessToken = jwt.sign({ email }, process.env.WEB_CLIENT_SECRET, { 
+            const accessToken = jwt.sign(
+              { 
+                user_id: requestedUser.user_id,
+                joined_date: requestedUser.joined_date,
+                last_login: requestedUser.last_login,
+                first_name: requestedUser.first_name,
+                last_name: requestedUser.last_name,
+                avatar: requestedUser.avatar,
+            }, 
+            process.env.WEB_CLIENT_SECRET, 
+            { 
               expiresIn: "1h",  
             });
 
-            // Update the access token in tokenList
-            tokenList[refreshToken].accessToken = accessToken;
+            //Generates a new refresh token
+            const newRefreshToken = token.generate({user_id: requestedUser.user_id});
 
-            // Send the new access token in the response
+            // Update the tokenList with the new refresh token
+            tokenList[newRefreshToken] = tokenList[refreshToken];
+            delete tokenList[refreshToken];
+
+            // Update the access token in tokenList
+            tokenList[newRefreshToken] = accessToken;
+
+            // Send the new access token and refresh token in the response
             response.send({
-              accessToken
+              success: true,
+              accessToken,
+              newRefreshToken
             });
           } else {
             response.status(401).send({
-              message: 'Invalid Refresh Token',
-              success: false
+              success: false,
+              message: 'Invalid Refresh Token'
             });
           }
       
     } else {
       response.status(401).send({
-        message: 'Refresh Token Required',
-        success: false
+        success: false,
+        message: 'Refresh Token Required'
       });
     }
   } catch (error) {
     response.status(500).send({
+      success: false,
+      message: error.message
+    });
+  }
+});
+
+router.post('/revokeToken', async (request, response) => {
+
+  try{
+
+    const { refreshToken } = request.body;
+
+    // Verify the refresh token
+    token.verify(refreshToken);
+
+    //Revoke refresh token from the token list
+    if (refreshToken in tokenList) {
+      delete tokenList[refreshToken];
+    }
+
+    response.send({
+      success: true,
+      message: 'Token has been revoked',
+    });
+
+  }catch (error) {
+    response.status(500).send({
+      success: false,
       message: error.message,
-      success: false
     });
   }
 });
