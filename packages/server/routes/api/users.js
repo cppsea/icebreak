@@ -7,11 +7,16 @@ const AuthController = require("../../controllers/auth");
 router.get('/', async (request, response) => {
   try {
     const users = await UserController.getAllUsers();
-    response.send(users);
+    response.send({
+      status: "success",
+      data: {
+        users,
+      },
+    });
   } catch(error) {
     response.send({
-      success: false,
-      message: error.message
+      status: "error",
+      message: error.message,
     });
   }
 });
@@ -21,11 +26,15 @@ router.get('/:userId', AuthController.authenticate, async (request, response) =>
     console.log("@user", request.user);
     const { userId } = request.params;
     const user = await UserController.getUser(userId);
-    response.send(user);
+    response.send({
+      data: {
+        user: user,
+      },
+    });
   } catch(error) {
     response.status(403).send({
+      status: "success",
       message: error.message,
-      success: false
     });
   }
 });
