@@ -15,6 +15,7 @@
     "app:test": "yarn workspace app test",
     "app:link": "cd packages/app/ios; pod install;",
     "server:start": "yarn workspace server start",
+    "server:test": "yarn workspace server test",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
     "dev": "node ./scripts/run.js && npx prisma generate"
@@ -23,5 +24,11 @@
   "main": "index.js",
   "author": "SEA",
   "license": "MIT",
-  "packageManager": "yarn@3.2.3"
+  "packageManager": "yarn@3.2.3",
+  "devDependencies": {
+    "eslint": "8.39.0",
+    "eslint-config-prettier": "8.8.0",
+    "prettier": "2.8.8"
+  },
+  "repository": "https://github.com/cppsea/icebreak.git"
 }

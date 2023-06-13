@@ -1,12 +1,10 @@
 const { OAuth2Client } = require("google-auth-library");
+const { OAuth2Client } = require("google-auth-library");
 
 const postgres = require("../utils/postgres");
 const prisma = require("../utils/prisma");
 const token = require("../utils/token");
-
-const CLIENT_ID =
-  "1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com";
-const client = new OAuth2Client(CLIENT_ID);
+const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 
 async function create(accessToken, refreshToken, profile, callback) {
   try {
@@ -51,7 +49,7 @@ async function authenticateWithGoogle(token) {
   // Verify the token is valid; to ensure it's a valid google auth.
   const { payload } = await client.verifyIdToken({
     idToken: token,
-    audience: CLIENT_ID,
+    audience: process.env.WEB_CLIENT_ID,
   });
 
   // Check if this user already exist on our database.
@@ -147,9 +145,7 @@ async function deserialize(id, callback) {
 
 async function authenticate(request, response, next) {
   const authToken = request.get("Authorization");
-  console.log(authToken);
   const payload = token.verify(authToken);
-  console.log(authToken);
   request.user = payload;
   next();
 }

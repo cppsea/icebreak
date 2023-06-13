@@ -28,3 +28,6 @@ module.exports = {
   getAllUsers,
   getUserByEmail,
 };
+
+  getUserByEmail,
+};
