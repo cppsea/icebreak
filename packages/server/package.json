@@ -23,6 +23,7 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.8.0",
+    "redis": "^4.6.7",
     "uniqid": "^5.4.0"
   },
   "devDependencies": {

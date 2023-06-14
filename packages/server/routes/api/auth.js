@@ -7,7 +7,6 @@ const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
 const tokenList = {};
 const jwt = require('jsonwebtoken');
-const axios = require('axios');
 
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
@@ -15,6 +14,7 @@ const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const AuthController = require("../../controllers/auth");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
+const redis = require("../../utils/redis");
 
 passport.use(
   new GoogleStrategy(
@@ -241,7 +241,6 @@ router.post("/login", async (request, response) => {
         success: true,
         refreshToken,
         accessToken,
-        
       });
     } else {
       response.send({
@@ -324,31 +323,35 @@ router.post('/token', async (request, response) => {
   }
 });
 
-router.post('/revokeToken', async (request, response) => {
-
-  try{
-
+router.post("/revokeToken", async (request, response) => {
+  try {
     const { refreshToken } = request.body;
 
     // Verify the refresh token
     token.verify(refreshToken);
 
-    //Revoke refresh token from the token list
-    if (refreshToken in tokenList) {
-      delete tokenList[refreshToken];
-    }
+    // Store the revoked token in Redis with an expiration time
+    redis.set(refreshToken, "revoked", "EX", 86400, (error) => {
+      if (error) {
+        console.error("Error storing token in Redis:", error);
+        return response.status(500).send({
+          success: false,
+          message: "Error storing token",
+        });
+      }
 
-    response.send({
-      success: true,
-      message: 'Token has been revoked',
+      response.send({
+        success: true,
+        message: "Token has been revoked",
+      });
     });
-
-  }catch (error) {
+  } catch (error) {
     response.status(500).send({
       success: false,
       message: error.message,
     });
   }
 });
+
 
 module.exports = router;
