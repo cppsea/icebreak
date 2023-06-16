@@ -1,0 +1,7 @@
+{
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2023
+  },
+  "extends": "prettier"
+}
