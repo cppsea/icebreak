@@ -1,55 +1,56 @@
-import React, { useCallback, useEffect } from 'react';
-import axios from 'axios';
-import { Text } from 'react-native';
-import * as WebBroswer from 'expo-web-browser';
-import * as Google from 'expo-auth-session/providers/google';
+import React, { useCallback, useEffect } from "react";
+import axios from "axios";
+import { Text } from "react-native";
+import Constants from "expo-constants";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
 
-import Button from '@app/components/Button';
-import Screen from '@app/components/Screen';
+import Button from "@app/components/Button";
+import Screen from "@app/components/Screen";
 
-import { useUserContext } from '@app/utils/UserContext';
-import { getUserInfo } from '@app/utils/datalayer';
-import { ENDPOINT } from '@app/utils/constants';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserContext } from "@app/utils/UserContext";
+import { getUserInfo } from "@app/utils/datalayer";
+import { ENDPOINT } from "@app/utils/constants";
+import * as SecureStore from "@app/utils/SecureStore";
 
-WebBroswer.maybeCompleteAuthSession();
+WebBrowser.maybeCompleteAuthSession();
 
 function LandingScreen() {
   const { user, setUser } = useUserContext();
 
   const [request, response, promptAsync] = Google.useAuthRequest({
-    responseType: 'id_token',
-    expoClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-    iosClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-    androidClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
-    webClientId: '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com',
+    responseType: "id_token",
+    expoClientId: Constants.expoConfig.extra.expoClientId,
+    iosClientId: Constants.expoConfig.extra.iosClientId,
+    androidClientId: Constants.expoConfig.extra.androidClientId,
+    webClientId: Constants.expoConfig.extra.webClientId,
   });
 
   const handleOnLoginWithGoogle = useCallback(async () => {
     try {
       const result = await promptAsync();
 
-      if (result.type !== 'success') {
+      if (result.type !== "success") {
         throw new Error("Failed to authenticate with Google's OAuth");
       }
 
       const id_token = result.params.id_token;
 
       const body = {
-        token: id_token
+        token: id_token,
       };
 
-      AsyncStorage.setItem("token", id_token);
+      SecureStore.save("google_auth_token", id_token);
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {
         setUser({
           ...user,
           isLoggedIn: true,
-          data: data.payload
-        }); 
+          data: data.payload,
+        });
       }
-    } catch(error) {
+    } catch (error) {
       console.log(error.message);
     }
   }, [user, setUser, request]);
