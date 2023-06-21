@@ -24,7 +24,7 @@ function addToBlacklist(token, callback) {
     if (error) {
       callback(error);
     } else {
-      callback(null, result === 0);
+      callback(null, result === 1);
     }
   });
 }

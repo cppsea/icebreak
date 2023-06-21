@@ -261,7 +261,9 @@ router.post("/login", async (request, response) => {
 });
 
 router.post('/token', async (request, response) => {
+
   try {
+
     const{ email, refreshToken } = request.body;
     const requestedUser = await user.getUserByEmail(email);
     // Check if refresh token is provided
@@ -271,29 +273,45 @@ router.post('/token', async (request, response) => {
       
           // Check if the refresh token exists in tokenList
           if (refreshToken in tokenList) {
-            // Generate a new access token
-            accessToken = token.generateAccessToken(requestedUser);      
 
-            //Generates a new refresh token
-            const newRefreshToken = token.generateRefreshToken(requestedUser);
-            // Update the tokenList with the new refresh token
-            tokenList[newRefreshToken] = tokenList[refreshToken];
-            delete tokenList[refreshToken];
-            // Update the access token in tokenList
-            tokenList[newRefreshToken] = accessToken;
-            // Send the new access token and refresh token in the response
-            response.send({
-              success: true,
-              newRefreshToken,
-              accessToken,
-            });
+            isTokenValid(refreshToken, (error, isRevoked) => {
+              if(error){
+                response.status(500).send({
+                  success: false,
+                  message: 'Error checking token validity:', error
+                });
+              } else if(isRevoked){
+                // Token is blacklisted
+                response.status(401).send({
+                  success: false,
+                  message: 'Revoked Refresh Token'
+          });
+              } else {
+                // Generate a new access token
+                accessToken = token.generateAccessToken(requestedUser);      
+
+                //Generates a new refresh token
+                const newRefreshToken = token.generateRefreshToken(requestedUser);
+                // Update the tokenList with the new refresh token
+                tokenList[newRefreshToken] = tokenList[refreshToken];
+                delete tokenList[refreshToken];
+                // Update the access token in tokenList
+                tokenList[newRefreshToken] = accessToken;
+
+                // Send the new access token and refresh token in the response
+                response.send({
+                  success: true,
+                  newRefreshToken,
+                  accessToken,
+              });
+            }
+          });
           } else {
             response.status(401).send({
               success: false,
               message: 'Invalid Refresh Token'
             });
           }
-      
     } else {
       response.status(401).send({
         success: false,
