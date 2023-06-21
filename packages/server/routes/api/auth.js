@@ -176,21 +176,10 @@ router.post("/register", async (request, response) => {
         `); // create new user in DB, (DO NOT STORE ACTUAL PASSWORD, STORE HASHED VERSION)
 
         // Generate a refresh token
-        refreshToken = token.generate({user_id: requestedUser.user_id});
+        refreshToken = token.generateRefreshToken(requestedUser);
 
         // create a signed jwt token
-        accessToken = token.generate({ 
-          user_id: requestedUser.user_id,
-          joined_date: requestedUser.joined_date,
-          last_login: requestedUser.last_login,
-          first_name: requestedUser.first_name,
-          last_name: requestedUser.last_name,
-          avatar: requestedUser.avatar, 
-        },
-        process.env.WEB_CLIENT_SECRET, 
-        { 
-        expiresIn: "1h", 
-        }); 
+        accessToken = token.generateAccessToken(requestedUser);
 
         // Store the refresh token and its associated access token in tokenList
         tokenList[refreshToken] = accessToken ;
@@ -244,22 +233,10 @@ router.post("/login", async (request, response) => {
     if (isValidPassword) {
 
     // Generate a refresh token
-    refreshToken = token.generate({user_id: requestedUser.user_id});
+    refreshToken = token.generateRefreshToken(requestedUser);
 
     // Generate an access token
-     accessToken = jwt.sign( 
-      {
-        user_id: requestedUser.user_id,
-        joined_date: requestedUser.joined_date,
-        last_login: requestedUser.last_login,
-        first_name: requestedUser.first_name,
-        last_name: requestedUser.last_name,
-        avatar: requestedUser.avatar,
-      },
-        process.env.WEB_CLIENT_SECRET, 
-      { 
-        expiresIn: "1h", 
-    });      
+    accessToken = token.generateAccessToken(requestedUser);      
     
     // Store the refresh token and its associated access token in tokenList
     tokenList[refreshToken] = accessToken ;
@@ -290,26 +267,15 @@ router.post('/token', async (request, response) => {
     // Check if refresh token is provided
     if (refreshToken) {
       // Verify the refresh token
-      token.verify(refreshToken);
+      token.verifyRefreshToken(refreshToken);
       
           // Check if the refresh token exists in tokenList
           if (refreshToken in tokenList) {
             // Generate a new access token
-             accessToken = jwt.sign(
-              { 
-                user_id: requestedUser.user_id,
-                joined_date: requestedUser.joined_date,
-                last_login: requestedUser.last_login,
-                first_name: requestedUser.first_name,
-                last_name: requestedUser.last_name,
-                avatar: requestedUser.avatar,
-            }, 
-            process.env.WEB_CLIENT_SECRET, 
-            { 
-              expiresIn: "1h",  
-            });
+            accessToken = token.generateAccessToken(requestedUser);      
+
             //Generates a new refresh token
-            const newRefreshToken = token.generate({user_id: requestedUser.user_id});
+            const newRefreshToken = token.generateRefreshToken(requestedUser);
             // Update the tokenList with the new refresh token
             tokenList[newRefreshToken] = tokenList[refreshToken];
             delete tokenList[refreshToken];
@@ -347,7 +313,7 @@ router.post('/revokeToken', async (request, response) => {
     const { refreshToken } = request.body;
 
     // Verify the refresh token
-    token.verify(refreshToken);
+    token.verifyRefreshToken(refreshToken);
 
     // Store the revoked token in Redis set
     addToBlacklist(refreshToken, (error) => {

@@ -102,7 +102,7 @@ async function deserialize(id, callback) {
 
 async function authenticate(request, response, next) {
   const authToken = request.get("Authorization");
-  const payload = token.verify(authToken);
+  const payload = token.verifyAccessToken(authToken);
   request.user = payload;
   next();
 }
