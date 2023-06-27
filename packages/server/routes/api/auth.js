@@ -5,7 +5,6 @@ const token = require("../../utils/token");
 const { OAuth2Client } = require("google-auth-library");
 const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
-const tokenList = {};
 const jwt = require('jsonwebtoken');
 
 
@@ -62,12 +61,6 @@ router.post("/verify", async (request, response) => {
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   try {
-
-    const currentTimestamp = Math.floor(Date.now() / 1000);
-    if (request.user.exp < currentTimestamp) {
-      throw new Error("Access token has expired");
-    }
-    
     response.send(request.user);
   } catch (error) {
     response.status(403).send({
@@ -158,18 +151,6 @@ router.post("/register", async (request, response) => {
         // create unique User ID as bytes (18 byte)
         const user_id = uniqid();
 
-        const { Client: PostgresClient } = require("pg");
-
-        const postgres = new PostgresClient({
-          host: process.env.DB_HOST,
-          user: process.env.DB_USER,
-          database: process.env.DB_NAME,
-          password: process.env.DB_PASSWORD,
-          port: process.env.DB_PORT,
-        });
-
-        await postgres.connect(); 
-
         await postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
           VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
@@ -180,9 +161,6 @@ router.post("/register", async (request, response) => {
 
         // create a signed jwt token
         accessToken = token.generateAccessToken(requestedUser);
-
-        // Store the refresh token and its associated access token in tokenList
-        tokenList[refreshToken] = accessToken ;
         
         response.send({
           success: true,
@@ -237,9 +215,6 @@ router.post("/login", async (request, response) => {
 
     // Generate an access token
     accessToken = token.generateAccessToken(requestedUser);      
-    
-    // Store the refresh token and its associated access token in tokenList
-    tokenList[refreshToken] = accessToken ;
 
     response.send({
         success: true,
@@ -268,51 +243,39 @@ router.post('/token', async (request, response) => {
     const requestedUser = await user.getUserByEmail(email);
     // Check if refresh token is provided
     if (refreshToken) {
+
       // Verify the refresh token
       token.verifyRefreshToken(refreshToken);
-      
-          // Check if the refresh token exists in tokenList
-          if (refreshToken in tokenList) {
 
-            isTokenValid(refreshToken, (error, isRevoked) => {
-              if(error){
-                response.status(500).send({
-                  success: false,
-                  message: 'Error checking token validity:', error
-                });
-              } else if(isRevoked){
-                // Token is blacklisted
-                response.status(401).send({
-                  success: false,
-                  message: 'Revoked Refresh Token'
-          });
-              } else {
-                // Generate a new access token
-                accessToken = token.generateAccessToken(requestedUser);      
-
-                //Generates a new refresh token
-                const newRefreshToken = token.generateRefreshToken(requestedUser);
-                // Update the tokenList with the new refresh token
-                tokenList[newRefreshToken] = tokenList[refreshToken];
-                delete tokenList[refreshToken];
-                // Update the access token in tokenList
-                tokenList[newRefreshToken] = accessToken;
-
-                // Send the new access token and refresh token in the response
-                response.send({
-                  success: true,
-                  newRefreshToken,
-                  accessToken,
+          //Checks refresh token against a blacklist of revoked tokens
+          isTokenValid(refreshToken, (error, isRevoked) => {
+            if(error){
+              response.status(500).send({
+                success: false,
+                message: 'Error checking token validity:', error
               });
-            }
+            } else if(isRevoked){
+              // Token is blacklisted
+              response.status(401).send({
+                success: false,
+                message: 'Revoked Refresh Token'
           });
-          } else {
-            response.status(401).send({
-              success: false,
-              message: 'Invalid Refresh Token'
+            } else {
+              // Generate a new access token
+              accessToken = token.generateAccessToken(requestedUser);      
+
+              //Generates a new refresh token
+              const newRefreshToken = token.generateRefreshToken(requestedUser);
+
+              // Send the new access token and refresh token in the response
+              response.send({
+                success: true,
+                newRefreshToken,
+                accessToken,
             });
           }
-    } else {
+        });
+  } else {
       response.status(401).send({
         success: false,
         message: 'Refresh Token Required'
@@ -326,7 +289,7 @@ router.post('/token', async (request, response) => {
   }
 });
 
-router.post('/revokeToken', async (request, response) => {
+router.post('/revoke-token', async (request, response) => {
   try {
     const { refreshToken } = request.body;
 

@@ -1,4 +1,6 @@
 const { OAuth2Client } = require("google-auth-library");
+const jwt = require('jsonwebtoken');
+
 
 const { postgres } = require("../utils/postgres");
 const token = require("../utils/token");
@@ -102,9 +104,35 @@ async function deserialize(id, callback) {
 
 async function authenticate(request, response, next) {
   const authToken = request.get("Authorization");
-  const payload = token.verifyAccessToken(authToken);
-  request.user = payload;
-  next();
+  
+  try{
+  token.verifyAccessToken(authToken);
+
+  jwt.verify(authToken, process.env.WEB_CLIENT_SECRET, function(err, decoded) {
+    if (err) {
+      if (err.name === 'TokenExpiredError') {
+        // Token has expired
+        response.status(401).json({ 
+          error: 'Access token has expired' 
+        });
+      } else {
+        // Other token verification errors
+        response.status(401).json({ 
+          error: 'Invalid access token' 
+        });
+      }
+    } else {
+      // Token is valid
+      request.user = decoded;
+      next();
+    }
+  });
+  } catch (error) {
+    // Handle any other errors that occur during token verification
+    response.status(500).json({
+      message: error.message 
+    });
+  }
 }
 
 module.exports = {
