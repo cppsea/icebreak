@@ -24,7 +24,7 @@ function generateAccessToken(user) {
     },
     process.env.WEB_CLIENT_SECRET,
     {
-      expiresIn: "1s",
+      expiresIn: "1h",
     }
   );
 }
