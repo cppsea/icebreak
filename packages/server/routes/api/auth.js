@@ -5,15 +5,18 @@ const token = require("../../utils/token");
 const { OAuth2Client } = require("google-auth-library");
 const bcrypt = require("bcrypt");
 const uniqid = require("uniqid");
-const jwt = require('jsonwebtoken');
-
+const jwt = require("jsonwebtoken");
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const AuthController = require("../../controllers/auth");
 const postgres = require("../../utils/postgres");
 const user = require("../../controllers/users");
-const { isTokenValid, addToBlacklist, redisClient } = require("../../utils/redis");
+const {
+  isTokenValid,
+  addToBlacklist,
+  redisClient,
+} = require("../../utils/redis");
 
 passport.use(
   new GoogleStrategy(
@@ -114,8 +117,8 @@ router.get(
   }
 );
 
-let refreshToken = '';
-let accessToken = '';
+let refreshToken = "";
+let accessToken = "";
 
 router.post("/register", async (request, response) => {
   try {
@@ -161,7 +164,7 @@ router.post("/register", async (request, response) => {
 
         // create a signed jwt token
         accessToken = token.generateAccessToken(requestedUser);
-        
+
         response.send({
           success: true,
           refreshToken,
@@ -180,7 +183,7 @@ router.post("/register", async (request, response) => {
 router.post("/login", async (request, response) => {
   try {
     // Get user input
-    const { email, password } = request.body; 
+    const { email, password } = request.body;
 
     if (email == undefined || password == undefined) {
       return response.status(400).send({
@@ -209,14 +212,13 @@ router.post("/login", async (request, response) => {
     );
 
     if (isValidPassword) {
+      // Generate a refresh token
+      refreshToken = token.generateRefreshToken(requestedUser);
 
-    // Generate a refresh token
-    refreshToken = token.generateRefreshToken(requestedUser);
+      // Generate an access token
+      accessToken = token.generateAccessToken(requestedUser);
 
-    // Generate an access token
-    accessToken = token.generateAccessToken(requestedUser);      
-
-    response.send({
+      response.send({
         success: true,
         refreshToken,
         accessToken,
@@ -235,61 +237,59 @@ router.post("/login", async (request, response) => {
   }
 });
 
-router.post('/token', async (request, response) => {
-
+router.post("/token", async (request, response) => {
   try {
-
-    const{ email, refreshToken } = request.body;
+    const { email, refreshToken } = request.body;
     const requestedUser = await user.getUserByEmail(email);
     // Check if refresh token is provided
     if (refreshToken) {
-
       // Verify the refresh token
       token.verifyRefreshToken(refreshToken);
 
-          //Checks refresh token against a blacklist of revoked tokens
-          isTokenValid(refreshToken, (error, isRevoked) => {
-            if(error){
-              response.status(500).send({
-                success: false,
-                message: 'Error checking token validity:', error
-              });
-            } else if(isRevoked){
-              // Token is blacklisted
-              response.status(401).send({
-                success: false,
-                message: 'Revoked Refresh Token'
+      //Checks refresh token against a blacklist of revoked tokens
+      isTokenValid(refreshToken, (error, isRevoked) => {
+        if (error) {
+          response.status(500).send({
+            success: false,
+            message: "Error checking token validity:",
+            error,
           });
-            } else {
-              // Generate a new access token
-              accessToken = token.generateAccessToken(requestedUser);      
+        } else if (isRevoked) {
+          // Token is blacklisted
+          response.status(401).send({
+            success: false,
+            message: "Revoked Refresh Token",
+          });
+        } else {
+          // Generate a new access token
+          accessToken = token.generateAccessToken(requestedUser);
 
-              //Generates a new refresh token
-              const newRefreshToken = token.generateRefreshToken(requestedUser);
+          //Generates a new refresh token
+          const newRefreshToken = token.generateRefreshToken(requestedUser);
 
-              // Send the new access token and refresh token in the response
-              response.send({
-                success: true,
-                newRefreshToken,
-                accessToken,
-            });
-          }
-        });
-  } else {
+          // Send the new access token and refresh token in the response
+          response.send({
+            success: true,
+            newRefreshToken,
+            accessToken,
+          });
+        }
+      });
+    } else {
       response.status(401).send({
         success: false,
-        message: 'Refresh Token Required'
+        message: "Refresh Token Required",
       });
     }
   } catch (error) {
     response.status(500).send({
       success: false,
-      message: error.message
+      message: error.message,
     });
   }
 });
 
-router.post('/revoke-token', async (request, response) => {
+router.post("/revoke-token", async (request, response) => {
   try {
     const { refreshToken } = request.body;
 
@@ -301,16 +301,16 @@ router.post('/revoke-token', async (request, response) => {
       if (error) {
         response.status(500).send({
           success: false,
-          message: "Error revoking token", error
+          message: "Error revoking token",
+          error,
         });
-    }else{
+      } else {
         response.status(200).send({
           success: true,
-          message: "Token has been revoked."
+          message: "Token has been revoked.",
         });
-  }
-});
-
+      }
+    });
   } catch (error) {
     response.status(500).send({
       success: false,
@@ -318,6 +318,5 @@ router.post('/revoke-token', async (request, response) => {
     });
   }
 });
-
 
 module.exports = router;
