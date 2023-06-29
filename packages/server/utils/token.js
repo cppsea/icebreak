@@ -54,7 +54,9 @@ function verifyAccessToken(accessToken, response, next) {
         }
       } else {
         // Token is valid
-        request.user = decoded;
+        response.user = decoded;
+        // Return the payload of the access token
+        response.status(200).json(decoded);
         next();
       }
     }
