@@ -67,7 +67,7 @@ function App() {
   };
 
   useEffect(() => {
-    currentSession();
+    //currentSession();
   }, []);
 
   return (

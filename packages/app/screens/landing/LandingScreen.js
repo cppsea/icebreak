@@ -28,17 +28,14 @@ import EyeOff from "@app/assets/eye-line-off";
 import EyeOn from "@app/assets/eye-line-on";
 import * as SecureStore from "@app/utils/SecureStore";
 
-import {
-  EXPO_CLIENT_ID,
-  IOS_CLIENT_ID,
-  ANDROID_CLIENT_ID,
-  WEB_CLIENT_ID,
-} from "@env";
+import Constants from "expo-constants";
 
 WebBrowser.maybeCompleteAuthSession();
 
-function LandingScreen() {
+
+function LandingScreen({ navigation }) {
   const { user, setUser } = useUserContext();
+
 
   let handleOnLoginWithGoogle;
 
@@ -46,10 +43,10 @@ function LandingScreen() {
   if (process.env.NODE_ENV !== "test") {
     const [request, response, promptAsync] = Google.useAuthRequest({
       responseType: "id_token",
-      expoClientId: EXPO_CLIENT_ID,
-      iosClientId: IOS_CLIENT_ID,
-      androidClientId: ANDROID_CLIENT_ID,
-      webClientId: WEB_CLIENT_ID,
+      expoClientId: Constants.expoConfig.extra.expoClientId,
+      iosClientId: Constants.expoConfig.extra.iosClientId,
+      androidClientId: Constants.expoConfig.extra.androidClientId,
+      webClientId: Constants.expoConfig.extra.webClientId,
     });
 
     handleOnLoginWithGoogle = useCallback(async () => {
@@ -118,9 +115,26 @@ function LandingScreen() {
     }
   };
 
-  const login = () => {
-    // TODO: Login code here
-    Alert.alert("Login successful");
+  const login = async () => {
+    console.log(`Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/login`)
+    try {
+      const response = await axios.post(`${ENDPOINT}/auth/login`, {
+        email: inputs.email,
+        password: inputs.password
+      });
+
+      if (response?.data.success) {
+        console.log("Data: " + response.data.newToken);
+        setUser({
+          ...user,
+          isLoggedIn: true,
+          data: response.data.newToken,
+        });
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleOnChange = (inputKey, text) => {
@@ -208,7 +222,7 @@ function LandingScreen() {
           <Button
             testID="googleButton"
             title="Continue with Google"
-            onPress={handleOnLoginWithGoogle}
+            onPress={() => handleOnLoginWithGoogle()}
             underlayColor="#ebebeb"
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
@@ -226,9 +240,8 @@ function LandingScreen() {
         <TouchableOpacity
           testID="signupButton"
           onPress={
-            // TODO: Navigate to signup screen.
             () => {
-              Alert.alert("Navigate to signup screen");
+              navigation.navigate("SignUpScreen")
             }
           }>
           <Text style={styles.textButton}>Sign Up.</Text>

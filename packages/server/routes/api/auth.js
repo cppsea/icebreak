@@ -36,7 +36,7 @@ router.post("/verify", async (request, response) => {
 
     const { payload } = await client.verifyIdToken({
       idToken: accessToken,
-      audience: WEB_CLIENT_ID,
+      audience: process.env.WEB_CLIENT_ID,
     });
 
     response.send({
@@ -145,7 +145,7 @@ router.post("/register", async (request, response) => {
         // create unique User ID as bytes (18 byte)
         const user_id = uniqid();
 
-        await postgres.query(`
+        await postgres.postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
           VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
         `); // create new user in DB, (DO NOT STORE ACTUAL PASSWORD, STORE HASHED VERSION)
@@ -170,6 +170,7 @@ router.post("/login", async (request, response) => {
   try {
     // Get user input
     const { email, password } = request.body;
+
 
     if (email == undefined || password == undefined) {
       return response.status(400).send({

@@ -9,6 +9,6 @@ export async function getValueFor(key) {
     return result;
 }
 
-export async function remove(){
-    await SecureStore.deleteItemAsync();
+export async function remove(key){
+    await SecureStore.deleteItemAsync(key);
 }
