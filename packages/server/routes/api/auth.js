@@ -192,10 +192,8 @@ router.post("/login", async (request, response) => {
       return response.status(400).send({
         status: "fail",
         data: {
-          user: {
-            email: "Email not provided",
-            password: "Password not provided",
-          },
+          email: "Email not provided",
+          password: "Password not provided",
         },
         message: "Validation error.",
       });
@@ -232,9 +230,7 @@ router.post("/login", async (request, response) => {
       response.send({
         status: "fail",
         data: {
-          user: {
-            password: "Incorrect password",
-          },
+          password: "Incorrect password",
         },
         message: "Validation error.",
       });

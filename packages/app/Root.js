@@ -63,7 +63,7 @@ function App() {
         setUser({
           ...user,
           isLoggedIn: true,
-          data: response.data,
+          data: response.data.user,
         });
       }
     }
