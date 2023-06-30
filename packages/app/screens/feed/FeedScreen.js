@@ -9,8 +9,7 @@ import CardEvent from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
-import * as SecureStore from '@app/utils/SecureStore';
-
+import * as SecureStore from "@app/utils/SecureStore";
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -26,20 +25,20 @@ function FeedScreen() {
   }, [setUser]);
 
   const getEvents = async () => {
-    const token = await SecureStore.getValueFor('token');
+    const token = await SecureStore.getValueFor("token");
     console.log("@token", token);
-    const response = await axios.get(`${ENDPOINT}/events`, {
+    const { data: response } = await axios.get(`${ENDPOINT}/events`, {
       withCredentials: true,
       headers: {
         Authorization: token,
       },
     });
 
-    const serializeEvents = response.data.events.map(event => {
+    const serializeEvents = response.data.events.map((event) => {
       return {
         ...event,
-        key: event.event_id
-      }
+        key: event.event_id,
+      };
     });
 
     setEvents(serializeEvents);
@@ -93,8 +92,8 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   h1: {
-    fontWeight: "bold"
-  }
+    fontWeight: "bold",
+  },
 });
 
 export default FeedScreen;

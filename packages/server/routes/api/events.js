@@ -29,7 +29,7 @@ router.get("/all-events", async (request, response) => {
  * (3 underscores separator)
  */
 router.get(
-  "/:cursor?",
+  "/pages/:cursor?",
   // AuthController.authenticate,
   async (request, response) => {
     try {

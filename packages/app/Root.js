@@ -55,12 +55,15 @@ function App() {
       const body = {
         token: googleAuthToken,
       };
-      const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
-      if (data?.success) {
+      const { data: response } = await axios.post(
+        `${ENDPOINT}/auth/google`,
+        body
+      );
+      if (response.status === "success") {
         setUser({
           ...user,
           isLoggedIn: true,
-          data: data.payload,
+          data: response.data,
         });
       }
     }

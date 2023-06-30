@@ -9,7 +9,7 @@ const uniqid = require("uniqid");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const AuthController = require("../../controllers/auth");
-const postgres = require("../../utils/postgres");
+const { postgres } = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
 passport.use(
@@ -36,7 +36,7 @@ router.post("/verify", async (request, response) => {
 
     const { payload } = await client.verifyIdToken({
       idToken: accessToken,
-      audience: WEB_CLIENT_ID,
+      audience: process.env.WEB_CLIENT_ID,
     });
 
     response.send({
@@ -60,13 +60,12 @@ router.post("/verify", async (request, response) => {
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   try {
-    response.send(
-      {
-        status: "success",
-        data: {
-          user: request.user,
-        },
-      });
+    response.send({
+      status: "success",
+      data: {
+        user: request.user,
+      },
+    });
   } catch (error) {
     response.status(403).send({
       status: "error",
@@ -98,7 +97,7 @@ router.post("/google", AuthController.login, async (request, response) => {
           email: email,
           joinedDate: joined_date,
           lastLogin: last_login,
-        }
+        },
       },
     });
   } catch (error) {
@@ -171,7 +170,7 @@ router.post("/register", async (request, response) => {
         response.send({
           status: "success",
           data: {
-            newToken,
+            accessToken: newToken,
           },
         });
       });
@@ -220,13 +219,13 @@ router.post("/login", async (request, response) => {
       password,
       requestedUser.password
     );
-    
+
     if (isValidPassword) {
       const newToken = token.generate({ email });
       response.send({
         status: "success",
         data: {
-          newToken,
+          accessToken: newToken,
         },
       });
     } else {
