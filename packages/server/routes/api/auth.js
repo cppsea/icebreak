@@ -128,10 +128,8 @@ router.post("/register", async (request, response) => {
       return response.status(400).send({
         status: "fail",
         data: {
-          user: {
-            email: "Email not provided",
-            password: "Password not provided",
-          },
+          email: "Email not provided",
+          password: "Password not provided",
         },
         message: "Validation error.",
       });
