@@ -35,29 +35,23 @@ function verifyRefreshToken(refreshToken) {
   });
 }
 
-function verifyAccessToken(accessToken, response, next) {
-  jwt.verify(
+function verifyAccessToken(accessToken) {
+  return jwt.verify(
     accessToken,
     process.env.WEB_CLIENT_SECRET,
     function (err, decoded) {
       if (err) {
         if (err.name === "TokenExpiredError") {
           // Token has expired
-          response.status(401).json({
-            error: "Access token has expired",
-          });
+          throw new Error("Access token has expired");
         } else {
           // Other token verification errors
-          response.status(401).json({
-            error: "Invalid access token",
-          });
+          throw new Error("Invalid access token");
         }
       } else {
         // Token is valid
-        response.user = decoded;
         // Return the payload of the access token
-        response.status(200).json(decoded);
-        next();
+        return decoded;
       }
     }
   );

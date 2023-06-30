@@ -105,7 +105,8 @@ async function authenticate(request, response, next) {
   const authToken = request.get("Authorization");
 
   try {
-    await token.verifyAccessToken(authToken, response, next);
+    request.user = await token.verifyAccessToken(authToken);
+    next();
   } catch (error) {
     // Handle any errors that occur during token verification
     response.status(500).json({
