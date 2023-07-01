@@ -37,7 +37,7 @@ function LandingScreen({ navigation }) {
   const { user, setUser } = useUserContext();
 
 
-  let handleOnLoginWithGoogle;
+  let handleOnLoginWithGoogle = () => {};
 
   // skips the code during test
   if (process.env.NODE_ENV !== "test") {

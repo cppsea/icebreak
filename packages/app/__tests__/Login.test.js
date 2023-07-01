@@ -11,6 +11,9 @@ jest.mock('expo-web-browser', () => ({
 jest.mock('expo-auth-session/providers/google', () => jest.fn())
 jest.mock('@app/utils/datalayer', () => jest.fn())
 jest.mock('react-native/Libraries/Animated/NativeAnimatedHelper');
+jest.mock('expo-constants', () => ({
+    Constants: () => null,
+}))
 
 
 describe(LandingScreen, () => {
@@ -96,7 +99,10 @@ describe(LandingScreen, () => {
         });
 
         it('signup button renders correctly', () => {
-            const {getByTestId} = render( <LandingScreen /> );
+            const mockNavigation = {
+                navigate: jest.fn(),
+            };
+            const {getByTestId} = render( <LandingScreen navigation={mockNavigation}/> );
             const signupButton = getByTestId('signupButton');
             expect(signupButton).toBeTruthy();
             fireEvent.press(signupButton);
