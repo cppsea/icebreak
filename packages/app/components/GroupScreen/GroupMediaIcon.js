@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { FontAwesome5 } from "@expo/vector-icons/FontAwesome5";
 
 const styles = StyleSheet.create({
   containerStyle: {
@@ -24,7 +24,7 @@ const styles = StyleSheet.create({
  */
 function GroupMediaIcon(props) {
   return (
-    <View style={styles.containerStyle}>
+    <View style={styles.containerStyle} testID={props.testID}>
       <FontAwesome5
         name="github"
         style={styles.mediaIconStyle}

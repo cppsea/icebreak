@@ -6,7 +6,7 @@ import {
   Linking,
   TouchableWithoutFeedback,
 } from "react-native";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { Ionicons } from "@expo/vector-icons/Ionicons";
 
 import GroupTag from "./GroupTag";
 
@@ -76,7 +76,7 @@ function GroupHeaderInfo(props) {
   };
 
   return (
-    <View style={styles.containerStyle}>
+    <View style={styles.containerStyle} testID={props.testID}>
       <View style={styles.titleContainer}>
         <Text style={styles.titleStyle}>{props.name}</Text>
 

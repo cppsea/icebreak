@@ -44,20 +44,23 @@ function GroupHeader(props) {
   });
 
   return (
-    <View style={styles.headerContainer}>
+    <View style={styles.headerContainer} testID={props.testID}>
       <Image
+        testID="clubBanner"
         source={require("@app/assets/test-club-banner.png")}
         style={styles.bannerStyle}
       />
-      <GroupMediaIcon size={17} />
+      <GroupMediaIcon size={17} testID="groupMediaIcon" />
 
       <View style={styles.textContainer}>
         <GroupIcon
+          testID="groupIcon"
           icon={require("@app/assets/test-club-icon.png")}
           size={iconSize}
           backgroundColor={"#0E131F"}
         />
         <GroupHeaderInfo
+          testID="groupHeaderInfo"
           name={"Software Engineering Association"}
           handler={"cppsea"}
           description={exampleDescription}

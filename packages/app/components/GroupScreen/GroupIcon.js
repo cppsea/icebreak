@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
  */
 function GroupIcon(props) {
   return (
-    <View style={[styles.iconContainer, { marginTop: -props.size / 2 }]}>
+    <View style={[styles.iconContainer, { marginTop: -props.size / 2 }]} testID={props.testID}>
       <Image
         source={props.icon}
         style={[

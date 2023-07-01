@@ -60,9 +60,10 @@ function GroupScreen() {
     <Screen style={{ height: "100%" }}>
       <Animated.View style={styles.container}>
         <Animated.View style={styles.header} onLayout={handleViewLayout}>
-          <GroupHeader />
+          <GroupHeader testID="groupHeader"/>
         </Animated.View>
         <GroupTabs
+          testID="groupTabs"
           style={{ height: "100%", display: "flex" }}
           handleScrollToTop={handleScrollToTop}
           handleScrollDown={handleScrollDown}

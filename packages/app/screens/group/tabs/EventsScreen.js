@@ -39,8 +39,9 @@ function EventsScreen(props) {
     }
 
     return(
-        <View style={[props.style, styles.container]}>
+        <View style={[props.style, styles.container]} testID={props.testID}>
             <SectionList
+                testID="eventScroll"
                 ref={sectionListRef}
                 onScroll={handleScroll}
                 stickySectionHeadersEnabled={false}

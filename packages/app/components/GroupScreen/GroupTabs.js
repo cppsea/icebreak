@@ -112,9 +112,10 @@ function GroupTabs(props) {
   }
 
   return (
-    <View style={props.style}>
+    <View style={props.style} testID={props.testID}>
       <View>
         <ScrollView
+          testID="tabScrollView"
           style={styles.tabScrollView}
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -175,6 +176,7 @@ function GroupTabs(props) {
 
       {activeTab.screen && (
         <activeTab.screen
+          testID="tab"
           style={styles.screen}
           handleScrollDown={handleScrollDown}
           handleScrollToTop={handleScrollToTop}
