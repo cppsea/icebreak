@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -14,6 +14,7 @@ import Button from "@app/components/Button";
 import * as ImagePicker from "expo-image-picker";
 import Dropdown from "@app/components/Dropdown";
 import TagInput from "@app/components/TagInput";
+import { GroupContext } from "@app/utils/GroupContext";
 
 function InitialCreateGroupScreen({ navigation }) {
   return (
@@ -29,12 +30,15 @@ function InitialCreateGroupScreen({ navigation }) {
 }
 
 function CreateGroupFormScreen1({ navigation }) {
+
   // 1st SCREEN INPUTS
-  const [title, setTitle] = useState("");
-  const [handler, setHandler] = useState("");
-  const [description, setDescription] = useState("");
-  const [banner, setBanner] = useState("");
-  const [icon, setIcon] = useState("");
+  const {
+    title, setTitle, 
+    handler, setHandler,
+    description, setDescription,
+    banner, setBanner,
+    icon, setIcon,
+    resetForm } = useContext(GroupContext);
 
   // Input Validation
   const [titleError, setTitleError] = useState("");
@@ -99,14 +103,6 @@ function CreateGroupFormScreen1({ navigation }) {
     return isValid;
   }
 
-  // const emptyForm = () => {
-  //     setTitle('');
-  //     setHandler('');
-  //     setDescription('');
-  //     setBanner('');
-  //     setIcon('');
-  // };
-
   const selectBannerImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -154,7 +150,7 @@ function CreateGroupFormScreen1({ navigation }) {
           <Button
             onPress={() => {
               navigation.navigate("Initial Create Group");
-              // emptyForm();
+              resetForm();
             }}
             title="BACK"
           />
@@ -250,16 +246,18 @@ function CreateGroupFormScreen1({ navigation }) {
 }
 
 function CreateGroupFormScreen2({ navigation }) {
-  // 2nd SCREEN INPUTS
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState([]);
-  const [website, setWebsite] = useState("");
-  const [location, setLocation] = useState("");
-  const [isInviteOnly, setIsInviteOnly] = useState(false);
 
   const categoryOptions = ["Sports", "Education", "Business", "Gaming"];
   const [inputValue, setInputValue] = useState("");
   const toggleSwitch = () => setIsInviteOnly((previousState) => !previousState);
+
+  const { 
+    category, setCategory,
+    tags, setTags,
+    location, setLocation,
+    website, setWebsite,
+    isInviteOnly, setIsInviteOnly
+  } = useContext(GroupContext)
 
   const [categoryError, setCategoryError] = useState("");
   const [tagsError, setTagsError] = useState("");
@@ -300,23 +298,6 @@ function CreateGroupFormScreen2({ navigation }) {
 
     return isValid;
   }
-
-//   const emptyForm = () => {
-//     setTitle('');
-//     setHandler('');
-//     setDescription('');
-//     setBanner('');
-//     setIcon('');
-
-//     setLocation('');
-//     setWebsite('');
-
-//     setTwitterLink('');
-//     setFacebookLink('');
-//     setDiscordLink('');
-//     setLinkedInLink('');
-//     setGithubLink('');
-// };
 
   return (
     <KeyboardAvoidingView
@@ -405,13 +386,15 @@ function CreateGroupFormScreen2({ navigation }) {
 }
 
 function CreateGroupFormScreen3({ navigation }) {
-  // 3rd SCREEN INPUTS
-  const [twitterLink, setTwitterLink] = useState("");
-  const [facebookLink, setFacebookLink] = useState("");
-  const [instagramLink, setInstagramLink] = useState("");
-  const [discordLink, setDiscordLink] = useState("");
-  const [linkedInLink, setLinkedInLink] = useState("");
-  const [githubLink, setGithubLink] = useState("");
+
+  const { 
+    twitterLink, setTwitterLink,
+    facebookLink, setFacebookLink,
+    instagramLink, setInstagramLink,
+    discordLink, setDiscordLink,
+    linkedInLink, setLinkedInLink,
+    githubLink, setGithubLink,
+  } = useContext(GroupContext)
 
   // Input Validation
   const [twitterLinkError, setTwitterLinkError] = useState("");
