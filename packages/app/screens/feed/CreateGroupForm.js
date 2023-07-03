@@ -394,6 +394,8 @@ function CreateGroupFormScreen3({ navigation }) {
     discordLink, setDiscordLink,
     linkedInLink, setLinkedInLink,
     githubLink, setGithubLink,
+
+    submitForm
   } = useContext(GroupContext)
 
   // Input Validation
@@ -573,11 +575,11 @@ function CreateGroupFormScreen3({ navigation }) {
                 const isValid = handleInputValidationScreen3();
 
                 if (isValid) {
-                  // emptyForm();
                   navigation.navigate("Initial Create Group");
                 }
 
-                // code for updating the group here?
+                // check GroupContext.js for submitForm implementation
+                submitForm();
               }}
             />
           </View>
