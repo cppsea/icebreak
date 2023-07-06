@@ -8,7 +8,7 @@ import { StyleSheet, View, Text, Image } from 'react-native';
 import FeedScreen from './FeedScreen';
 import { useUserContext } from '@app/utils/UserContext';
 import Button from '@app/components/Button';
-import CreateGroupStack from './CreateGroupStack';
+import CreateGroupStack from './create group form/CreateGroupStack';
 
 const Feed = createDrawerNavigator();
 
