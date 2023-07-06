@@ -15,6 +15,7 @@ import * as ImagePicker from "expo-image-picker";
 import Dropdown from "@app/components/Dropdown";
 import TagInput from "@app/components/TagInput";
 import { GroupContext } from "@app/utils/GroupContext";
+import { ScrollView } from "react-native-gesture-handler";
 
 function InitialCreateGroupScreen({ navigation }) {
   return (
@@ -107,7 +108,7 @@ function CreateGroupFormScreen1({ navigation }) {
     const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
-        aspect: [1, 5],
+        aspect: [3, 1],
         quality: 1,
         base64: true, // Enable base64 option
       });
@@ -142,9 +143,11 @@ function CreateGroupFormScreen1({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}>
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <Button
@@ -241,7 +244,7 @@ function CreateGroupFormScreen1({ navigation }) {
           </View>
         </View>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
@@ -300,9 +303,11 @@ function CreateGroupFormScreen2({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}>
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <Button
@@ -350,7 +355,7 @@ function CreateGroupFormScreen2({ navigation }) {
 
           <View>
             <Text style={styles.header}>
-              Webite<Text style={styles.important}> {websiteError} </Text>
+              Website<Text style={styles.important}> {websiteError} </Text>
             </Text>
             <TextInput
               value={website}
@@ -375,13 +380,17 @@ function CreateGroupFormScreen2({ navigation }) {
             <Button
               title="NEXT"
               onPress={() => {
-                navigation.navigate("Create Group Form 3");
+                const isValid = handleInputValidationScreen2();
+
+                if (isValid) {
+                  navigation.navigate("Create Group Form 3");
+                }
               }}
             />
           </View>
         </View>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
@@ -490,9 +499,11 @@ function CreateGroupFormScreen3({ navigation }) {
   }
 
   return (
-    <KeyboardAvoidingView
+    <ScrollView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={styles.container}>
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      keyboardShouldPersistTaps="handled">
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <View style={styles.inner}>
           <Button
@@ -583,9 +594,10 @@ function CreateGroupFormScreen3({ navigation }) {
               }}
             />
           </View>
+          <View style={styles.scrollview_extra_margin}/>
         </View>
       </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 }
 
@@ -598,6 +610,9 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  scrollview_extra_margin:{
+    margin: 100,
   },
   inner: {
     padding: 36,
@@ -621,7 +636,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
   imageSelectorBtnContainer: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     textAlign: "center",
     justifyContent: "center",
     marginTop: 6,
@@ -633,12 +648,14 @@ const styles = StyleSheet.create({
     width: 200,
     height: 100,
     borderWidth: 1,
+    borderColor: "black",
   },
   iconDisplay: {
     width: 100,
     height: 100,
     borderRadius: 100,
     borderWidth: 1,
+    borderColor: "black",
   },
   imageSelectorContainer: {
     flexDirection: "row",

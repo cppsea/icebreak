@@ -40,4 +40,12 @@ module.exports = {
     anroidClientId: process.env.ANDROID_CLIENT_ID,
     webClientId: process.env.WEB_CLIENT_ID,
   },
+  android: {
+    adaptiveIcon: {
+      foregroundImage: "./assets/adaptive-icon.png",
+      backgroundColor: "#FFFFFF",
+    },
+    package: "com.sea.icebreak",
+    softwareKeyboardLayoutMode: "pan",
+  }
 };
