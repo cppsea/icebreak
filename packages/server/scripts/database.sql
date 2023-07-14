@@ -10,13 +10,18 @@ CREATE TABLE users (
 );
 
 CREATE TABLE Guild (
-  guild_id VARCHAR(255),
-  name VARCHAR(100),
-  handler VARCHAR(50),
-  description TEXT,
+  guild_id uuid PRIMARY KEY NOT NULL,
+  name VARCHAR(100) NOT NULL,
+  handler VARCHAR(50) NOT NULL,
+  description TEXT NOT NULL,
+  category VARCHAR(255) NOT NULL,
+  location VARCHAR(255),
+  website VARCHAR(255),
+  tags TEXT[] NOT NULL,
+  banner VARCHAR(255),
+  icon VARCHAR(255),
   media TEXT[],
-  invite_only BOOLEAN,
-  PRIMARY KEY(guild_id)
+  invite_only BOOLEAN NOT NULL
 );
 
 CREATE TABLE Event (

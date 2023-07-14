@@ -8,6 +8,10 @@ const postgres = new PostgresClient({
   port: process.env.DB_PORT,
 });
 
+postgres.on("connection", (stream) => {
+  console.log("Postgres database connection successfully established.");
+});
+
 postgres.connect();
 
 function closePostgres() {
