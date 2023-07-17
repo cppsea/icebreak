@@ -13,6 +13,7 @@ const users = require("./routes/api/users");
 const guild = require("./routes/api/guild");
 const events = require("./routes/api/events");
 const auth = require("./routes/api/auth");
+const images = require("./routes/api/images");
 
 app.use(
   cors({
@@ -34,6 +35,7 @@ app.use("/api/auth", auth);
 app.use("/api/users", users);
 app.use("/api/guilds", guild);
 app.use("/api/events", events);
+app.use("/api/images", images);
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
