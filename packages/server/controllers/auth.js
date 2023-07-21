@@ -1,20 +1,23 @@
 const { OAuth2Client } = require("google-auth-library");
-
+const { v5: uuidv5 } = require("uuid");
 const { postgres } = require("../utils/postgres");
 const token = require("../utils/token");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 
+const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
+
 async function create(accessToken, refreshToken, profile, callback) {
   try {
-    let { sub: id, given_name, family_name, picture, email } = profile._json;
+    let { sub, given_name, family_name, picture, email } = profile._json;
     picture = picture.replace("=s96-c", "");
+    const googleUUID = uuidv5(sub, NAMESPACE);
     const { rows } = await postgres.query(
-      `SELECT * FROM Users WHERE user_id='${id}'`
+      `SELECT * FROM Users WHERE user_id='${googleUUID}'`
     );
     if (rows.length < 1) {
       const createUser = await postgres.query(`
         INSERT INTO Users (user_id, email, avatar, first_name, last_name)
-        VALUES ('${id}', '${email}', '${picture}', '${given_name}', '${family_name}')
+        VALUES ('${googleUUID}', '${email}', '${picture}', '${given_name}', '${family_name}')
         RETURNING *
       `);
       console.log("user doesn't exist. create one");
@@ -36,17 +39,18 @@ async function authenticateWithGoogle(token) {
   });
 
   // Check if this user already exist on our database.
-  const { sub: userId, email, given_name, family_name, picture } = payload;
+  const { sub, email, given_name, family_name, picture } = payload;
+  const googleUUID = uuidv5(sub, NAMESPACE);
   console.log("@payload", payload);
   const { rows } = await postgres.query(
-    `SELECT * FROM Users WHERE user_id='${userId}'`
+    `SELECT * FROM Users WHERE user_id='${googleUUID}'`
   );
 
   // if the query returns a row, there's a user with the existing userId.
   if (rows.length < 1) {
     const createUser = await postgres.query(`
       INSERT INTO Users (user_id, email, avatar, first_name, last_name)
-      VALUES ('${userId}', '${email}', '${picture}', '${given_name}', '${family_name}')
+      VALUES ('${googleUUID}', '${email}', '${picture}', '${given_name}', '${family_name}')
       RETURNING *
     `);
 
