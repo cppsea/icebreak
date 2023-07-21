@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
-import { Platform } from "react-native";
+import { LogBox, Platform } from "react-native";
 import {
   View,
   Text,
@@ -24,18 +24,16 @@ const tabs = [
 ];
 
 const blueViewWidth = 60;
-const tabTextPadding = 10;
-const tabGroupMargin = 5;
+let firstTabViewRef = React.createRef();
 const blueViewPosition = new Animated.ValueXY({
-  x: tabTextPadding + tabGroupMargin,
+  x: 0,
   y: -1,
 });
-const staticBlueViewPosition = blueViewPosition.getLayout().top.toString + "px";
 
 function GroupTabs(props) {
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const [scrollOffset, setScrollOffset] = useState(0);
-  const [isAnimationComplete, setIsAnimationComplete] = useState(false);
+  const [isAnimationComplete, setIsAnimationComplete] = useState(true);
   const { handleScrollDown, handleScrollToTop, getScrollOffset } = props;
 
   // viewRefs.current to access the list
@@ -47,64 +45,54 @@ function GroupTabs(props) {
     viewRefs.current = tabs.map(() => React.createRef());
   }, [tabs]);
 
-  // Move the blue view whenever activeTab or scrollOffset changed
+  // Move the blue view whenever activeTab
   useEffect(() => {
+    setIsAnimationComplete(false);
+    animateBlueSlider();
+  }, [activeTab]);
+
+  function animateBlueSlider() {
     getPosition()
-      .then((position) => {
-        Animated.spring(blueViewPosition, {
-          toValue: { x: position, y: blueViewPosition.y },
-          useNativeDriver: true,
-        }).start(() => {
-          setTimeout(() => {
-            setIsAnimationComplete(true);
-          }, 200);
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+    .then((position) => {
+      Animated.spring(blueViewPosition, {
+        toValue: { x: position, y: blueViewPosition.y },
+        useNativeDriver: true,
+        speed: 100
+      }).start(({ finished }) => {
+        if (finished) {
+          setIsAnimationComplete(true);
+        }
       });
-  }, [activeTab, scrollOffset]);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  }
+
+  useEffect(() => {
+    setIsAnimationComplete(true)
+  }, [])
 
   function getPosition() {
-    // measureInWindow worked better in Android and measure worked better on iOS
-    if (Platform.OS === "ios") {
-      return new Promise((resolve, reject) => {
-        for (let index = 0; index < tabs.length; index++) {
-          if (tabs[index] == activeTab && viewRefs.current[index].current) {
-            let position;
-            viewRefs.current[index].current.measure(
-              (x, y, width, height, pageX, pageY) => {
-                position = x + width / 2 - scrollOffset - blueViewWidth / 2 + 3;
-                resolve(position);
-              }
-            );
-            return;
-          }
+    return new Promise((resolve, reject) => {
+      for (let index = 0; index < tabs.length; index++) {
+        if (tabs[index] == activeTab && viewRefs.current[index].current) {
+          viewRefs.current[index].current.measure(
+            (x, y, width, height, pageX, pageY) => {
+              const tabCenter = pageX + width / 2;
+              const position = tabCenter - (blueViewWidth / 2);
+              resolve(position);
+            }
+          );
+          return;
         }
-        reject(new Error("Could not find active tab or view ref"));
-      });
-    } else {
-      return new Promise((resolve, reject) => {
-        for (let index = 0; index < tabs.length; index++) {
-          if (tabs[index] == activeTab && viewRefs.current[index].current) {
-            let position;
-            viewRefs.current[index].current.measureInWindow(
-              (x, y, width, height, pageX, pageY) => {
-                position = x + width / 2 - scrollOffset - blueViewWidth / 2 + 5;
-                resolve(position);
-              }
-            );
-            return;
-          }
-        }
-        reject(new Error("Could not find active tab or view ref"));
-      });
-    }
+      }
+      reject(new Error("Could not find active tab or view ref"));
+    });
   }
 
   function selectTab(tab) {
     setActiveTab(tab);
-    setIsAnimationComplete(false);
   }
 
   function handleScroll(event) {
@@ -120,6 +108,7 @@ function GroupTabs(props) {
           horizontal
           showsHorizontalScrollIndicator={false}
           scrollEventThrottle={100}
+          
           onScroll={handleScroll}
         >
           <View style={styles.innerTabView}>
@@ -145,7 +134,7 @@ function GroupTabs(props) {
                     </Text>
                   </View>
 
-                  {activeTab.name == tab.name && (
+                  {activeTab.name === tab.name && (
                     <View
                       style={[
                         styles.staticBlueView,
@@ -195,12 +184,12 @@ const styles = StyleSheet.create({
   },
   tabText: {
     fontWeight: "600",
-    paddingLeft: tabTextPadding,
-    paddingRight: tabTextPadding,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
   tabScrollView: {
-    marginLeft: tabGroupMargin,
-    marginRight: tabGroupMargin,
+    marginLeft: 5,
+    marginRight: 5,
   },
   innerTabView: {
     flexDirection: "row",
