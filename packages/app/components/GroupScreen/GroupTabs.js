@@ -42,7 +42,9 @@ function GroupTabs(props) {
       Animated.spring(blueViewPosition, {
         toValue: { x: position, y: blueViewPosition.y },
         useNativeDriver: true,
-        speed: 100
+        speed: 100,
+        restSpeedThreshold: 100, 
+        restDisplacementThreshold: 40
       }).start(({ finished }) => {
         if (finished) {
           setIsAnimationComplete(true);
