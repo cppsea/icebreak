@@ -1,5 +1,4 @@
 import React, { useRef, useState, useEffect } from "react";
-import { LogBox, Platform } from "react-native";
 import {
   View,
   Text,
@@ -9,32 +8,18 @@ import {
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import EventsScreen from "../../screens/group/tabs/EventsScreen";
-import MembersScreen from "../../screens/group/tabs/MembersScreen";
-import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
-import AboutScreen from "../../screens/group/tabs/AboutScreen";
-import NewsletterScreen from "../../screens/group/tabs/NewsletterScreen";
-
-const tabs = [
-  { name: "Events", screen: EventsScreen },
-  { name: "Members", screen: MembersScreen },
-  { name: "Leaderboard", screen: LeaderboardScreen },
-  { name: "About", screen: AboutScreen },
-  { name: "Newsletter", screen: NewsletterScreen },
-];
 
 const blueViewWidth = 60;
-let firstTabViewRef = React.createRef();
 const blueViewPosition = new Animated.ValueXY({
-  x: 0,
+  x: 30,
   y: -1,
 });
 
 function GroupTabs(props) {
-  const [activeTab, setActiveTab] = useState(tabs[0]);
+  
   const [scrollOffset, setScrollOffset] = useState(0);
   const [isAnimationComplete, setIsAnimationComplete] = useState(true);
-  const { handleScrollDown, handleScrollToTop, getScrollOffset } = props;
+  const { selectTab, tabs, activeTab } = props
 
   // viewRefs.current to access the list
   // viewRefs.current[index].current to access the view
@@ -69,6 +54,7 @@ function GroupTabs(props) {
     });
   }
 
+  // Set starting position for Blue View
   useEffect(() => {
     setIsAnimationComplete(true)
   }, [])
@@ -91,10 +77,6 @@ function GroupTabs(props) {
     });
   }
 
-  function selectTab(tab) {
-    setActiveTab(tab);
-  }
-
   function handleScroll(event) {
     setScrollOffset(event.nativeEvent.contentOffset.x);
   }
@@ -107,8 +89,7 @@ function GroupTabs(props) {
           style={styles.tabScrollView}
           horizontal
           showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={100}
-          
+          scrollEventThrottle={16}
           onScroll={handleScroll}
         >
           <View style={styles.innerTabView}>
@@ -162,16 +143,6 @@ function GroupTabs(props) {
 
         <View style={styles.bottomBorder} />
       </View>
-
-      {activeTab.screen && (
-        <activeTab.screen
-          testID="tab"
-          style={styles.screen}
-          handleScrollDown={handleScrollDown}
-          handleScrollToTop={handleScrollToTop}
-          getScrollOffset={getScrollOffset}
-        />
-      )}
     </View>
   );
 }
@@ -214,9 +185,7 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#E4E4E4",
   },
-  screen: {
-    flex: 1,
-  },
+
 });
 
 export default GroupTabs;

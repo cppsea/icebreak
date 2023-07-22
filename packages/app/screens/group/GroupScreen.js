@@ -1,75 +1,66 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader.js";
 import GroupTabs from "../../components/GroupScreen/GroupTabs.js";
 import Screen from "@app/components/Screen";
 import { Animated, StyleSheet, View } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
+
+import EventsScreen from "../../screens/group/tabs/EventsScreen";
+import MembersScreen from "../../screens/group/tabs/MembersScreen";
+import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
+import AboutScreen from "../../screens/group/tabs/AboutScreen";
+import NewsletterScreen from "../../screens/group/tabs/NewsletterScreen";
+
+const tabs = [
+  { name: "Events", screen: EventsScreen },
+  { name: "Members", screen: MembersScreen },
+  { name: "Leaderboard", screen: LeaderboardScreen },
+  { name: "About", screen: AboutScreen },
+  { name: "Newsletter", screen: NewsletterScreen },
+];
 
 function GroupScreen() {
+  const tabRef = useRef(null);
   const [scrollOffset, setScrollOffset] = useState(0);
-  const [headerOffset, setHeaderOffset] = useState(new Animated.Value(0));
-  const [viewHeight, setViewHeight] = useState(0);
+  const [activeTab, setActiveTab] = useState(tabs[0]);
 
-  function handleViewLayout(event) {
-    const { height } = event.nativeEvent.layout;
-    setViewHeight(height);
-  }
 
-  function collapseAnimation() {
-    Animated.timing(headerOffset, {
-      toValue: -viewHeight,
-      duration: 100,
-      useNativeDriver: true,
-    }).start();
-  }
-
-  function expandAnimation() {
-    Animated.timing(headerOffset, {
-      toValue: 0,
-      duration: 80,
-      useNativeDriver: true,
-    }).start();
-  }
-
-  // Make header expand when scrolling up past top
-  function handleScrollToTop() {
-    expandAnimation();
-  }
-
-  // Make header collapse when scrolling down
-  function handleScrollDown() {
-    collapseAnimation();
-  }
-
-  function getScrollOffset(offsetY) {
-    setScrollOffset(offsetY);
+  function handleScroll(event) {
+    const offsetY = event.nativeEvent.contentOffset.y;
+    setScrollOffset(offsetY)
   }
 
   const styles = StyleSheet.create({
     container: {
-      position: "relative",
-      transform: [{ translateY: headerOffset }],
+      height: "100%",
+      display: 'flex'
     },
-    header: {
-      position: "relative",
-      transform: [{ translateY: headerOffset }],
+    screen: {
+      flex: 1,
     },
   });
 
   return (
-    <Screen style={{ height: "100%" }}>
-      <Animated.View style={styles.container}>
-        <Animated.View style={styles.header} onLayout={handleViewLayout}>
-          <GroupHeader testID="groupHeader"/>
-        </Animated.View>
-        <GroupTabs
-          testID="groupTabs"
-          style={{ height: "100%", display: "flex" }}
-          handleScrollToTop={handleScrollToTop}
-          handleScrollDown={handleScrollDown}
-          getScrollOffset={getScrollOffset}
-        />
-      </Animated.View>
+    <Screen style={styles.container}>
+      <ScrollView onScroll={handleScroll} scrollEventThrottle={16} stickyHeaderIndices={[1]}>
+        <GroupHeader testID="groupHeader"/>
+        <View ref={tabRef}>
+          <GroupTabs
+            testID="groupTabs"
+            style={{ display: "flex", backgroundColor: '#F5F5F5'}}
+            tabs={tabs}
+            activeTab={activeTab}
+            selectTab={(tab) => setActiveTab(tab)}
+          />
+        </View>
+        {activeTab.screen && (
+          <activeTab.screen
+            testID="tab"
+            style={styles.screen}
+          />
+        )}
+      </ScrollView>
     </Screen>
   );
 }

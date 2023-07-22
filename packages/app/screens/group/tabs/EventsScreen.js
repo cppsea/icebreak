@@ -1,8 +1,6 @@
 import EventCard from '@app/components/EventCard/EventCard';
-import React, { useRef, useState } from 'react';
-import { View, SectionList, StyleSheet, Text, PanResponder } from 'react-native';
-import { Platform } from 'react-native';
-import { RefreshControl } from 'react-native-gesture-handler';
+import React from 'react';
+import { View, StyleSheet, Text } from 'react-native';
 
 const mockData = [
     {
@@ -21,54 +19,26 @@ const mockData = [
 
 
 function EventsScreen(props) {
-    const sectionListRef = useRef(null);
-    const {handleScrollDown, handleScrollToTop, getScrollOffset} = props;
-    const [offset, setOffset] = useState(0);
-    const [refreshing, setRefreshing] = React.useState(false);
-
-    const onRefresh = React.useCallback(() => {
-        setRefreshing(true);
-        handleScrollToTop()
-        setRefreshing(false);
-    }, [])
-
-    function handleScroll(event) {
-        const offsetY = event.nativeEvent.contentOffset.y;
-        setOffset(offsetY);
-
-        getScrollOffset(offsetY)
-
-        if (offsetY > 0) {
-            handleScrollDown()
-        }
-    }
 
     return(
         <View style={[props.style, styles.container]} testID={props.testID}>
-            <SectionList
-                testID="eventScroll"
-                ref={sectionListRef}
-                onScroll={handleScroll}
-                refreshControl={ <RefreshControl refreshing={refreshing} onRefresh={onRefresh}/> }
-                stickySectionHeadersEnabled={false}
-                sections={mockData}
-                keyExtractor={(item, index) => item + index}
-                renderItem={({item}) => (
-                    <EventCard 
-                        style={styles.card}
-                        banner={require("@app/assets/test_card_banner.png")}
-                        title="Test" 
-                        timeBegin="test"
-                        timeEnd="test"
-                        location="test"
-                        description="test"
+            {mockData.map((section) => (
+                <View key={section.title}>
+                <Text style={styles.header}>{section.title}</Text>
+                {section.data.map((item, index) => (
+                    <EventCard
+                    key={index}
+                    style={styles.card}
+                    banner={require("@app/assets/test_card_banner.png")}
+                    title="Test"
+                    timeBegin="test"
+                    timeEnd="test"
+                    location="test"
+                    description="test"
                     />
-                )}
-                renderSectionHeader={({section: {title}}) => (
-                    <Text style={styles.header}>{title}</Text>
-                )}
-            />
-            
+                ))}
+                </View>
+            ))}
         </View>
     );
 }
@@ -76,14 +46,12 @@ function EventsScreen(props) {
 const styles = StyleSheet.create({
     container: {
         margin: 10,
-        paddingBottom: 350
     },
     header: {
         fontSize: 20,
         color: '#2C2C2C',
         fontWeight: '700',
-        backgroundColor: '',
-        margin: 5
+        backgroundColor: '#F5F5F5',
     },
     card: {
         marginTop: 10,
