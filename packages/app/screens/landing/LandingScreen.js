@@ -33,7 +33,7 @@ import Constants from "expo-constants";
 WebBrowser.maybeCompleteAuthSession();
 
 
-function LandingScreen({ navigation }) {
+function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
 
 
@@ -80,7 +80,7 @@ function LandingScreen({ navigation }) {
   }
 
   // State to change the variable with the TextInput
-  const [inputs, setInputs] = React.useState({ email: "", password: "" });
+  const [inputs, setInputs] = React.useState({ email: route.params?.email ?? "", password: "" });
   const [errors, setErrors] = React.useState({});
 
   const isValidEmail = (email) => {
@@ -118,10 +118,13 @@ function LandingScreen({ navigation }) {
   const login = async () => {
     console.log(`Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/login`)
     try {
+      
       const response = await axios.post(`${ENDPOINT}/auth/login`, {
         email: inputs.email,
         password: inputs.password
       });
+      
+      
 
       if (response?.data.success) {
         console.log("Data: " + response.data.newToken);
@@ -130,10 +133,12 @@ function LandingScreen({ navigation }) {
           isLoggedIn: true,
           data: response.data.newToken,
         });
+      } else {
+        console.log(response?.data.message)
       }
 
     } catch (error) {
-      console.log(error);
+      console.log(error.toString());
     }
   };
 
@@ -241,7 +246,7 @@ function LandingScreen({ navigation }) {
           testID="signupButton"
           onPress={
             () => {
-              navigation.navigate("SignUpScreen")
+              navigation.navigate("SignUpScreen", { email: inputs.email })
             }
           }>
           <Text style={styles.textButton}>Sign Up.</Text>
