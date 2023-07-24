@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-export default styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     input: {
         height: 40,
         margin: 6,

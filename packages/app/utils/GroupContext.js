@@ -1,4 +1,7 @@
 import React, { createContext, useState } from 'react';
+import { Alert } from 'react-native';
+import axios from 'axios';
+import { ENDPOINT } from './constants';
 
 export const GroupContext = createContext();
 
@@ -7,23 +10,23 @@ export function GroupProvider({ children }) {
   const [title, setTitle] = useState("");
   const [handler, setHandler] = useState("");
   const [description, setDescription] = useState("");
-  const [banner, setBanner] = useState("");
-  const [icon, setIcon] = useState("");
+  const [bannerUrl, setBanner] = useState("");
+  const [iconUrl, setIcon] = useState("");
 
   // 2nd SCREEN INPUTS
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState([]);
-  const [website, setWebsite] = useState("");
+  const [websiteUrl, setWebsite] = useState("");
   const [location, setLocation] = useState("");
   const [isInviteOnly, setIsInviteOnly] = useState(false);
   
   // 3rd SCREEN INPUTS
-  const [twitterLink, setTwitterLink] = useState("");
-  const [facebookLink, setFacebookLink] = useState("");
-  const [instagramLink, setInstagramLink] = useState("");
-  const [discordLink, setDiscordLink] = useState("");
-  const [linkedInLink, setLinkedInLink] = useState("");
-  const [githubLink, setGithubLink] = useState("");
+  const [twitterUrl, setTwitterLink] = useState("");
+  const [facebookUrl, setFacebookLink] = useState("");
+  const [instagramUrl, setInstagramLink] = useState("");
+  const [discordUrl, setDiscordLink] = useState("");
+  const [linkedinUrl, setLinkedInLink] = useState("");
+  const [githubUrl, setGithubLink] = useState("");
 
   const resetForm = () => {
     setTitle("");
@@ -47,13 +50,37 @@ export function GroupProvider({ children }) {
 
   };
 
-  const submitForm = () => {
-    // Perform submission logic here
-    // Access the form variables (title, handler, description, etc.) and submit them
-    // You can also pass them to an API call or save them to a database
-    // After submission, you can reset the form if needed
+  const submitForm = async () => {
+    try {
+      const formData = {
+        title,
+        handler,
+        description,
+        category,
+        bannerUrl,
+        iconUrl,
+        location,
+        websiteUrl,
+        tags,
+        twitterUrl,
+        facebookUrl,
+        instagramUrl,
+        discordUrl,
+        linkedinUrl,
+        githubUrl,
+        isInviteOnly,
+      };
+      const response = await axios.post(`${ENDPOINT}/guilds/insert`, formData);
 
-    resetForm();
+      Alert.alert('Success', 'Group created successfully!');
+      console.log("error");
+
+      resetForm();
+    } catch (error) {
+      // handle errors
+      Alert.alert('Error', 'Failed to create group.');
+      console.error('Error submitting form:', error);
+    }
   };
 
   return (
@@ -62,21 +89,21 @@ export function GroupProvider({ children }) {
         title, setTitle,
         handler, setHandler,
         description, setDescription,
-        banner, setBanner,
-        icon, setIcon,
+        banner: bannerUrl, setBanner,
+        icon: iconUrl, setIcon,
 
         category, setCategory,
         tags, setTags,
-        website, setWebsite,
+        website: websiteUrl, setWebsite,
         location, setLocation,
         isInviteOnly, setIsInviteOnly,
 
-        twitterLink, setTwitterLink,
-        facebookLink, setFacebookLink,
-        instagramLink, setInstagramLink,
-        discordLink, setDiscordLink,
-        linkedInLink, setLinkedInLink,
-        githubLink, setGithubLink,
+        twitterLink: twitterUrl, setTwitterLink,
+        facebookLink: facebookUrl, setFacebookLink,
+        instagramLink: instagramUrl, setInstagramLink,
+        discordLink: discordUrl, setDiscordLink,
+        linkedInLink: linkedinUrl, setLinkedInLink,
+        githubLink: githubUrl, setGithubLink,
 
         resetForm,
         submitForm,
