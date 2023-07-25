@@ -129,11 +129,19 @@ router.post("/register", async (request, response) => {
   try {
     const { email, password } = request.body;
 
-    if (email == undefined || password == undefined) {
+    if (email == undefined) {
       return response.status(400).json({
         status: "fail",
         data: {
           email: "Email not provided",
+        },
+      });
+    }
+
+    if (password === undefined) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
           password: "Password not provided",
         },
       });
