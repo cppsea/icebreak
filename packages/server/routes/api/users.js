@@ -7,10 +7,15 @@ const AuthController = require("../../controllers/auth");
 router.get("/", async (request, response) => {
   try {
     const users = await UserController.getAllUsers();
-    response.send(users);
+    response.send({
+      status: "success",
+      data: {
+        users,
+      },
+    });
   } catch (error) {
     response.send({
-      success: false,
+      status: "error",
       message: error.message,
     });
   }
@@ -21,14 +26,28 @@ router.get(
   AuthController.authenticate,
   async (request, response) => {
     try {
-      console.log("@user", request.user);
       const { userId } = request.params;
+
+      if (userId === undefined) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            userId: "User ID not provided",
+          },
+        });
+      }
+
       const user = await UserController.getUser(userId);
-      response.send(user);
+      response.send({
+        status: "success",
+        data: {
+          user: user,
+        },
+      });
     } catch (error) {
       response.status(403).send({
+        status: "error",
         message: error.message,
-        success: false,
       });
     }
   }

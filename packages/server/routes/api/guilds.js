@@ -1,28 +1,21 @@
 const express = require("express");
 const router = express.Router();
 
-const GuildController = require("../../controllers/guild");
+const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
-router.get("/", async (request, response) => {
+router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     const guilds = await GuildController.getAllGuilds();
-    response.send(guilds);
-  } catch (error) {
     response.send({
-      success: false,
-      message: error.message,
+      status: "success",
+      data: {
+        guilds,
+      },
     });
-  }
-});
-
-router.get("/insert", async (request, response) => {
-  try {
-    const newGuild = await GuildController.insertGuild();
-    response.send(newGuild);
   } catch (error) {
     response.send({
-      success: false,
+      status: "error",
       message: error.message,
     });
   }
@@ -33,14 +26,28 @@ router.get(
   AuthController.authenticate,
   async (request, response) => {
     try {
-      console.log("@user", request.user);
       const { guildId } = request.params;
+
+      if (guildId === undefined) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Guild ID not provided",
+          },
+        });
+      }
+
       const guild = await GuildController.getGuild(guildId);
-      response.send(guild);
+      response.send({
+        status: "success",
+        data: {
+          guild,
+        },
+      });
     } catch (error) {
       response.status(403).send({
+        status: "error",
         message: error.message,
-        success: false,
       });
     }
   }

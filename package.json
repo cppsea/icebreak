@@ -18,7 +18,7 @@
     "server:test": "yarn workspace server test",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
-    "dev": "node ./scripts/run.js && npx prisma generate"
+    "dev": "node ./scripts/run.js"
   },
   "description": "organization engagement platform",
   "main": "index.js",

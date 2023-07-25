@@ -1,7 +1,6 @@
 const { OAuth2Client } = require("google-auth-library");
 const { v5: uuidv5 } = require("uuid");
-const postgres = require("../utils/postgres");
-const prisma = require("../utils/prisma");
+const prisma = require("../prisma/prisma");
 const token = require("../utils/token");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 
@@ -12,22 +11,15 @@ async function create(accessToken, refreshToken, profile, callback) {
     let { sub, given_name, family_name, picture, email } = profile._json;
     picture = picture.replace("=s96-c", "");
     const googleUUID = uuidv5(sub, NAMESPACE);
-    // const { rows } = await postgres.query(`SELECT * FROM Users WHERE user_id='${googleUUID}'`);
     const user = await prisma.users.findUniqueOrThrow({
       where: {
-        userId: id,
+        userId: googleUUID,
       },
     });
-    // if (rows.length < 1) {
     if (!user) {
-      // const createUser = await postgres.query(`
-      //   INSERT INTO Users (user_id, email, avatar, first_name, last_name)
-      //   VALUES ('${googleUUID}', '${email}', '${picture}', '${given_name}', '${family_name}')
-      //   RETURNING *
-      // `);
       const newUser = await prisma.users.create({
         data: {
-          userId: id,
+          userId: googleUUID,
           email: email,
           avatar: picture,
           firstName: given_name,
@@ -35,11 +27,9 @@ async function create(accessToken, refreshToken, profile, callback) {
         },
       });
       console.log("user doesn't exist. create one");
-      // callback(null, createUser.rows[0]);
       callback(null, newUser);
     } else {
       console.log("user exists");
-      // callback(null, rows[0]);
       callback(null, user);
     }
   } catch (error) {
@@ -58,27 +48,17 @@ async function authenticateWithGoogle(token) {
   const { sub, email, given_name, family_name, picture } = payload;
   const googleUUID = uuidv5(sub, NAMESPACE);
   console.log("@payload", payload);
-  // const { rows } = await postgres.query(
-  //   `SELECT * FROM Users WHERE user_id='${googleUUID}'`
-  // );
   const user = await prisma.users.findUnique({
     where: {
-      userId: id,
+      userId: googleUUID,
     },
   });
 
   // if the query returns a row, there's a user with the existing userId.
-  // if (rows.length < 1) {
   if (!user) {
-    // const createUser = await postgres.query(`
-    //   INSERT INTO Users (user_id, email, avatar, first_name, last_name)
-    //   VALUES ('${googleUUID}', '${email}', '${picture}', '${given_name}', '${family_name}')
-    //   RETURNING *
-    // `);
-
     const newUser = await prisma.users.create({
       data: {
-        userId: id,
+        userId: googleUUID,
         email: email,
         avatar: picture,
         firstName: given_name,
@@ -86,10 +66,8 @@ async function authenticateWithGoogle(token) {
       },
     });
 
-    // return createUser.rows[0];
     return newUser;
   } else {
-    // return rows[0];
     return user;
   }
 }
@@ -126,18 +104,12 @@ async function deserialize(id, callback) {
   try {
     console.log("deserializeUser");
     console.log("id", id);
-    // const user = await postgres.query(
-    //   `select * from users where user_id='${id}'`
-    // );
     const user = await prisma.users.findUniqueOrThrow({
       where: {
         userId: id,
       },
     });
-    // if (user.rows) {
     if (user) {
-      // console.log(user.rows[0]);
-      // callback(null, user.rows[0]);
       console.log(user);
       callback(null, user);
     }
