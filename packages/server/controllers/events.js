@@ -2,7 +2,7 @@ const { postgres } = require("../utils/postgres");
 
 async function getAllEvents() {
   const query = await postgres.query(
-    "SELECT * FROM event ORDER BY event_id ASC"
+    "SELECT * FROM events ORDER BY event_id ASC"
   );
   return query.rows;
 }
@@ -17,14 +17,14 @@ async function getEvents(limit, action, eventId) {
       // for better visibility
       query = await postgres.query(
         `WITH prev_events AS (
-          SELECT * FROM event WHERE event_id < '${eventId}' ORDER BY event_id
+          SELECT * FROM events WHERE event_id < '${eventId}' ORDER BY event_id
           DESC LIMIT ${limit})
         SELECT * FROM prev_events ORDER BY event_id ASC`
       );
       break;
     case "next":
       query = await postgres.query(
-        `SELECT * FROM event WHERE event_id > '${eventId}' ORDER BY event_id
+        `SELECT * FROM events WHERE event_id > '${eventId}' ORDER BY event_id
         ASC LIMIT ${limit}`
       );
       break;
@@ -32,7 +32,7 @@ async function getEvents(limit, action, eventId) {
     case undefined:
     default:
       query = await postgres.query(
-        `SELECT * FROM event ORDER BY event_id ASC LIMIT ${limit}`
+        `SELECT * FROM events ORDER BY event_id ASC LIMIT ${limit}`
       );
       break;
   }
@@ -41,7 +41,7 @@ async function getEvents(limit, action, eventId) {
 }
 
 async function getPages(limit) {
-  const query = await postgres.query("SELECT COUNT(*) FROM event");
+  const query = await postgres.query("SELECT COUNT(*) FROM events");
   let { count: totalEvents } = query.rows[0];
   const totalPages = Math.ceil(parseInt(totalEvents) / limit);
   return totalPages;
