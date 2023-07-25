@@ -5,23 +5,6 @@ const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
 const DEFAULT_EVENT_LIMIT = 10;
 
-router.get("/all-events", async (request, response) => {
-  try {
-    const events = await EventController.getAllEvents();
-    response.send({
-      status: "success",
-      data: {
-        events: events,
-      },
-    });
-  } catch (error) {
-    response.send({
-      status: "error",
-      message: error.message,
-    });
-  }
-});
-
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
@@ -30,11 +13,16 @@ router.get("/all-events", async (request, response) => {
  */
 router.get(
   "/pages/:cursor?",
-  // AuthController.authenticate,
+  AuthController.authenticate,
   async (request, response) => {
     try {
       if (request.query.limit && isNaN(request.query.limit)) {
-        throw new Error("Query limit parameter must be a number");
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            limit: "Total event limit for a page must be a number",
+          },
+        });
       }
 
       const eventLimit = parseInt(request.query.limit) || DEFAULT_EVENT_LIMIT;
@@ -106,7 +94,6 @@ router.get(
   AuthController.authenticate,
   async (request, response) => {
     try {
-      console.log("@user", request.user);
       const { eventId } = request.params;
       const event = await EventController.getEvent(eventId);
       response.send({

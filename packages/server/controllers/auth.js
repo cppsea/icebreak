@@ -12,11 +12,11 @@ async function create(accessToken, refreshToken, profile, callback) {
     picture = picture.replace("=s96-c", "");
     const googleUUID = uuidv5(sub, NAMESPACE);
     const { rows } = await postgres.query(
-      `SELECT * FROM Users WHERE user_id='${googleUUID}'`
+      `SELECT * FROM users WHERE user_id='${googleUUID}'`
     );
     if (rows.length < 1) {
       const createUser = await postgres.query(`
-        INSERT INTO Users (user_id, email, avatar, first_name, last_name)
+        INSERT INTO users (user_id, email, avatar, first_name, last_name)
         VALUES ('${googleUUID}', '${email}', '${picture}', '${given_name}', '${family_name}')
         RETURNING *
       `);
@@ -43,13 +43,13 @@ async function authenticateWithGoogle(token) {
   const googleUUID = uuidv5(sub, NAMESPACE);
   console.log("@payload", payload);
   const { rows } = await postgres.query(
-    `SELECT * FROM Users WHERE user_id='${googleUUID}'`
+    `SELECT * FROM users WHERE user_id='${googleUUID}'`
   );
 
   // if the query returns a row, there's a user with the existing userId.
   if (rows.length < 1) {
     const createUser = await postgres.query(`
-      INSERT INTO Users (user_id, email, avatar, first_name, last_name)
+      INSERT INTO users (user_id, email, avatar, first_name, last_name)
       VALUES ('${googleUUID}', '${email}', '${picture}', '${given_name}', '${family_name}')
       RETURNING *
     `);

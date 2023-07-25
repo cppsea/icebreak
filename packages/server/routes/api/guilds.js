@@ -1,16 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const UserController = require("../../controllers/users");
+const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
 router.get("/", async (request, response) => {
   try {
-    const users = await UserController.getAllUsers();
+    const guilds = await GuildController.getAllGuilds();
     response.send({
       status: "success",
       data: {
-        users,
+        guilds,
       },
     });
   } catch (error) {
@@ -22,26 +22,26 @@ router.get("/", async (request, response) => {
 });
 
 router.get(
-  "/:userId",
+  "/:guildId",
   AuthController.authenticate,
   async (request, response) => {
     try {
-      const { userId } = request.params;
+      const { guildId } = request.params;
 
-      if (userId === undefined) {
+      if (guildId === undefined) {
         return response.status(400).json({
           status: "fail",
           data: {
-            userId: "User ID not provided",
+            guildId: "Guild ID not provided",
           },
         });
       }
 
-      const user = await UserController.getUser(userId);
+      const guild = await GuildController.getGuild(guildId);
       response.send({
         status: "success",
         data: {
-          user: user,
+          guild,
         },
       });
     } catch (error) {

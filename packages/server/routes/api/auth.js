@@ -31,7 +31,12 @@ router.post("/verify", async (request, response) => {
   try {
     const { accessToken } = request.body;
     if (accessToken == undefined) {
-      throw new Error("AccessToken isn't defined in body.");
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          accessToken: "Access token not provided.",
+        },
+      });
     }
 
     const { payload } = await client.verifyIdToken({
@@ -125,13 +130,12 @@ router.post("/register", async (request, response) => {
     const { email, password } = request.body;
 
     if (email == undefined || password == undefined) {
-      return response.status(400).send({
+      return response.status(400).json({
         status: "fail",
         data: {
           email: "Email not provided",
           password: "Password not provided",
         },
-        message: "Validation error.",
       });
     }
 
@@ -139,14 +143,24 @@ router.post("/register", async (request, response) => {
 
     if (!emailRegex.test(email)) {
       // check if email is valid, doesn't include or no spaces
-      throw new Error("Email is invalid.");
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "Invalid email was provided",
+        },
+      });
     }
 
     const requestedUser = await user.getUserByEmail(email);
 
     if (requestedUser?.email === email) {
       // check if email is already in the database
-      throw new Error("User already exists with this email.");
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "A user with this email already exists.",
+        },
+      });
     }
 
     const saltRounds = 10;
@@ -186,14 +200,21 @@ router.post("/login", async (request, response) => {
     // get user input
     const { email, password } = request.body;
 
-    if (email == undefined || password == undefined) {
-      return response.status(400).send({
+    if (email == undefined) {
+      return response.status(400).json({
         status: "fail",
         data: {
           email: "Email not provided",
+        },
+      });
+    }
+
+    if (password == undefined) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
           password: "Password not provided",
         },
-        message: "Validation error.",
       });
     }
 
@@ -201,14 +222,24 @@ router.post("/login", async (request, response) => {
 
     if (!emailRegex.test(email)) {
       // check if email is valid, doesn't include or no spaces
-      throw new Error("Email is invalid.");
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "Invalid email provided",
+        },
+      });
     }
 
     const requestedUser = await user.getUserByEmail(email);
 
     if (requestedUser?.email !== email) {
       // check if email is in the database
-      throw new Error("Email does not exist.");
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "A user with that email does not exist.",
+        },
+      });
     }
 
     const isValidPassword = await bcrypt.compare(
@@ -230,7 +261,6 @@ router.post("/login", async (request, response) => {
         data: {
           password: "Incorrect password",
         },
-        message: "Validation error.",
       });
     }
   } catch (error) {
