@@ -47,7 +47,6 @@ async function authenticateWithGoogle(token) {
   // Check if this user already exist on our database.
   const { sub, email, given_name, family_name, picture } = payload;
   const googleUUID = uuidv5(sub, NAMESPACE);
-  console.log("@payload", payload);
   const user = await prisma.users.findUnique({
     where: {
       userId: googleUUID,

@@ -82,11 +82,11 @@ router.get("/user", AuthController.authenticate, (request, response) => {
 router.post("/google", AuthController.login, async (request, response) => {
   try {
     const {
-      user_id,
-      joined_date,
-      last_login,
-      first_name,
-      last_name,
+      userId,
+      joinedDate,
+      lastLogin,
+      firstName,
+      lastName,
       email,
       avatar,
     } = request.user;
@@ -95,13 +95,13 @@ router.post("/google", AuthController.login, async (request, response) => {
       status: "success",
       data: {
         user: {
-          userId: user_id,
-          firstName: first_name,
-          lastName: last_name,
-          avatar: avatar,
-          email: email,
-          joinedDate: joined_date,
-          lastLogin: last_login,
+          userId,
+          firstName,
+          lastName,
+          avatar,
+          email,
+          joinedDate,
+          lastLogin,
         },
       },
     });
@@ -125,7 +125,7 @@ router.get(
   }
 );
 
-// TODO: implement in separate branch
+// TODO: implement in separate fix branch
 router.post("/register", async (request, response) => {
   try {
     const { email, password } = request.body;

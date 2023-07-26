@@ -4,7 +4,7 @@ const router = express.Router();
 const UserController = require("../../controllers/users");
 const AuthController = require("../../controllers/auth");
 
-router.get("/", async (request, response) => {
+router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     const users = await UserController.getAllUsers();
     response.send({
