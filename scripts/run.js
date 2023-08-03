@@ -65,10 +65,9 @@ if (systemType === "win32") {
 newTerminal(`ngrok http ${PORT}`);
 
 setTimeout(() => {
-  exec("curl 'http://127.0.0.1:4040/api/tunnels'", (error, stdout) => {
+  exec("curl http://127.0.0.1:4040/api/tunnels", (error, stdout) => {
     const ngrok = JSON.parse(stdout);
     const { tunnels } = ngrok;
-    console.log(ngrok);
     const { public_url } = tunnels[0];
     console.log(public_url);
     fs.access("./packages/app/utils/", (error) => {
