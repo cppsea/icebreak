@@ -4,7 +4,7 @@ const router = express.Router();
 const token = require("../../utils/token");
 const { OAuth2Client } = require("google-auth-library");
 const bcrypt = require("bcrypt");
-const uniqid = require("uniqid");
+const { v4: uuidv4 } = require("uuid");
 
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
@@ -125,6 +125,7 @@ router.get(
   }
 );
 
+// TODO: implement in separate branch
 router.post("/register", async (request, response) => {
   try {
     const { email, password } = request.body;
@@ -177,8 +178,8 @@ router.post("/register", async (request, response) => {
       bcrypt.hash(password, salt, async function (error, hash) {
         // encrypt the user password using bcrypt
 
-        // create unique User ID as bytes (18 byte)
-        const user_id = uniqid();
+        // create unique User ID as UUID
+        const user_id = uuidv4();
 
         await postgres.query(`
           INSERT INTO users (user_id, first_name, last_name, email, avatar, password)

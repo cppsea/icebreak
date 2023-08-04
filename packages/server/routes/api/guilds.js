@@ -4,7 +4,7 @@ const router = express.Router();
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
-router.get("/", async (request, response) => {
+router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     const guilds = await GuildController.getAllGuilds();
     response.send({

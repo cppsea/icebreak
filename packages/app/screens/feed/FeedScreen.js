@@ -26,7 +26,6 @@ function FeedScreen() {
 
   const getEvents = async () => {
     const token = await SecureStore.getValueFor("token");
-    console.log("@token", token);
     const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
       withCredentials: true,
       headers: {
@@ -37,7 +36,7 @@ function FeedScreen() {
     const serializeEvents = response.data.events.map((event) => {
       return {
         ...event,
-        key: event.event_id,
+        key: event.eventId,
       };
     });
 
