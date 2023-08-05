@@ -36,7 +36,7 @@ function FeedScreen() {
     const serializeEvents = response.data.events.map((event) => {
       return {
         ...event,
-        key: event.event_id,
+        key: event.eventId,
       };
     });
 

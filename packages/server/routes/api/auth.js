@@ -131,6 +131,7 @@ router.get(
   }
 );
 
+// TODO: implement in separate branch
 router.post("/register", async (request, response) => {
   try {
     const { email, password } = request.body;

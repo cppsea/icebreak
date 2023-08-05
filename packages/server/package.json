@@ -12,6 +12,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@prisma/client": "^5.0.0",
     "bcrypt": "^5.1.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
@@ -24,6 +25,7 @@
     "passport": "^0.6.0",
     "passport-google-oauth20": "^2.0.0",
     "pg": "^8.8.0",
+    "prisma": "^5.0.0",
     "redis": "^4.6.7",
     "uniqid": "^5.4.0",
     "uuid": "^9.0.0"

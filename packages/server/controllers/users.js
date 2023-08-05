@@ -1,22 +1,26 @@
-const { postgres } = require("../utils/postgres");
+const prisma = require("../prisma/prisma");
 
 async function getAllUsers() {
-  const query = await postgres.query("SELECT * FROM users");
-  return query.rows;
+  const query = await prisma.users.findMany();
+  return query;
 }
 
 async function getUser(userId) {
-  const query = await postgres.query(
-    `SELECT * FROM users WHERE user_id='${userId}'`
-  );
-  return query.rows[0];
+  const query = await prisma.users.findFirst({
+    where: {
+      userId: userId,
+    },
+  });
+  return query;
 }
 
 async function getUserByEmail(email) {
-  const query = await postgres.query(
-    `SELECT * FROM users WHERE email='${email}'`
-  );
-  return query.rows[0];
+  const query = await prisma.users.findFirst({
+    where: {
+      email: email,
+    },
+  });
+  return query;
 }
 
 module.exports = {
