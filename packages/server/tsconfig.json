@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "outDir": "./build",
+    "allowJs": true,
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "target": "ES6"
+  },
+  "include": [
+    "./controllers/**/*",
+    "./routes/**/*",
+    "./utils/**/*",
+    "./index.js"
+  ]
+}

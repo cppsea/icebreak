@@ -1,5 +1,5 @@
 // const postgres = require("../utils/postgres");
-const prisma = require("../prisma/prisma");
+const prisma = require("../utils/prisma");
 
 async function getAllEvents() {
   return prisma.event.findMany();

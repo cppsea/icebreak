@@ -1,6 +1,6 @@
 const { OAuth2Client } = require("google-auth-library");
 const { v5: uuidv5 } = require("uuid");
-const prisma = require("../prisma/prisma");
+const prisma = require("../utils/prisma");
 const token = require("../utils/token");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 

@@ -7,7 +7,7 @@ datasource db {
   url      = env("DB_URL")
 }
 
-model users {
+model User {
   userId          String            @id @map("user_id") @db.Uuid
   joinedDate      DateTime?         @map("joined_date") @db.Timestamp(6)
   lastLogin       DateTime?         @map("last_login") @db.Timestamp(6)
@@ -16,21 +16,23 @@ model users {
   email           String            @unique @db.VarChar(255)
   avatar          String?           @db.VarChar(255)
   password        String?           @db.VarChar(255)
-  eventAttendees  eventAttendees[]
-  guildMembers    guildMembers[]
+  eventAttendees  EventAttendees[]
+  guildMembers    GuildMembers[]
+
+  @@map("users")
 }
 
-model eventAttendees {
-  userId    String @db.Uuid @map("user_id")
-  eventId   String @db.Uuid @map("event_id")
-  events    events @relation(fields: [eventId], references: [eventId], onDelete: Cascade, onUpdate: NoAction, map: "fk_event")
-  attendees users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+model EventAttendees {
+  userId    String  @db.Uuid @map("user_id")
+  eventId   String  @db.Uuid @map("event_id")
+  event     Event?  @relation(fields: [eventId], references: [eventId], onDelete: Cascade, onUpdate: NoAction, map: "fk_event")
+  attendee  User?   @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
   @@id([userId, eventId])
   @@map("event_attendees")
 }
 
-model events {
+model Event {
   eventId         String            @id(map: "event_pkey") @db.Uuid @map("event_id")
   guildId         String            @db.Uuid @map("guild_id")
   title           String            @db.VarChar(255)
@@ -39,21 +41,23 @@ model events {
   endDate         DateTime?         @db.Timestamp(6) @map("end_date")
   location        String?           @db.VarChar(255)
   thumbnail       String?           @db.VarChar(255)
-  eventAttendees  eventAttendees[]
-  guilds          guilds            @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "event_guild_id_fkey")
+  eventAttendees  EventAttendees[]
+  guilds          Guild             @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "event_guild_id_fkey")
+
+  @@map("events")
 }
 
-model guildMembers {
+model GuildMembers {
   userId   String @db.Uuid @map("user_id")
   guildId  String @db.Uuid @map("guild_id")
-  guilds   guilds @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
-  members  users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+  guilds   Guild  @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
+  members  User  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
   @@id([guildId, userId], map: "users_guilds_pkey")
   @@map("guild_members")
 }
 
-model guilds {
+model Guild {
   guildId       String          @id(map: "guild_pkey") @db.Uuid @map("guild_id")
   name          String          @db.VarChar(100)
   handler       String          @db.VarChar(50)
@@ -66,6 +70,6 @@ model guilds {
   icon          String?         @db.VarChar(255)
   media         String[]
   isInviteOnly  Boolean         @map("invite_only")
-  events        events[]
-  members       guildMembers[]
+  events        Event[]
+  members       GuildMembers[]
 }

@@ -1,7 +1,19 @@
 {
+  "root": true,
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "sourceType": "module",
+    "sourceType": "script",
     "ecmaVersion": 2023
   },
-  "extends": "prettier"
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "node": true,
+    "amd": true
+  },
+  "rules": {},
+  "extends": [
+    "prettier",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ]
 }
