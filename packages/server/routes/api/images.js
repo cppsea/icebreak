@@ -77,7 +77,7 @@ router.put("/:type", AuthController.authenticate, async (request, response) => {
   }
 
   try {
-    const url = ImagesController.upload(imageType, imageData);
+    const url = await ImagesController.upload(imageType, imageData);
     response.status(200).json({
       status: "success",
       data: {
@@ -113,7 +113,7 @@ router.get(
     }
 
     try {
-      const s3response = ImagesController.retrieve(imageType, id);
+      const s3response = await ImagesController.retrieve(imageType, id);
       response.status(200);
       s3response.Body.pipe(response);
     } catch (err) {
