@@ -23,7 +23,7 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 app.use(passport.initialize());
 
@@ -35,7 +35,7 @@ app.use("/api/auth", auth);
 app.use("/api/users", users);
 app.use("/api/guilds", guild);
 app.use("/api/events", events);
-app.use("/api/images", images);
+app.use("/api/media/images", images);
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
