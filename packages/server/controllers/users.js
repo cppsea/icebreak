@@ -15,7 +15,7 @@ async function getUser(userId) {
 }
 
 async function getUserByEmail(email) {
-  const query = await prisma.users.findFirst({
+  const query = await prisma.users.findUnique({
     where: {
       email: email,
     },

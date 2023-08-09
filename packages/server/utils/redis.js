@@ -8,25 +8,17 @@ const redisClient = new redis({
 });
 
 // Function to check if a token is valid by verifying its absence in the Redis set
-function isTokenValid(token, callback) {
-  redisClient.sismember("token_blacklist", token, (error, result) => {
-    if (error) {
-      callback(error);
-    } else {
-      callback(null, result);
-    }
-  });
+async function checkInvalidToken(token) {
+  const isMember = await redisClient.sismember("token_blacklist", token);
+  if (isMember === 1) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
-//Function to add a refresh token to the blacklist set
-function addToBlacklist(token, callback) {
-  redisClient.sadd("token_blacklist", token, (error, result) => {
-    if (error) {
-      callback(error);
-    } else {
-      callback(null, result === 1);
-    }
-  });
+async function addToTokenBlacklist(token) {
+  await redisClient.sadd("token_blacklist", token);
 }
 
 // Log any errors that occur during the Redis connection
@@ -37,6 +29,6 @@ redisClient.on("error", (error) => {
 // Export the Redis client
 module.exports = {
   redisClient,
-  isTokenValid,
-  addToBlacklist
+  checkInvalidToken,
+  addToTokenBlacklist,
 };
