@@ -28,37 +28,43 @@ import EyeOn from "@app/assets/eye-line-on";
 import * as SecureStore from "@app/utils/SecureStore";
 
 import Constants from "expo-constants";
+import DividerWithText from "@app/components/DividerWithText";
 
 WebBrowser.maybeCompleteAuthSession();
-
 
 function SignUpScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
 
   const register = async () => {
-      console.log(`Attempting Register with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/login`)
-      try {
-        const response = await axios.post(`${ENDPOINT}/auth/register`, {
-          email: inputs.email,
-          password: inputs.password
-        });
+    console.log(
+      `Attempting Register with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/login`
+    );
+    try {
+      const response = await axios.post(`${ENDPOINT}/auth/register`, {
+        email: inputs.email,
+        password: inputs.password,
+        passwordConfirmation: inputs.passwordConfirmation,
+      });
 
-        if (response?.data.success) {
-          console.log("Data: " + response.data.newToken);
-          setUser({
-            ...user,
-            isLoggedIn: true,
-            data: response.data.newToken,
-          });
-        }
-  
-      } catch (error) {
-        console.log(error.toString());
+      if (response?.data.success) {
+        console.log("Data: " + response.data.newToken);
+        setUser({
+          ...user,
+          isLoggedIn: true,
+          data: response.data.newToken,
+        });
       }
+    } catch (error) {
+      console.log(error.toString());
+    }
   };
 
-      // State to change the variable with the TextInput
-  const [inputs, setInputs] = React.useState({ email: route.params?.email ?? "", password: "" });
+  // State to change the variable with the TextInput
+  const [inputs, setInputs] = React.useState({
+    email: route.params?.email ?? "",
+    password: "",
+    passwordConfirmation: "",
+  });
   const [errors, setErrors] = React.useState({});
 
   const isValidEmail = (email) => {
@@ -83,8 +89,23 @@ function SignUpScreen({ navigation, route }) {
       isValid = false;
     }
 
+    if (!inputs.username) {
+      handleError("username", "Please enter a username.");
+      isValid = false;
+    }
+
     if (!inputs.password) {
       handleError("password", "Please enter a password.");
+      isValid = false;
+    }
+
+    if (!inputs.passwordConfirmation) {
+      handleError("passwordConfirmation", "Please confirm your password.");
+      isValid = false;
+    }
+
+    if (!(inputs.password == inputs.passwordConfirmation)) {
+      handleError("passwordConfirmation", "Passwords do not match.");
       isValid = false;
     }
 
@@ -100,83 +121,127 @@ function SignUpScreen({ navigation, route }) {
   const handleError = (inputKey, error) => {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
-  
+
   // Keeps a reference to help switch from Username input to Password input
   const refPasswordInput = useRef();
+  const refPasswordConfirmationInput = useRef();
 
   return (
-      <Screen style={styles.container}>
+    <Screen style={styles.container}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={styles.container}>
+          <Text testID="logo" style={styles.logo}>
+            icebreak
+          </Text>
+          <TextInput
+            testID="emailInput"
+            value={inputs["email"]}
+            container={{ marginBottom: 10 }}
+            style={[styles.component, styles.textInput]}
+            borderColor="#cccccc"
+            onChangeText={(text) => {
+              // whenever we type, we set email hook and clear errors
+              handleOnChange("email", text);
+              handleError("email", null);
+            }}
+            error={errors.email}
+            placeholder="Email"
+            onSubmitEditing={() => {
+              refPasswordInput.current.focus();
+              refPasswordConfirmationInput.current.focus();
+            }}
+          />
 
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <KeyboardAvoidingView
-                behavior={Platform.OS === "ios" ? "padding" : "height"}
-                style={styles.container}>
-              <Text testID="logo" style={styles.logo}>icebreak</Text>
-              <TextInput
-                testID="emailInput"
-                value={inputs["email"]}
-                container={{ marginBottom: 10 }}
-                style={[styles.component, styles.textInput]}
-                borderColor="#cccccc"
-                onChangeText={(text) => {
-                  // whenever we type, we set email hook and clear errors
-                  handleOnChange("email", text);
-                  handleError("email", null);
-                }}
-                error={errors.email}
-                placeholder="Email"
-                onSubmitEditing={() => {
-                  refPasswordInput.current.focus();
-                }}
-              />
+          <TextInput
+            testID="usernameInput"
+            value={inputs["username"]}
+            container={{ marginBottom: 10 }}
+            style={[styles.component, styles.textInput]}
+            borderColor="#cccccc"
+            onChangeText={(text) => {
+              handleOnChange("username", text);
+              handleError("username", null);
+            }}
+            error={errors.username}
+            placeholder="Username"
+            onSubmitEditing={validateInput}
+          />
 
-              <TextInput
-                testID="passwordInput"
-                value={inputs["password"]}
-                ref={refPasswordInput}
-                style={[styles.component, styles.textInput]}
-                borderColor="#cccccc"
-                onChangeText={(text) => {
-                  handleOnChange("password", text);
-                  handleError("password", null);
-                }}
-                error={errors.password}
-                password
-                placeholder="Password"
-                onSubmitEditing={validateInput}
-              />
+          <TextInput
+            testID="passwordInput"
+            value={inputs["password"]}
+            container={{ marginBottom: 10 }}
+            ref={refPasswordInput}
+            style={[styles.component, styles.textInput]}
+            borderColor="#cccccc"
+            onChangeText={(text) => {
+              handleOnChange("password", text);
+              handleError("password", null);
+            }}
+            error={errors.password}
+            password
+            placeholder="Password"
+            onSubmitEditing={validateInput}
+          />
 
-              <Button
-                testID="signupButton"
-                title="Sign Up"
-                onPress={() => {
-                  validateInput();
-                }}
-                underlayColor="#0e81c4"
-                fontColor="#ffffff"
-                fontWeight="bold"
-                style={[styles.loginButton, styles.component]}
-                textStyle={styles.boldText}
-              />
-            </KeyboardAvoidingView>
-          </TouchableWithoutFeedback>
+          <TextInput
+            testID="passwordConfirmationInput"
+            value={inputs["passwordConfirmation"]}
+            ref={refPasswordConfirmationInput}
+            style={[styles.component, styles.textInput]}
+            borderColor="#cccccc"
+            onChangeText={(text) => {
+              handleOnChange("passwordConfirmation", text);
+              handleError("passwordConfirmation", null);
+            }}
+            error={errors.passwordConfirmation}
+            password
+            placeholder="Confirm Password"
+            onSubmitEditing={validateInput}
+          />
 
-          <View style={styles.lineDivider} />
+          <Button
+            testID="signupButton"
+            title="Sign Up"
+            onPress={() => {
+              validateInput();
+            }}
+            underlayColor="#0e81c4"
+            fontColor="#ffffff"
+            fontWeight="bold"
+            style={[styles.loginButton, styles.component]}
+            textStyle={styles.boldText}
+          />
 
-          <View style={styles.signupContainer}>
-              <Text>Already have an account? </Text>
+          <DividerWithText title="OR" />
 
-              <TouchableOpacity
-              testID="signupButton"
-              onPress={
-                  () => {
-                      navigation.navigate("LandingScreen", { email: inputs.email })
-                  }
-              }>
-              <Text style={styles.textButton}>Log In.</Text>
-              </TouchableOpacity>
-          </View>
-      </Screen>
+          <Button
+            testID="googleButton"
+            title="Continue with Google"
+            underlayColor="#ebebeb"
+            onPress={() => {}} //TODO: Implement Google Sign Up
+            style={[styles.googleButton, styles.component]}
+            fontWeight="bold"
+            imageStyle={styles.imageStyle}
+            icon={<GoogleIcon height={25} />}
+          />
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+
+      <View style={styles.signupContainer}>
+        <Text>Already have an account? </Text>
+
+        <TouchableOpacity
+          testID="signupButton"
+          onPress={() => {
+            navigation.navigate("LandingScreen", { email: inputs.email });
+          }}>
+          <Text style={styles.textButton}>Log In.</Text>
+        </TouchableOpacity>
+      </View>
+    </Screen>
   );
 }
 
@@ -220,6 +285,10 @@ const styles = StyleSheet.create({
   forgotPassContainer: {
     alignSelf: "flex-end",
   },
+  googleButton: {
+    borderWidth: 1,
+    borderColor: "#a3a3a3",
+  },
   lineDivider: {
     backgroundColor: "#c4c4c4",
     height: 1,
@@ -238,6 +307,5 @@ const styles = StyleSheet.create({
     fontSize: 40,
   },
 });
-
 
 export default SignUpScreen;
