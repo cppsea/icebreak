@@ -25,6 +25,10 @@ const exampleDescription2 =
 const testURL = "https://cppsea.com";
 const testURL2 =
   "https://asdsds8dasdasdsadasdsadasdadasdasdasdasdasdsasaasdasdsadasasdasdasdasdasasdasasdasa";
+const testGithubUrl = "https://github.com"
+const testDiscordUrl = "https://discord.com"
+const testLinkedInUrl = "https://linkedin.com"
+const testInstagramUrl = "https://instagram.com"
 
 function GroupHeader(props) {
   const styles = StyleSheet.create({
@@ -50,7 +54,14 @@ function GroupHeader(props) {
         source={require("@app/assets/test-club-banner.png")}
         style={styles.bannerStyle}
       />
-      <GroupMediaIcon size={17} testID="groupMediaIcon" />
+      <GroupMediaIcon 
+        size={17} 
+        testID="groupMediaIcon" 
+        githubUrl={testGithubUrl}
+        discordUrl={testDiscordUrl}
+        linkedinUrl={testLinkedInUrl}
+        instagramUrl={testInstagramUrl}
+      />
 
       <View style={styles.textContainer}>
         <GroupIcon
