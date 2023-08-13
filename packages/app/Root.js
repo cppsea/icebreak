@@ -36,7 +36,6 @@ function App() {
 
   const currentSession = async () => {
     // automatically log in depending on which token is set in expo secure store
-
     // log in with local auth
     const localAuthToken = await SecureStore.getValueFor("local_auth_token");
     if (localAuthToken) {
