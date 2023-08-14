@@ -92,7 +92,7 @@ function CreateGroupFormScreen1({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: imageType === 'icon' ? 1 : 0.2, // Adjust quality based on image type
+      quality: 0.2,
       base64: true,
     });
   
