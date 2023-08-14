@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext} from "react";
 import {
   View,
   Text,
@@ -85,45 +85,41 @@ function CreateGroupFormScreen1({ navigation }) {
     return isValid;
   }
 
-  const selectBannerImage = async () => {
-    setBannerError('');
-    const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [3, 1],
-        quality: 1,
-        base64: true, // Enable base64 option
-      });
-
-    const { assets } = result;
-
-    if (!result.canceled) {
-        // Process the selected image
-        const { base64 } = assets[0];
-        // console.log("Banner image picked: " + base64);
-        setBanner(base64);
-    }
-  };
-
-  const selectIconImage = async () => {
-    setIconError('');
-    const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [1, 1],
-        quality: 1,
-        base64: true, // Enable base64 option
-      });
-
-    const { assets } = result;
+  const selectImage = async (imageType) => {
+    Keyboard.dismiss();
     
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: imageType === 'icon' ? 1 : 0.2, // Adjust quality based on image type
+      base64: true,
+    });
+  
+    const { assets } = result;
+  
     if (!result.canceled) {
-        // Process the selected image
-        const { base64 } = assets[0];
-        // console.log("Icon image picked: " + base64);
+      // Process the selected image
+      const { base64 } = assets[0];
+      if (imageType === 'banner') {
+        setBanner(base64);
+      } else if (imageType === 'icon') {   
         setIcon(base64);
+      }
     }
   };
+  
+  // Usage
+  const selectBannerImage = () => {
+    setBannerError('');
+    selectImage('banner');
+  };
+
+  const selectIconImage = () => {
+    setIconError(''); 
+    selectImage('icon');
+  };
+  
 
   const handleOnChangeInput = (text, setText, setError) =>
   {

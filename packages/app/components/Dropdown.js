@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 const Dropdown = ({options, value, setValue, setDropdownError}) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -29,17 +30,17 @@ const Dropdown = ({options, value, setValue, setDropdownError}) => {
       </TouchableOpacity>
 
       {isOpen && (
-        <View style={styles.optionsContainer}>
+        <ScrollView style={styles.optionsContainer}>
           {options.map((option) => (
-            <TouchableOpacity
-              key={option}
-              style={styles.optionButton}
-              onPress={() => selectOption(option)}
-            >
-              <Text style={styles.optionText}>{option}</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                key={option}
+                style={styles.optionButton}
+                onPress={() => selectOption(option)}
+              >
+                <Text style={styles.optionText}>{option}</Text>
+              </TouchableOpacity>
           ))}
-        </View>
+        </ScrollView>
       )}
     </View>
   );
@@ -63,6 +64,7 @@ const styles = StyleSheet.create({
   },
   optionsContainer: {
     marginTop: 10,
+    maxHeight: 200,
   },
   optionButton: {
     padding: 10,
