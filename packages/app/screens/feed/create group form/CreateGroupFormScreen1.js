@@ -33,10 +33,6 @@ function CreateGroupFormScreen1({ navigation }) {
   const [bannerError, setBannerError] = useState("");
   const [iconError, setIconError] = useState("");
 
-  useEffect(() => {
-    handleInputValidationScreen1();
-  }, [title, handler, description, banner, icon]);
-
   function handleInputValidationScreen1() {
     let isValid = true;
 
@@ -90,6 +86,7 @@ function CreateGroupFormScreen1({ navigation }) {
   }
 
   const selectBannerImage = async () => {
+    setBannerError('');
     const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -109,6 +106,7 @@ function CreateGroupFormScreen1({ navigation }) {
   };
 
   const selectIconImage = async () => {
+    setIconError('');
     const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
         allowsEditing: true,
@@ -126,6 +124,12 @@ function CreateGroupFormScreen1({ navigation }) {
         setIcon(base64);
     }
   };
+
+  const handleOnChangeInput = (text, setText, setError) =>
+  {
+    setText(text);
+    setError('');
+  }
 
   return (
     <ScrollView
@@ -150,7 +154,7 @@ function CreateGroupFormScreen1({ navigation }) {
             <TextInput
               value={title}
               placeholder="title"
-              onChangeText={(newText) => setTitle(newText)}
+              onChangeText={(newText) => handleOnChangeInput(newText, setTitle, setTitleError)}
               style={styles.input}
               maxLength={20}
             />
@@ -163,7 +167,7 @@ function CreateGroupFormScreen1({ navigation }) {
             <TextInput
               value={handler}
               placeholder="@unique_name"
-              onChangeText={(newText) => setHandler(newText)}
+              onChangeText={(newText) => handleOnChangeInput(newText, setHandler, setHandlerError)}
               style={styles.input}
               maxLength={15}
             />
@@ -177,7 +181,7 @@ function CreateGroupFormScreen1({ navigation }) {
             <TextInput
               value={description}
               placeholder="This is the description."
-              onChangeText={(newText) => setDescription(newText)}
+              onChangeText={(newText) => handleOnChangeInput(newText, setDescription, setDescriptionError)}
               style={styles.input}
               maxLength={150}
             />

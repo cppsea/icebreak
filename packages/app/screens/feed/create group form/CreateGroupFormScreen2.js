@@ -34,10 +34,6 @@ function CreateGroupFormScreen2({ navigation }) {
     const [websiteError, setWebsiteError] = useState("");
     const [locationError, setLocationError] = useState("");
   
-    useEffect(() => {
-      handleInputValidationScreen2();
-    }, [category, tags, location, website]);
-  
     function handleInputValidationScreen2() {
       let isValid = true;
       const websiteRegex =
@@ -68,6 +64,13 @@ function CreateGroupFormScreen2({ navigation }) {
   
       return isValid;
     }
+
+    const handleWebsiteBlur = (website, setLink) => {
+      // Add 'https://' if it's not already present and not typed by the user
+      if (!website.startsWith('https://') && website !== '') {
+        setLink('https://' + website);
+      }
+    };
   
     return (
       <ScrollView
@@ -90,6 +93,7 @@ function CreateGroupFormScreen2({ navigation }) {
                 options={categoryOptions}
                 value={category}
                 setValue={setCategory}
+                setDropdownError={setCategoryError}
               />
             </View>
   
@@ -103,6 +107,7 @@ function CreateGroupFormScreen2({ navigation }) {
                 tags={tags}
                 setTags={setTags}
                 maxTags={10}
+                setTagsError={setTagsError}
               />
             </View>
   
@@ -126,8 +131,9 @@ function CreateGroupFormScreen2({ navigation }) {
               </Text>
               <TextInput
                 value={website}
-                placeholder="https://example.com"
+                placeholder="example.com"
                 onChangeText={(newText) => setWebsite(newText)}
+                onBlur={handleWebsiteBlur(website, setWebsite)}
                 style={styles.input}
               />
             </View>

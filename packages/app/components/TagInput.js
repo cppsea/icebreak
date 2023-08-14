@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextInput, Button, View, Text, StyleSheet } from 'react-native';
 
-const TagInput = ({ value, setValue, tags, setTags, maxTags }) => {
+const TagInput = ({ value, setValue, tags, setTags, maxTags, setTagsError }) => {
   const addTag = () => {
     if (value && tags.length < maxTags && !tags.includes(value)) {
       setTags([...tags, value]);
@@ -20,7 +20,13 @@ const TagInput = ({ value, setValue, tags, setTags, maxTags }) => {
       <View style={styles.inputContainer}>
         <TextInput
           value={value}
-          onChangeText={setValue}
+          onChangeText={(newText) => {
+            setValue(newText);
+            if(setTagsError != null)
+            {
+              setTagsError('');
+            }
+          }}
           placeholder="Enter a tag"
           style={styles.input}
         />

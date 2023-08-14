@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
 
-const Dropdown = ({options, value, setValue}) => {
+const Dropdown = ({options, value, setValue, setDropdownError}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -11,6 +11,10 @@ const Dropdown = ({options, value, setValue}) => {
   const selectOption = (option) => {
     setValue(option);
     setIsOpen(false);
+    if(setDropdownError != null)
+    {
+      setDropdownError('');
+    }
   };
 
   return (

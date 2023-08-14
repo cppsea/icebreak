@@ -24,7 +24,9 @@ function CreateGroupFormScreen3({ navigation }) {
   
       submitForm
     } = useContext(GroupContext)
-  
+
+    const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
     // Input Validation
     const [twitterLinkError, setTwitterLinkError] = useState("");
     const [facebookLinkError, setFacebookLinkError] = useState("");
@@ -32,17 +34,6 @@ function CreateGroupFormScreen3({ navigation }) {
     const [discordLinkError, setDiscordLinkError] = useState("");
     const [linkedInLinkError, setLinkedInLinkError] = useState("");
     const [githubLinkError, setGithubLinkError] = useState("");
-  
-    useEffect(() => {
-      handleInputValidationScreen3();
-    }, [
-      twitterLink,
-      facebookLink,
-      instagramLink,
-      discordLink,
-      linkedInLink,
-      githubLink,
-    ]);
   
     function handleInputValidationScreen3() {
       let isValid = true;
@@ -115,6 +106,18 @@ function CreateGroupFormScreen3({ navigation }) {
   
       return isValid;
     }
+
+    const handleOnChangeInput = (text, setLink, setError) =>
+    {
+      setLink(text);
+      setError('');
+    }
+
+    const handleSocialMediaBlur = (social, setLink) => {
+      if (!social.startsWith('https://') && social !== '') {
+        setLink('https://' + social);
+      }
+    };
   
     return (
       <ScrollView
@@ -135,7 +138,8 @@ function CreateGroupFormScreen3({ navigation }) {
               <TextInput
                 value={twitterLink}
                 placeholder="https://twitter.com/abc123"
-                onChangeText={(newText) => setTwitterLink(newText)}
+                onChangeText={(newText) => handleOnChangeInput(newText, setTwitterLink, setTwitterLinkError)}
+                onBlur={handleSocialMediaBlur(twitterLink, setTwitterLink)}
                 style={styles.input}
               />
             </View>
@@ -147,7 +151,8 @@ function CreateGroupFormScreen3({ navigation }) {
               <TextInput
                 value={facebookLink}
                 placeholder="https://facebook.com/abc123"
-                onChangeText={(newText) => setFacebookLink(newText)}
+                onChangeText={(newText) => handleOnChangeInput(newText, setFacebookLink, setFacebookLinkError)}
+                onBlur={handleSocialMediaBlur(facebookLink, setFacebookLink)}
                 style={styles.input}
               />
             </View>
@@ -159,7 +164,8 @@ function CreateGroupFormScreen3({ navigation }) {
               <TextInput
                 value={instagramLink}
                 placeholder="https://instagram.com/abc123"
-                onChangeText={(newText) => setInstagramLink(newText)}
+                onChangeText={(newText) => handleOnChangeInput(newText, setInstagramLink, setInstagramLinkError)}
+                onBlur={handleSocialMediaBlur(instagramLink, setInstagramLink)}
                 style={styles.input}
               />
             </View>
@@ -170,7 +176,8 @@ function CreateGroupFormScreen3({ navigation }) {
               <TextInput
                 value={discordLink}
                 placeholder="https://discord.gg/abc123"
-                onChangeText={(newText) => setDiscordLink(newText)}
+                onChangeText={(newText) => handleOnChangeInput(newText, setDiscordLink, setDiscordLinkError)}
+                onBlur={handleSocialMediaBlur(discordLink, setDiscordLink)}
                 style={styles.input}
               />
             </View>
@@ -182,7 +189,8 @@ function CreateGroupFormScreen3({ navigation }) {
               <TextInput
                 value={linkedInLink}
                 placeholder="https://linkedin.com/abc123"
-                onChangeText={(newText) => setLinkedInLink(newText)}
+                onChangeText={(newText) => handleOnChangeInput(newText, setLinkedInLink, setLinkedInLink)}
+                onBlur={handleSocialMediaBlur(linkedInLink, setLinkedInLink)}
                 style={styles.input}
               />
             </View>
@@ -193,22 +201,39 @@ function CreateGroupFormScreen3({ navigation }) {
               <TextInput
                 value={githubLink}
                 placeholder="https://github.com/abc123e"
-                onChangeText={(newText) => setGithubLink(newText)}
+                onChangeText={(newText) => handleOnChangeInput(newText, setGithubLink, setGithubLinkError)}
+                onBlur={handleSocialMediaBlur(githubLink, setGithubLink)}
                 style={styles.input}
               />
             </View>
             <View style={styles.btnContainer}>
               <Button
                 title="SUBMIT"
-                onPress={() => {
+                disabled={isButtonDisabled}
+                onPress={async () => {
                   const isValid = handleInputValidationScreen3();
   
+                  setIsButtonDisabled(true);
                   if (isValid) {
-                    navigation.navigate("Initial Create Group");
+                    try {
+                      // check GroupContext.js for submitForm implementation
+                      const isSubmitted = await submitForm();
+              
+                      if (isSubmitted) {
+                        navigation.navigate("Initial Create Group");
+                      }
+                    } catch (error) {
+                      Alert.alert('Error', 'Failed to submit form.');
+                      console.error('Error submitting form:', error);
+                    } finally {
+                      setIsButtonDisabled(false);
+                    }
+                  }
+                  else
+                  {
+                    setIsButtonDisabled(false);
                   }
   
-                  // check GroupContext.js for submitForm implementation
-                  submitForm();
                 }}
               />
             </View>
