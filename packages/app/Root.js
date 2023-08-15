@@ -35,37 +35,7 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
-    // automatically log in depending on which token is set in expo secure store
-    // log in with local auth
-    const localAuthToken = await SecureStore.getValueFor("local_auth_token");
-    if (localAuthToken) {
-      const payload = await getUserInfo(localAuthToken);
-      setUser({
-        ...user,
-        isLoggedIn: true,
-        data: payload,
-      });
-      return;
-    }
-
-    // log in with google auth
-    const googleAuthToken = await SecureStore.getValueFor("google_auth_token");
-    if (googleAuthToken) {
-      const body = {
-        token: googleAuthToken,
-      };
-      const { data: response } = await axios.post(
-        `${ENDPOINT}/auth/google`,
-        body
-      );
-      if (response.status === "success") {
-        setUser({
-          ...user,
-          isLoggedIn: true,
-          data: response.data.user,
-        });
-      }
-    }
+    // TODO: implement auto log in
   };
 
   useEffect(() => {

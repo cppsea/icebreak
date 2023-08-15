@@ -7,14 +7,14 @@ const AuthController = require("../../controllers/auth");
 router.get("/", async (request, response) => {
   try {
     const users = await UserController.getAllUsers();
-    response.send({
+    response.status(200).json({
       status: "success",
       data: {
         users,
       },
     });
   } catch (error) {
-    response.send({
+    response.status(500).json({
       status: "error",
       message: error.message,
     });
@@ -38,14 +38,14 @@ router.get(
       }
 
       const user = await UserController.getUser(userId);
-      response.send({
+      response.status(200).json({
         status: "success",
         data: {
           user: user,
         },
       });
     } catch (error) {
-      response.status(403).send({
+      response.status(500).json({
         status: "error",
         message: error.message,
       });
