@@ -25,63 +25,58 @@ passport.serializeUser(AuthController.serialize);
 passport.deserializeUser(AuthController.deserialize);
 
 router.get("/user", AuthController.authenticate, (request, response) => {
+  const accessToken = token.generateAccessToken(request.user);
+  const refreshToken = token.generateRefreshToken(request.user);
+
+  // destructuring so we don't send JWT iat and expiration properties in
+  // response
+  const { userId, firstName, lastName, avatar, email } = request.user;
+
+  response.status(200).json({
+    status: "success",
+    data: {
+      user: {
+        userId,
+        firstName,
+        lastName,
+        avatar,
+        email,
+      },
+      accessToken,
+      refreshToken,
+    },
+  });
+});
+
+router.post("/google", AuthController.login, async (request, response) => {
   try {
+    const { userId, firstName, lastName, email, avatar, isNew } = request.user;
+
+    const accessToken = token.generateAccessToken(request.user);
+    const refreshToken = token.generateRefreshToken(request.user);
+
     response.status(200).json({
       status: "success",
       data: {
-        user: request.user,
+        user: {
+          userId,
+          firstName,
+          lastName,
+          avatar,
+          email,
+          isNew,
+        },
+        accessToken,
+        refreshToken,
       },
     });
   } catch (error) {
-    response.status(500).send({
+    response.status(500).json({
       status: "error",
       message: error.message,
     });
   }
 });
-
-router.post(
-  "/google/login",
-  AuthController.login,
-  async (request, response) => {
-    try {
-      const {
-        user_id,
-        joined_date,
-        last_login,
-        first_name,
-        last_name,
-        email,
-        avatar,
-      } = request.user;
-
-      const accessToken = token.generateAccessToken(request.user);
-      const refreshToken = token.generateRefreshToken(request.user);
-
-      response.status(200).json({
-        status: "success",
-        data: {
-          user: {
-            userId: user_id,
-            firstName: first_name,
-            lastName: last_name,
-            avatar: avatar,
-            email: email,
-            joinedDate: joined_date,
-            lastLogin: last_login,
-          },
-          accessToken,
-          refreshToken,
-        },
-      });
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
-  }
-);
 
 router.get(
   "/google/callback",
@@ -95,10 +90,9 @@ router.get(
   }
 );
 
-router.post("/register", async (request, response) => {
+router.post("/local/register", async (request, response) => {
   try {
-    const { firstName, lastName, email, avatar, password } =
-      request.body.newUser;
+    const { firstName, lastName, email, avatar, password } = request.body;
 
     if (firstName == undefined) {
       return response.status(400).json({
@@ -169,7 +163,7 @@ router.post("/register", async (request, response) => {
       });
     }
 
-    await AuthController.register(request.body.newUser);
+    await AuthController.register(request.body);
 
     // users will have to log in manually after successfully registering
     response.status(200).json({
@@ -184,7 +178,7 @@ router.post("/register", async (request, response) => {
   }
 });
 
-router.post("/local/login", async (request, response) => {
+router.post("/local", async (request, response) => {
   try {
     // get user input
     const { email, password } = request.body;
@@ -236,29 +230,33 @@ router.post("/local/login", async (request, response) => {
       requestedUser.password
     );
 
-    if (isValidPassword) {
-      // Generate a refresh token
-      const refreshToken = token.generateRefreshToken(requestedUser);
-
-      // Generate an access token
-      const accessToken = token.generateAccessToken(requestedUser);
-
-      response.status(200).json({
-        status: "success",
-        data: {
-          user: requestedUser,
-          accessToken,
-          refreshToken,
-        },
-      });
-    } else {
-      response.status(400).json({
+    if (!isValidPassword) {
+      return response.status(400).json({
         status: "fail",
         data: {
-          password: "Password is incorrect",
+          password: "Incorrect password",
         },
       });
     }
+
+    const refreshToken = token.generateRefreshToken(requestedUser);
+    const accessToken = token.generateAccessToken(requestedUser);
+
+    response.status(200).json({
+      status: "success",
+      data: {
+        user: {
+          userId: requestedUser.userId,
+          firstName: requestedUser.firstName,
+          lastName: requestedUser.lastName,
+          email: requestedUser.email,
+          avatar: requestedUser.avatar,
+          isNew: requestedUser.isNew,
+        },
+        accessToken,
+        refreshToken,
+      },
+    });
   } catch (error) {
     response.status(500).json({
       status: "error",
@@ -269,16 +267,7 @@ router.post("/local/login", async (request, response) => {
 
 router.post("/token", async (request, response) => {
   try {
-    const { email, refreshToken } = request.body;
-
-    if (!email) {
-      return response.status(400).json({
-        status: "fail",
-        data: {
-          email: "Email not provided",
-        },
-      });
-    }
+    const { refreshToken } = request.body;
 
     if (!refreshToken) {
       return response.status(400).json({
@@ -288,9 +277,6 @@ router.post("/token", async (request, response) => {
         },
       });
     }
-
-    const requestedUser = await UserController.getUserByEmail(email);
-    token.verifyRefreshToken(refreshToken);
 
     const isInvalidToken = await checkInvalidToken(refreshToken);
 
@@ -303,13 +289,18 @@ router.post("/token", async (request, response) => {
       });
     }
 
-    const accessToken = token.generateAccessToken(requestedUser);
-    const newRefreshToken = token.generateRefreshToken(requestedUser);
+    const { userId } = token.verifyRefreshToken(refreshToken);
+    const user = await UserController.getUser(userId);
+
+    const accessToken = token.generateAccessToken(user);
+    const newRefreshToken = token.generateRefreshToken(user);
 
     response.status(200).json({
       status: "success",
-      newRefreshToken,
-      accessToken,
+      data: {
+        accessToken,
+        refreshToken: newRefreshToken,
+      },
     });
   } catch (error) {
     response.status(500).json({
@@ -320,9 +311,18 @@ router.post("/token", async (request, response) => {
 });
 
 router.post("/token/revoke", async (request, response) => {
-  try {
-    const { refreshToken } = request.body;
+  const { refreshToken } = request.body;
 
+  if (!refreshToken) {
+    return response.status(400).json({
+      status: "fail",
+      data: {
+        refreshToken: "Refresh token not provided",
+      },
+    });
+  }
+
+  try {
     token.verifyRefreshToken(refreshToken);
 
     await addToTokenBlacklist(refreshToken);

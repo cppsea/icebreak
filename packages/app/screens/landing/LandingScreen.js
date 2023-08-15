@@ -28,7 +28,7 @@ function LandingScreen() {
 
   const handleOnLoginWithGoogle = useCallback(async () => {
     try {
-      const result = await promptAsync();
+      const result = await promptAsync({ showInRecents: true });
 
       if (result.type !== "success") {
         throw new Error("Failed to authenticate with Google's OAuth");
@@ -45,8 +45,8 @@ function LandingScreen() {
         body
       );
       if (response.status === "success") {
-        SecureStore.save("token", response.data.accessToken);
-        SecureStore.save("refreshToken", response.data.refreshToken);
+        await SecureStore.save("accessToken", response.data.accessToken);
+        await SecureStore.save("refreshToken", response.data.refreshToken);
         setUser({
           ...user,
           isLoggedIn: true,

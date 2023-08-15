@@ -1,9 +1,10 @@
 const jwt = require("jsonwebtoken");
 
 function generateRefreshToken(user) {
+  const { userId } = user;
   return jwt.sign(
     {
-      user_id: user.user_id,
+      userId,
     },
     process.env.TOKEN_SECRET,
     {
@@ -13,14 +14,14 @@ function generateRefreshToken(user) {
 }
 
 function generateAccessToken(user) {
+  const { userId, firstName, lastName, avatar, email } = user;
   return jwt.sign(
     {
-      user_id: user.user_id,
-      joined_date: user.joined_date,
-      last_login: user.last_login,
-      first_name: user.first_name,
-      last_name: user.last_name,
-      avatar: user.avatar,
+      userId,
+      firstName,
+      lastName,
+      avatar,
+      email,
     },
     process.env.WEB_CLIENT_SECRET,
     {
@@ -30,9 +31,7 @@ function generateAccessToken(user) {
 }
 
 function verifyRefreshToken(refreshToken) {
-  return jwt.verify(refreshToken, process.env.TOKEN_SECRET, {
-    algorithms: ["HS256"],
-  });
+  return jwt.verify(refreshToken, process.env.TOKEN_SECRET);
 }
 
 function verifyAccessToken(accessToken) {
@@ -41,13 +40,7 @@ function verifyAccessToken(accessToken) {
     process.env.WEB_CLIENT_SECRET,
     function (err, decoded) {
       if (err) {
-        if (err.name === "TokenExpiredError") {
-          // Token has expired
-          throw new Error("Access token has expired");
-        } else {
-          // Other token verification errors
-          throw new Error("Invalid access token");
-        }
+        throw err;
       } else {
         // Token is valid
         // Return the payload of the access token

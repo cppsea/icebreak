@@ -6,7 +6,7 @@ async function getAllUsers() {
 }
 
 async function getUser(userId) {
-  const query = await prisma.users.findFirst({
+  const query = await prisma.users.findUnique({
     where: {
       userId: userId,
     },
