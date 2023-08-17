@@ -7,14 +7,14 @@ const AuthController = require("../../controllers/auth");
 router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     const guilds = await GuildController.getAllGuilds();
-    response.send({
+    response.status(200).json({
       status: "success",
       data: {
         guilds,
       },
     });
   } catch (error) {
-    response.send({
+    response.status(500).json({
       status: "error",
       message: error.message,
     });
@@ -38,14 +38,14 @@ router.get(
       }
 
       const guild = await GuildController.getGuild(guildId);
-      response.send({
+      response.status(200).json({
         status: "success",
         data: {
           guild,
         },
       });
     } catch (error) {
-      response.status(403).send({
+      response.status(500).json({
         status: "error",
         message: error.message,
       });

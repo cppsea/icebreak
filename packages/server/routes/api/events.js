@@ -56,13 +56,13 @@ router.get(
 
       // follow-up request, not first request to api route
       if (currentPage && action && eventId) {
-        response.send({
+        response.status(200).json({
           status: "success",
           data: {
             events: events,
             cursor: {
-              previous_page: `http://localhost:5050/api/events/pages/${prevCursor}?limit=${eventLimit}`,
-              next_page: `http://localhost:5050/api/events/pages/${nextCursor}?limit=${eventLimit}`,
+              previousPage: `http://localhost:5050/api/events/pages/${prevCursor}?limit=${eventLimit}`,
+              nextPage: `http://localhost:5050/api/events/pages/${nextCursor}?limit=${eventLimit}`,
             },
           },
         });
@@ -71,20 +71,20 @@ router.get(
         // null previous cursor on first page
         const totalPages = await EventController.getPages(eventLimit);
 
-        response.send({
+        response.status(200).json({
           status: "success",
           data: {
             events: events,
-            total_pages: totalPages,
+            totalPages: totalPages,
             cursor: {
-              previous_page: null,
-              next_page: `http://localhost:5050/api/events/pages/${nextCursor}?limit=${eventLimit}`,
+              previousPage: null,
+              nextPage: `http://localhost:5050/api/events/pages/${nextCursor}?limit=${eventLimit}`,
             },
           },
         });
       }
     } catch (error) {
-      response.status(403).send({
+      response.status(500).json({
         status: "error",
         message: error.message,
       });
@@ -99,14 +99,14 @@ router.get(
     try {
       const { eventId } = request.params;
       const event = await EventController.getEvent(eventId);
-      response.send({
+      response.status(200).json({
         status: "success",
         data: {
           event: event,
         },
       });
     } catch (error) {
-      response.status(403).send({
+      response.status(500).json({
         status: "error",
         message: error.message,
       });
