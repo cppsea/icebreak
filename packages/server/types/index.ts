@@ -1,0 +1,35 @@
+import * as Express from "express";
+
+/**
+ * @template T, V
+ * @param T - (optional) structure of request route parameters
+ * @param V - (optional) structure of request body
+ *
+ * void = optional generic parameters
+ */
+export type Request<T = void, V = void> = Express.Request<T, any, V>;
+
+/**
+ * @template T
+ * @param T - structure of response body
+ */
+export interface Response<T = Record<string, any>> extends Express.Response {
+  json: (
+    body: SuccessResponseBody<T> | FailResponseBody<T> | ErrorResponseBody
+  ) => this;
+}
+
+type SuccessResponseBody<T = Record<string, any>> = {
+  status: "success";
+  data: T;
+};
+
+type FailResponseBody<T = Record<string, any>> = {
+  status: "fail";
+  data: Record<keyof T, string>;
+};
+
+type ErrorResponseBody = {
+  status: "error";
+  message: string;
+};

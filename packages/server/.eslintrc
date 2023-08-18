@@ -10,7 +10,7 @@
     "node": true,
     "amd": true
   },
-  "rules": {},
+  "ignorePatterns": ["/__tests__/**/*"],
   "extends": [
     "prettier",
     "eslint:recommended",

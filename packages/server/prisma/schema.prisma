@@ -16,13 +16,13 @@ model User {
   email           String            @unique @db.VarChar(255)
   avatar          String?           @db.VarChar(255)
   password        String?           @db.VarChar(255)
-  eventAttendees  EventAttendees[]
-  guildMembers    GuildMembers[]
+  eventAttendees  EventAttendee[]
+  guildMembers    GuildMember[]
 
   @@map("users")
 }
 
-model EventAttendees {
+model EventAttendee {
   userId    String  @db.Uuid @map("user_id")
   eventId   String  @db.Uuid @map("event_id")
   event     Event?  @relation(fields: [eventId], references: [eventId], onDelete: Cascade, onUpdate: NoAction, map: "fk_event")
@@ -41,13 +41,13 @@ model Event {
   endDate         DateTime?         @db.Timestamp(6) @map("end_date")
   location        String?           @db.VarChar(255)
   thumbnail       String?           @db.VarChar(255)
-  eventAttendees  EventAttendees[]
+  eventAttendees  EventAttendee[]
   guilds          Guild             @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "event_guild_id_fkey")
 
   @@map("events")
 }
 
-model GuildMembers {
+model GuildMember {
   userId   String @db.Uuid @map("user_id")
   guildId  String @db.Uuid @map("guild_id")
   guilds   Guild  @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
@@ -71,5 +71,5 @@ model Guild {
   media         String[]
   isInviteOnly  Boolean         @map("invite_only")
   events        Event[]
-  members       GuildMembers[]
+  members       GuildMember[]
 }
