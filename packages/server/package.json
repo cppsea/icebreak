@@ -7,6 +7,7 @@
   "private": true,
   "scripts": {
     "start": "nodemon index.js",
+    "build": "yarn tsc .",
     "forward": "ttab node scripts/ngrok.js",
     "dev": "ttab yarn start",
     "test": "jest"

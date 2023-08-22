@@ -10,6 +10,9 @@
     "node": true,
     "amd": true
   },
+  "rules": {
+    "@typescript-eslint/no-explicit-any": "off"
+  },
   "ignorePatterns": ["/__tests__/**/*"],
   "extends": [
     "prettier",
