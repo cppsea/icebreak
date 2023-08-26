@@ -9,7 +9,7 @@ const uniqid = require("uniqid");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 
 const AuthController = require("../../controllers/auth");
-const postgres = require("../../utils/postgres");
+const {postgres} = require("../../utils/postgres");
 const user = require("../../controllers/users");
 
 passport.use(
