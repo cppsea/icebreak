@@ -4,6 +4,7 @@ const router = express.Router();
 const { s3Client } = require("../../utils/s3");
 const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 const path = require("path");
+const { validate } = require("uuid");
 
 const AuthController = require("../../controllers/auth");
 const ImagesController = require("../../controllers/images");
@@ -12,7 +13,7 @@ const validImageTypes = [
   "user_icon",
   "guild_icon",
   "guild_banner",
-  "event_banner"
+  "event_banner",
 ];
 
 router.get("/test-insert", async (request, response) => {
@@ -59,26 +60,41 @@ router.get("/test-get", async (request, response) => {
   }
 });
 
-router.put("/:type", 
-//AuthController.authenticate,
+router.put(
+  "/:type/:UUID",
+  //AuthController.authenticate,
   async (request, response) => {
-  const imageType = request.params.type;
-  const imageData = request.body.imageData;
+    const imageType = request.params.type;
+    const imageUUID = request.params.UUID;
+    const imageData = request.body.imageData;
 
-  if (!validImageTypes.includes(imageType)) {
-    response.status(400).json({
-      status: "fail",
-      message: "Image type '" + imageType + "' is invalid.",
-    });
-    return;
-  }
-  if (imageData === undefined) {
-    response.status(400).json({
-      status: "fail",
-      message: "Request body missing values 'id' and/or 'imageData'.",
-    });
-    return;
-  }
+    if (!validImageTypes.includes(imageType)) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageType: `Image type '${imageType}' is invalid.`,
+        },
+      });
+      return;
+    }
+    if (!validate(imageUUID)) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageUUID: `Image UUID '${imageUUID}' is invalid.`,
+        },
+      });
+      return;
+    }
+    if (!imageData) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageData: "Request body missing value 'imageData'.",
+        },
+      });
+      return;
+    }
 
   try {
     const url = await ImagesController.upload(imageType, imageData);
@@ -101,12 +117,23 @@ router.get(
   //AuthController.authenticate,
   async (request, response) => {
     const imageType = request.params.type;
-    const id = request.params.id;
+    const imageUUID = request.params.UUID;
 
     if (!validImageTypes.includes(imageType)) {
       response.status(403).json({
         status: "fail",
-        message: "Image type '" + imageType + "' is invalid.",
+        data: {
+          imageType: `Image type '${imageType}' is invalid.`,
+        },
+      });
+      return;
+    }
+    if (!validate(imageUUID)) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageUUID: `Image UUID '${imageUUID}' is invalid.`,
+        },
       });
       return;
     }
@@ -138,7 +165,6 @@ router.delete( "/:type/:id",
       });
       return;
     }
-
     try {
       const response = await ImagesController.Delete(imageType, id);
       response.status(204).json({
@@ -160,10 +186,11 @@ router.patch( "/:type/:id",
 async (request, response) => {
   const imageType = request.params.type;
   const id = request.params.id;
-  //const imageData = request.body.imageData;
-  const imageData = await fs.readFile(
-    path.resolve(__dirname + "../../../../../assets/test.jpg")
-  );
+  const imageData = request.body.imageData;
+  //  For testing
+  // const imageData = await fs.readFile(
+  //   path.resolve(__dirname + "../../../../../assets/test.jpg")
+  // );
   if (!validImageTypes.includes(imageType)) {
     response.status(403).json({
       status: "fail",
@@ -171,7 +198,6 @@ async (request, response) => {
     });
     return;
   }
-
   if (!imageData) {
     response.status(400).json({
       status: "fail",
@@ -179,7 +205,6 @@ async (request, response) => {
     });
     return;
   }
-
   try {
     const s3response = await ImagesController.patch(imageType, imageData, id);
     s3response.Body.pipe(response);
