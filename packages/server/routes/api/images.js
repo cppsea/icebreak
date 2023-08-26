@@ -4,7 +4,7 @@ const router = express.Router();
 const { s3Client } = require("../../utils/s3");
 const { PutObjectCommand, GetObjectCommand } = require("@aws-sdk/client-s3");
 const path = require("path");
-const { v4: uuidv4 } = require("uuid");
+const { validate } = require("uuid");
 
 const AuthController = require("../../controllers/auth");
 const ImagesController = require("../../controllers/images");
@@ -77,7 +77,7 @@ router.put(
       });
       return;
     }
-    if (!uuidv4.validate(imageUUID)) {
+    if (!validate(imageUUID)) {
       response.status(400).json({
         status: "fail",
         data: {
@@ -133,7 +133,7 @@ router.get(
       });
       return;
     }
-    if (!uuidv4.validate(imageUUID)) {
+    if (!validate(imageUUID)) {
       response.status(400).json({
         status: "fail",
         data: {
