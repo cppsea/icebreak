@@ -165,9 +165,19 @@ router.delete( "/:type/:id",
       });
       return;
     }
+    // if (!validate(imageUUID)) {
+    //   response.status(400).json({
+    //     status: "fail",
+    //     data: {
+    //       imageUUID: `Image UUID '${imageUUID}' is invalid.`,
+    //     },
+    //   });
+    //   return;
+    // }
     try {
-      const response = await ImagesController.Delete(imageType, id);
-      response.status(204).json({
+      const deleteResponse  = await ImagesController.Delete(imageType, id);
+      console.log(deleteResponse);
+      response.status(200).json({
         status: "success",
         data: null
       });
@@ -205,11 +215,22 @@ async (request, response) => {
     });
     return;
   }
+  // if (!validate(imageUUID)) {
+    //   response.status(400).json({
+    //     status: "fail",
+    //     data: {
+    //       imageUUID: `Image UUID '${imageUUID}' is invalid.`,
+    //     },
+    //   });
+    //   return;
+    // }
   try {
-    const s3response = await ImagesController.patch(imageType, imageData, id);
-    s3response.Body.pipe(response);
+    const url = await ImagesController.patch(imageType, imageData, id);
     response.status(200).json({
       status: "success",
+      data:{
+        imageURL: url
+      }
     });
   } catch (err) {
     response.status(500).json({
