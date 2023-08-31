@@ -200,9 +200,8 @@ function LandingScreen({ navigation, route }) {
           <TouchableOpacity
             testID="forgotPassButton"
             onPress={
-              // TODO: Forgot password code here.
               () => {
-                Alert.alert("Open forgot password page");
+                navigation.navigate("ForgotPaswordScreen", {email: inputs.email})
               }
             }
             style={styles.forgotPassContainer}>

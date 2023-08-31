@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     paddingLeft: 20,
     alignItems: "center",
+    fontWeight: "bold"
   },
   lineDivider: {
     backgroundColor: "#c4c4c4",

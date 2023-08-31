@@ -42,6 +42,8 @@ function SignUpScreen({ navigation, route }) {
     try {
       const response = await axios.post(`${ENDPOINT}/auth/register`, {
         email: inputs.email,
+        firstName: inputs.firstName,
+        lastName: inputs.lastName,
         password: inputs.password,
         passwordConfirmation: inputs.passwordConfirmation,
       });
@@ -62,9 +64,12 @@ function SignUpScreen({ navigation, route }) {
   // State to change the variable with the TextInput
   const [inputs, setInputs] = React.useState({
     email: route.params?.email ?? "",
+    firstName: "",
+    lastName: "",
     password: "",
     passwordConfirmation: "",
   });
+
   const [errors, setErrors] = React.useState({});
 
   const isValidEmail = (email) => {
@@ -89,8 +94,13 @@ function SignUpScreen({ navigation, route }) {
       isValid = false;
     }
 
-    if (!inputs.username) {
-      handleError("username", "Please enter a username.");
+    if (!inputs.firstName) {
+      handleError("firstName", "Please enter your first name.");
+      isValid = false;
+    }
+
+    if (!inputs.lastName) {
+      handleError("lastName", "Please enter your last name.");
       isValid = false;
     }
 
@@ -99,12 +109,12 @@ function SignUpScreen({ navigation, route }) {
       isValid = false;
     }
 
-    if (!inputs.passwordConfirmation) {
-      handleError("passwordConfirmation", "Please confirm your password.");
+    if(inputs.password && !inputs.passwordConfirmation){
+      handleError("passwordConfirmation", "Please confirm password.");
       isValid = false;
     }
-
-    if (!(inputs.password == inputs.passwordConfirmation)) {
+    
+    if((inputs.password && inputs.passwordConfirmation) && (inputs.password != inputs.passwordConfirmation)){
       handleError("passwordConfirmation", "Passwords do not match.");
       isValid = false;
     }
@@ -138,7 +148,7 @@ function SignUpScreen({ navigation, route }) {
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
-            container={{ marginBottom: 10 }}
+            container={{ marginBottom: 10, marginTop: 20 }}
             style={[styles.component, styles.textInput]}
             borderColor="#cccccc"
             onChangeText={(text) => {
@@ -155,17 +165,32 @@ function SignUpScreen({ navigation, route }) {
           />
 
           <TextInput
-            testID="usernameInput"
-            value={inputs["username"]}
+            testID="firstNameInput"
+            value={inputs["firstName"]}
             container={{ marginBottom: 10 }}
             style={[styles.component, styles.textInput]}
             borderColor="#cccccc"
             onChangeText={(text) => {
-              handleOnChange("username", text);
-              handleError("username", null);
+              handleOnChange("firstName", text);
+              handleError("firstName", null);
             }}
-            error={errors.username}
-            placeholder="Username"
+            error={errors.firstName}
+            placeholder="First Name"
+            onSubmitEditing={validateInput}
+          />
+
+          <TextInput
+            testID="lastNameInput"
+            value={inputs["lastName"]}
+            container={{ marginBottom: 10 }}
+            style={[styles.component, styles.textInput]}
+            borderColor="#cccccc"
+            onChangeText={(text) => {
+              handleOnChange("lastName", text);
+              handleError("lastName", null);
+            }}
+            error={errors.lastName}
+            placeholder="Last Name"
             onSubmitEditing={validateInput}
           />
 
@@ -189,6 +214,7 @@ function SignUpScreen({ navigation, route }) {
           <TextInput
             testID="passwordConfirmationInput"
             value={inputs["passwordConfirmation"]}
+            container={{marginBottom: 20}}
             ref={refPasswordConfirmationInput}
             style={[styles.component, styles.textInput]}
             borderColor="#cccccc"
@@ -215,7 +241,7 @@ function SignUpScreen({ navigation, route }) {
             textStyle={styles.boldText}
           />
 
-          <DividerWithText title="OR" />
+          <DividerWithText title="or" />
 
           <Button
             testID="googleButton"
@@ -234,7 +260,7 @@ function SignUpScreen({ navigation, route }) {
         <Text>Already have an account? </Text>
 
         <TouchableOpacity
-          testID="signupButton"
+          testID="logInButton"
           onPress={() => {
             navigation.navigate("LandingScreen", { email: inputs.email });
           }}>
