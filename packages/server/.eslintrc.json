@@ -3,5 +3,8 @@
     "sourceType": "module",
     "ecmaVersion": 2023
   },
-  "extends": "prettier"
+  "env": {
+    "node": true
+  },
+  "extends": ["prettier", "eslint:recommended"]
 }

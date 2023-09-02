@@ -61,7 +61,7 @@ function LandingScreen({ navigation, route }) {
         setUser({
           ...user,
           isLoggedIn: true,
-          data: data.payload,
+          data: response.data.user,
         });
       }
     } catch (error) {
