@@ -30,54 +30,94 @@ import * as SecureStore from "@app/utils/SecureStore";
 
 import Constants from "expo-constants";
 
+import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
+
 WebBrowser.maybeCompleteAuthSession();
 
 
 function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
 
+  GoogleSignin.configure({
+    webClientId: Constants.expoConfig.extra.webClientId,
+    iosClientId: Constants.expoConfig.extra.iosClientId,
+  });
 
-  let handleOnLoginWithGoogle = () => {};
+  // Somewhere in your code
+  let handleOnLoginWithGoogle = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn()
+      const idToken = userInfo.idToken
 
-  // skips the code during test
-  if (process.env.NODE_ENV !== "test") {
-    const [request, response, promptAsync] = Google.useAuthRequest({
-      responseType: "id_token",
-      expoClientId: Constants.expoConfig.extra.expoClientId,
-      iosClientId: Constants.expoConfig.extra.iosClientId,
-      androidClientId: Constants.expoConfig.extra.androidClientId,
-      webClientId: Constants.expoConfig.extra.webClientId,
-    });
+      const body = {
+        token: idToken,
+      };
 
-    handleOnLoginWithGoogle = useCallback(async () => {
-      try {
-        const result = await promptAsync();
+      SecureStore.save("google_auth_token", id_token);
 
-        if (result.type !== "success") {
-          throw new Error("Failed to authenticate with Google's OAuth");
-        }
-
-        const id_token = result.params.id_token;
-
-        const body = {
-          token: id_token,
-        };
-
-        SecureStore.save("google_auth_token", id_token);
-
-        const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
-        if (data?.success) {
-          setUser({
-            ...user,
-            isLoggedIn: true,
-            data: data.payload,
-          });
-        }
-      } catch (error) {
-        console.log(error.message);
+      const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
+      if (data?.success) {
+        setUser({
+          ...user,
+          isLoggedIn: true,
+          data: data.payload,
+        });
       }
-    }, [user, setUser, request]);
-  }
+    } catch (error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log("Google Error: User cancelled the login flow")
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log("Google Error: Operation (e.g. sign in) is in progress already")
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log("Google Error: Play services not available or outdated")
+      } else {
+        console.log("Google " + JSON.stringify(error))
+      }
+    }
+  };
+
+  // let handleOnLoginWithGoogle = () => {};
+
+  // // skips the code during test
+  // if (process.env.NODE_ENV !== "test") {
+  //   const [request, response, promptAsync] = Google.useAuthRequest({
+  //     responseType: "id_token",
+  //     expoClientId: Constants.expoConfig.extra.expoClientId,
+  //     iosClientId: Constants.expoConfig.extra.iosClientId,
+  //     androidClientId: Constants.expoConfig.extra.androidClientId,
+  //     webClientId: Constants.expoConfig.extra.webClientId,
+  //   });
+
+  //   handleOnLoginWithGoogle = useCallback(async () => {
+  //     try {
+  //       const result = await promptAsync();
+
+  //       if (result.type !== "success") {
+  //         throw new Error("Failed to authenticate with Google's OAuth");
+  //       }
+
+  //       const id_token = result.params.id_token;
+
+  //       const body = {
+  //         token: id_token,
+  //       };
+
+  //       SecureStore.save("google_auth_token", id_token);
+
+  //       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
+  //       if (data?.success) {
+  //         setUser({
+  //           ...user,
+  //           isLoggedIn: true,
+  //           data: data.payload,
+  //         });
+  //       }
+  //     } catch (error) {
+  //       console.log(error.message);
+  //     }
+  //   }, [user, setUser, request]);
+  // }
 
   // State to change the variable with the TextInput
   const [inputs, setInputs] = React.useState({ email: route.params?.email ?? "", password: "" });
@@ -233,6 +273,7 @@ function LandingScreen({ navigation, route }) {
             imageStyle={styles.imageStyle}
             icon={<GoogleIcon height={25} />}
           />
+
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
 
