@@ -54,7 +54,7 @@ function LandingScreen({ navigation, route }) {
         token: idToken,
       };
 
-      SecureStore.save("google_auth_token", id_token);
+      SecureStore.save("google_auth_token", idToken);
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
       if (data?.success) {
@@ -72,7 +72,7 @@ function LandingScreen({ navigation, route }) {
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
         console.log("Google Error: Play services not available or outdated")
       } else {
-        console.log("Google " + JSON.stringify(error))
+        console.log(error)
       }
     }
   };
