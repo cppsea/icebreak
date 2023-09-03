@@ -8,13 +8,13 @@ const server = axios.create({
 
 // get user info for local auth only
 export async function getUserInfo(token) {
-  const user = await server.get("/auth/user", {
+  const { data: response } = await server.get("/auth/user", {
     headers: {
       Authorization: token,
     },
   });
 
-  return user.data;
+  return response.data.user;
 }
 
 export async function logoutUser() {

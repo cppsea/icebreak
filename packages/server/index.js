@@ -10,7 +10,7 @@ const app = express();
 const PORT = process.env.PORT || 5050;
 
 const users = require("./routes/api/users");
-const guild = require("./routes/api/guild");
+const guilds = require("./routes/api/guilds");
 const events = require("./routes/api/events");
 const auth = require("./routes/api/auth");
 const images = require("./routes/api/images");
@@ -33,7 +33,7 @@ app.get("/", async (request, response) => {
 
 app.use("/api/auth", auth);
 app.use("/api/users", users);
-app.use("/api/guilds", guild);
+app.use("/api/guilds", guilds);
 app.use("/api/events", events);
 app.use("/api/media/images", images);
 

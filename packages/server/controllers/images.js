@@ -1,6 +1,10 @@
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { s3Client } = require("../utils/s3");
-const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
+const {
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} = require("@aws-sdk/client-s3");
 
 const EXPIRATION_IN_SECONDS = 3600;
 
