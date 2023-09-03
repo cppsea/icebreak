@@ -41,20 +41,15 @@ function SignUpScreen({ navigation, route }) {
     );
     try {
       const response = await axios.post(`${ENDPOINT}/auth/local/register`, {
-        email: inputs.email,
         firstName: inputs.firstName,
         lastName: inputs.lastName,
+        email: inputs.email,
+        avatar: "avatar",
         password: inputs.password,
-        passwordConfirmation: inputs.passwordConfirmation,
-      });
+      })
 
-      if (response?.data.success) {
-        console.log("Data: " + response.data.newToken);
-        setUser({
-          ...user,
-          isLoggedIn: true,
-          data: response.data.newToken,
-        });
+      if (response?.data.status == "success") {
+        navigation.navigate("LandingScreen", { email: inputs.email });
       }
     } catch (error) {
       console.log(error.toString());

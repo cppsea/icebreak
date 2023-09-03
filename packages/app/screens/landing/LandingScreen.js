@@ -122,7 +122,7 @@ function LandingScreen({ navigation, route }) {
       const response = await axios.post(`${ENDPOINT}/auth/local`, {
         email: inputs.email,
         password: inputs.password
-      });
+      })
       
       if (response?.data.status == "success") {
         await SecureStore.save("accessToken", response.data.data.accessToken);

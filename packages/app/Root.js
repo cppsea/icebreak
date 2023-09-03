@@ -35,8 +35,12 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
+
     const accessToken = await SecureStore.getValueFor("accessToken");
     const refreshToken = await SecureStore.getValueFor("refreshToken");
+
+    console.log("accessToken: " + accessToken)
+    console.log("refreshToken: " + refreshToken)
 
     if (accessToken) {
       const payload = await getUserInfo(accessToken);
@@ -62,7 +66,7 @@ function App() {
 
   useEffect(() => {
     currentSession();
-  }, [user]);
+  }, []);
 
   return (
     <Stack.Navigator
