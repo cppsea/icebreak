@@ -73,11 +73,7 @@ function App() {
           return;
         }
       }
-    }
-    
-    // If none of the conditions are met, handle the appropriate case here (e.g., user is not authenticated)
-    
-      
+    }      
   };
 
 
