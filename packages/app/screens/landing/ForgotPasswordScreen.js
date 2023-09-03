@@ -1,3 +1,5 @@
+import React, {useState} from "react";
+
 import {
   StyleSheet,
   View,
@@ -18,10 +20,11 @@ import { getUserInfo } from "@app/utils/datalayer";
 
 function ForgotPasswordScreen({navigation, route }) {
 
-  const [inputs, setInputs] = React.useState({
+  const [inputs, setInputs] = useState({
     email: route.params?.email ?? ""
   });
-  const [errors, setErrors] = React.useState({});
+
+  const [errors, setErrors] = useState({});
 
   const isValidEmail = (email) => {
     const emailRE =
@@ -36,12 +39,16 @@ function ForgotPasswordScreen({navigation, route }) {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
 
-  for (const inputKey in inputs) {
-    handleError(inputKey, null);
-  }
+
 
   const validateInput = () => {
     let isValid = true;
+
+    // Reset the error message
+    for (const inputKey in inputs) {
+      handleError(inputKey, null);
+    }
+
     if (!inputs.email) {
       handleError("email", "Please enter an email.");
       isValid = false;
@@ -53,12 +60,14 @@ function ForgotPasswordScreen({navigation, route }) {
   
 
   return (
-    <Screen styles={styles.container}>
+    <Screen style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.container}>
+            
           <Text>This is {route.params.name}</Text>
+          
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
@@ -74,6 +83,7 @@ function ForgotPasswordScreen({navigation, route }) {
             placeholder="Email">
           </TextInput>
         </KeyboardAvoidingView>
+
       </TouchableWithoutFeedback>
     </Screen>
   );
@@ -85,7 +95,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: "100%",
     paddingLeft: 20,
-    paddingRight: 20,
+    paddingRight: 20
   },
   component: {
     height: 50,

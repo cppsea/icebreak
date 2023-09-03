@@ -200,7 +200,7 @@ function LandingScreen({ navigation, route }) {
             testID="forgotPassButton"
             onPress={
               () => {
-                navigation.navigate("ForgotPaswordScreen", {email: inputs.email})
+                navigation.navigate("ForgotPasswordScreen", {email: inputs.email})
               }
             }
             style={styles.forgotPassContainer}>
