@@ -35,12 +35,33 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
-    // TODO: implement auto log in
+    const accessToken = await SecureStore.getValueFor("accessToken");
+    if (accessToken) {
+      const payload = await getUserInfo(accessToken);
+      setUser({
+        ...user,
+        isLoggedIn: true,
+        data: payload,
+      });
+      return;
+    }
+
+    const refreshToken = await SecureStore.getValueFor("refreshToken");
+    if (refreshToken) {
+      const payload = await getUserInfo(refreshToken);
+      setUser({
+        ...user,
+        isLoggedIn: true,
+        data: payload,
+      });
+      return;
+    }
   };
 
+
   useEffect(() => {
-    //currentSession();
-  }, []);
+    currentSession();
+  }, [user]);
 
   return (
     <Stack.Navigator

@@ -18,5 +18,6 @@ export async function getUserInfo(token) {
 }
 
 export async function logoutUser() {
-  await SecureStore.remove("local_auth_token");
+  await SecureStore.remove("accessToken");
+  await SecureStore.remove("refreshToken");
 }

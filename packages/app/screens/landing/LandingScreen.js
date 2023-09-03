@@ -43,7 +43,6 @@ function LandingScreen({ navigation, route }) {
     iosClientId: Constants.expoConfig.extra.iosClientId,
   });
 
-  // Somewhere in your code
   let handleOnLoginWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
@@ -54,15 +53,18 @@ function LandingScreen({ navigation, route }) {
         token: idToken,
       };
 
-      SecureStore.save("google_auth_token", idToken);
-
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
-      if (data?.success) {
+
+      console.log("response: " + JSON.stringify(data.data.user))
+      if (data?.status == "success") { 
+        await SecureStore.save("accessToken", data.data.accessToken);
+        await SecureStore.save("refreshToken", data.data.refreshToken);
         setUser({
           ...user,
           isLoggedIn: true,
-          data: response.data.user,
+          data: data.data.user,
         });
+
       }
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
@@ -76,48 +78,6 @@ function LandingScreen({ navigation, route }) {
       }
     }
   };
-
-  // let handleOnLoginWithGoogle = () => {};
-
-  // // skips the code during test
-  // if (process.env.NODE_ENV !== "test") {
-  //   const [request, response, promptAsync] = Google.useAuthRequest({
-  //     responseType: "id_token",
-  //     expoClientId: Constants.expoConfig.extra.expoClientId,
-  //     iosClientId: Constants.expoConfig.extra.iosClientId,
-  //     androidClientId: Constants.expoConfig.extra.androidClientId,
-  //     webClientId: Constants.expoConfig.extra.webClientId,
-  //   });
-
-  //   handleOnLoginWithGoogle = useCallback(async () => {
-  //     try {
-  //       const result = await promptAsync();
-
-  //       if (result.type !== "success") {
-  //         throw new Error("Failed to authenticate with Google's OAuth");
-  //       }
-
-  //       const id_token = result.params.id_token;
-
-  //       const body = {
-  //         token: id_token,
-  //       };
-
-  //       SecureStore.save("google_auth_token", id_token);
-
-  //       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
-  //       if (data?.success) {
-  //         setUser({
-  //           ...user,
-  //           isLoggedIn: true,
-  //           data: data.payload,
-  //         });
-  //       }
-  //     } catch (error) {
-  //       console.log(error.message);
-  //     }
-  //   }, [user, setUser, request]);
-  // }
 
   // State to change the variable with the TextInput
   const [inputs, setInputs] = React.useState({ email: route.params?.email ?? "", password: "" });
@@ -156,22 +116,21 @@ function LandingScreen({ navigation, route }) {
   };
 
   const login = async () => {
-    console.log(`Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/login`)
+    console.log(`Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local`)
     try {
       
-      const response = await axios.post(`${ENDPOINT}/auth/login`, {
+      const response = await axios.post(`${ENDPOINT}/auth/local`, {
         email: inputs.email,
         password: inputs.password
       });
       
-      
-
-      if (response?.data.success) {
-        console.log("Data: " + response.data.newToken);
+      if (response?.data.status == "success") {
+        await SecureStore.save("accessToken", response.data.data.accessToken);
+        await SecureStore.save("refreshToken", response.data.data.refreshToken);
         setUser({
           ...user,
           isLoggedIn: true,
-          data: response.data.newToken,
+          data: response.data.data.user,
         });
       } else {
         console.log(response?.data.message)
