@@ -36,6 +36,8 @@ function App() {
 
   const currentSession = async () => {
     const accessToken = await SecureStore.getValueFor("accessToken");
+    const refreshToken = await SecureStore.getValueFor("refreshToken");
+
     if (accessToken) {
       const payload = await getUserInfo(accessToken);
       setUser({
@@ -46,8 +48,7 @@ function App() {
       return;
     }
 
-    const refreshToken = await SecureStore.getValueFor("refreshToken");
-    if (refreshToken) {
+    else if (refreshToken) {
       const payload = await getUserInfo(refreshToken);
       setUser({
         ...user,
