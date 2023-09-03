@@ -38,29 +38,46 @@ function App() {
 
     const accessToken = await SecureStore.getValueFor("accessToken");
     const refreshToken = await SecureStore.getValueFor("refreshToken");
-
-    console.log("accessToken: " + accessToken)
-    console.log("refreshToken: " + refreshToken)
-
+  
     if (accessToken) {
       const payload = await getUserInfo(accessToken);
-      setUser({
-        ...user,
-        isLoggedIn: true,
-        data: payload,
-      });
-      return;
+    
+      if (payload) {
+        setUser({
+          ...user,
+          isLoggedIn: true,
+          data: payload,
+        });
+        return;
+      }
     }
-
-    else if (refreshToken) {
-      const payload = await getUserInfo(refreshToken);
-      setUser({
-        ...user,
-        isLoggedIn: true,
-        data: payload,
+    
+    // If access token is invalid/expired, try to get a new one with the refresh token
+    if (refreshToken) {
+      const { data } = await axios.post(`${ENDPOINT}/auth/token`, {
+        refreshToken: refreshToken
       });
-      return;
+    
+      if (data.status === "success") {
+        await SecureStore.save("accessToken", data.data.accessToken);
+        await SecureStore.save("refreshToken", data.data.refreshToken);
+    
+        const payload = await getUserInfo(data.data.accessToken);
+    
+        if (payload) {
+          setUser({
+            ...user,
+            isLoggedIn: true,
+            data: payload,
+          });
+          return;
+        }
+      }
     }
+    
+    // If none of the conditions are met, handle the appropriate case here (e.g., user is not authenticated)
+    
+      
   };
 
 

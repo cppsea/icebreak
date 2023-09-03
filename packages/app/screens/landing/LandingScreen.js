@@ -55,7 +55,6 @@ function LandingScreen({ navigation, route }) {
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
 
-      console.log("response: " + JSON.stringify(data.data.user))
       if (data?.status == "success") { 
         await SecureStore.save("accessToken", data.data.accessToken);
         await SecureStore.save("refreshToken", data.data.refreshToken);

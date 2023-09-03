@@ -10,6 +10,7 @@ import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -18,29 +19,43 @@ function FeedScreen() {
 
   const handleOnLogout = useCallback(async () => {
     console.log("logout");
-    await logoutUser();
-    setUser({
-      isLoggedIn: false,
-    });
+
+    try {
+      // Revoke the refresh token
+      const refreshToken = await SecureStore.getValueFor("refreshToken");
+      const response = await axios.post(`${ENDPOINT}/auth/token/revoke`, {
+        refreshToken: refreshToken
+      })
+  
+      // Remove tokens from SecureStore and logout user
+      await logoutUser();
+      await GoogleSignin.signOut();
+      setUser({
+        isLoggedIn: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }, [setUser]);
 
   const getEvents = async () => {
     const token = await SecureStore.getValueFor("accessToken");
-    const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
-      withCredentials: true,
-      headers: {
-        Authorization: token,
-      },
-    });
+    // TODO: Uncomment/fix warning errors
+    // const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
+    //   withCredentials: true,
+    //   headers: {
+    //     Authorization: token,
+    //   },
+    // });
 
-    const serializeEvents = response.data.events.map((event) => {
-      return {
-        ...event,
-        key: event.eventId,
-      };
-    });
+    // const serializeEvents = response.data.events.map((event) => {
+    //   return {
+    //     ...event,
+    //     key: event.eventId,
+    //   };
+    // });
 
-    setEvents(serializeEvents);
+    // setEvents(serializeEvents);
   };
 
   useEffect(() => {
@@ -68,18 +83,19 @@ function FeedScreen() {
   return (
     <>
       <Screen>
-        <Text>Hello, {user.data.firstName}</Text>
+        <Text>Hello, {user.firstName}</Text>
         <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
         <Text>{JSON.stringify(user)}</Text>
         <Button onPress={handleOnLogout} title="logout" />
       </Screen>
+      {/* TODO: Uncomment/fix warning errors
       <FlatList
         onRefresh={onRefresh}
         refreshing={refreshing}
         data={events}
         renderItem={handleRenderItem}
         keyExtractor={(item) => item.key}
-      />
+      /> */}
     </>
   );
 }
