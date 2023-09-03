@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
     padding: 10
   },
   mediaButtonStyle: {
-    height: 30,
+    height: 40,
     justifyContent: 'center',
     alignContent: 'center',
   }
