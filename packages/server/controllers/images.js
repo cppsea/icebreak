@@ -40,9 +40,8 @@ async function retrieve(imageType, imageUUID) {
   });
 }
 
-async function Delete(imageType, id) {
-  const key = id + ".jpg";
-  //const key = imageType + "." + id + ".jpg"; UUID
+async function remove(imageType, imageUUID) {
+  const key = imageType + "." + imageUUID + ".jpg";
   const command = new DeleteObjectCommand({
     Bucket: "icebreak-assets",
     Key: key,
@@ -51,11 +50,10 @@ async function Delete(imageType, id) {
   return response;
 }
 
-async function patch(imageType, imageData, id) {
-  const key = id + ".jpg";
-  //const key = imageType + "." + id + ".jpg"; UUID
+async function update(imageType, imageData, imageUUID) {
+  const key = imageType + "." + imageUUID + ".jpg"; 
   const body = Buffer.from(imageData, "base64");
-  const putObjectCommand = new PutObjectCommand({
+  const patchObjectCommand = new PutObjectCommand({
     Bucket: "icebreak-assets",
     Key: key,
     Body: body,
@@ -64,7 +62,7 @@ async function patch(imageType, imageData, id) {
     Bucket: "icebreak-assets",
     Key: key,
   });
-  await s3Client.send(putObjectCommand);
+  await s3Client.send(patchObjectCommand);
   return await getSignedUrl(s3Client, getObjectCommand, {
     expiresIn: EXPIRATION_IN_SECONDS,
   });
@@ -72,6 +70,6 @@ async function patch(imageType, imageData, id) {
 module.exports = {
   upload,
   retrieve,
-  Delete,
-  patch,
+  remove,
+  update,
 };
