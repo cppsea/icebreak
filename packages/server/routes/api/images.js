@@ -59,9 +59,7 @@ router.put(
     } catch (err) {
       response.status(500).json({
         status: "error",
-        data: {
-          message: err.message,
-        },
+        message: err.message,
       });
     }
   }
@@ -100,9 +98,7 @@ router.get(
     } catch (err) {
       response.status(500).json({
         status: "error",
-        data: {
-          message: err.message,
-        },
+        message: err.message,
       });
     }
   }
@@ -142,9 +138,7 @@ router.delete(
     } catch (err) {
       response.status(500).json({
         status: "error",
-        data: {
-          message: err.message,
-        },
+        message: err.message,
       });
     }
   }
@@ -193,9 +187,7 @@ router.patch(
     } catch (err) {
       response.status(500).json({
         status: "error",
-        data: {
-          message: err.message,
-        },
+        message: err.message,
       });
     }
   }
