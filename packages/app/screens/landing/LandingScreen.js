@@ -30,10 +30,13 @@ import * as SecureStore from "@app/utils/SecureStore";
 
 import Constants from "expo-constants";
 
-import { GoogleSignin, GoogleSigninButton, statusCodes } from "@react-native-google-signin/google-signin";
+import {
+  GoogleSignin,
+  GoogleSigninButton,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 
 WebBrowser.maybeCompleteAuthSession();
-
 
 function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
@@ -46,8 +49,8 @@ function LandingScreen({ navigation, route }) {
   let handleOnLoginWithGoogle = async () => {
     try {
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn()
-      const idToken = userInfo.idToken
+      const userInfo = await GoogleSignin.signIn();
+      const idToken = userInfo.idToken;
 
       const body = {
         token: idToken,
@@ -55,7 +58,7 @@ function LandingScreen({ navigation, route }) {
 
       const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
 
-      if (data?.status == "success") { 
+      if (data?.status == "success") {
         await SecureStore.save("accessToken", data.data.accessToken);
         await SecureStore.save("refreshToken", data.data.refreshToken);
         setUser({
@@ -63,23 +66,27 @@ function LandingScreen({ navigation, route }) {
           isLoggedIn: true,
           data: data.data.user,
         });
-
       }
     } catch (error) {
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log("Google Error: User cancelled the login flow")
+        console.log("Google Error: User cancelled the login flow");
       } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log("Google Error: Operation (e.g. sign in) is in progress already")
+        console.log(
+          "Google Error: Operation (e.g. sign in) is in progress already"
+        );
       } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log("Google Error: Play services not available or outdated")
+        console.log("Google Error: Play services not available or outdated");
       } else {
-        console.log(error)
+        console.log(error);
       }
     }
   };
 
   // State to change the variable with the TextInput
-  const [inputs, setInputs] = React.useState({ email: route.params?.email ?? "", password: "" });
+  const [inputs, setInputs] = React.useState({
+    email: route.params?.email ?? "",
+    password: "",
+  });
   const [errors, setErrors] = React.useState({});
 
   const isValidEmail = (email) => {
@@ -115,14 +122,15 @@ function LandingScreen({ navigation, route }) {
   };
 
   const login = async () => {
-    console.log(`Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local`)
+    console.log(
+      `Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local`
+    );
     try {
-      
       const response = await axios.post(`${ENDPOINT}/auth/local`, {
         email: inputs.email,
-        password: inputs.password
-      })
-      
+        password: inputs.password,
+      });
+
       if (response?.data.status == "success") {
         await SecureStore.save("accessToken", response.data.data.accessToken);
         await SecureStore.save("refreshToken", response.data.data.refreshToken);
@@ -132,9 +140,8 @@ function LandingScreen({ navigation, route }) {
           data: response.data.data.user,
         });
       } else {
-        console.log(response?.data.message)
+        console.log(response?.data.message);
       }
-
     } catch (error) {
       console.log(error.toString());
     }
@@ -197,11 +204,11 @@ function LandingScreen({ navigation, route }) {
 
           <TouchableOpacity
             testID="forgotPassButton"
-            onPress={
-              () => {
-                navigation.navigate("ForgotPasswordScreen", {email: inputs.email})
-              }
-            }
+            onPress={() => {
+              navigation.navigate("ForgotPasswordScreen", {
+                email: inputs.email,
+              });
+            }}
             style={styles.forgotPassContainer}>
             <Text style={styles.textButton}>Forgot password?</Text>
           </TouchableOpacity>
@@ -231,7 +238,6 @@ function LandingScreen({ navigation, route }) {
             imageStyle={styles.imageStyle}
             icon={<GoogleIcon height={25} />}
           />
-
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
 
@@ -242,11 +248,9 @@ function LandingScreen({ navigation, route }) {
 
         <TouchableOpacity
           testID="signupButton"
-          onPress={
-            () => {
-              navigation.navigate("SignUpScreen", { email: inputs.email })
-            }
-          }>
+          onPress={() => {
+            navigation.navigate("SignUpScreen", { email: inputs.email });
+          }}>
           <Text style={styles.textButton}>Sign Up.</Text>
         </TouchableOpacity>
       </View>
