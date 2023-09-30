@@ -14,7 +14,7 @@ export async function getUserInfo(token) {
     },
   });
 
-  return response.data.user;
+  return response;
 }
 
 export async function logoutUser() {

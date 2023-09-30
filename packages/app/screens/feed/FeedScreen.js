@@ -4,7 +4,7 @@ import axios from "axios";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
-import CardEvent from "@app/components/EventCard/EventCard";
+import EventCard from "@app/components/EventCard/EventCard";
 
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
@@ -24,9 +24,9 @@ function FeedScreen() {
       // Revoke the refresh token
       const refreshToken = await SecureStore.getValueFor("refreshToken");
       const response = await axios.post(`${ENDPOINT}/auth/token/revoke`, {
-        refreshToken: refreshToken
-      })
-  
+        refreshToken: refreshToken,
+      });
+
       // Remove tokens from SecureStore and logout user
       await logoutUser();
       await GoogleSignin.signOut();
@@ -40,22 +40,20 @@ function FeedScreen() {
 
   const getEvents = async () => {
     const token = await SecureStore.getValueFor("accessToken");
-    // TODO: Uncomment/fix warning errors
-    // const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
-    //   withCredentials: true,
-    //   headers: {
-    //     Authorization: token,
-    //   },
-    // });
+    const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
+      headers: {
+        Authorization: token,
+      },
+    });
 
-    // const serializeEvents = response.data.events.map((event) => {
-    //   return {
-    //     ...event,
-    //     key: event.eventId,
-    //   };
-    // });
+    const serializeEvents = response.data.events.map((event) => {
+      return {
+        ...event,
+        key: event.eventId,
+      };
+    });
 
-    // setEvents(serializeEvents);
+    setEvents(serializeEvents);
   };
 
   useEffect(() => {
@@ -70,7 +68,7 @@ function FeedScreen() {
 
   const handleRenderItem = useCallback(({ item }) => {
     return (
-      <CardEvent
+      <EventCard
         title={item.title}
         description={item.description}
         location={item.location}
@@ -88,14 +86,13 @@ function FeedScreen() {
         <Text>{JSON.stringify(user)}</Text>
         <Button onPress={handleOnLogout} title="logout" />
       </Screen>
-      {/* TODO: Uncomment/fix warning errors
       <FlatList
         onRefresh={onRefresh}
         refreshing={refreshing}
         data={events}
         renderItem={handleRenderItem}
         keyExtractor={(item) => item.key}
-      /> */}
+      />
     </>
   );
 }

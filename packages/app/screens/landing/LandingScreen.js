@@ -56,15 +56,18 @@ function LandingScreen({ navigation, route }) {
         token: idToken,
       };
 
-      const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
+      const { data: response } = await axios.post(
+        `${ENDPOINT}/auth/google`,
+        body
+      );
 
-      if (data?.status == "success") {
-        await SecureStore.save("accessToken", data.data.accessToken);
-        await SecureStore.save("refreshToken", data.data.refreshToken);
+      if (response?.status == "success") {
+        await SecureStore.save("accessToken", response.data.accessToken);
+        await SecureStore.save("refreshToken", response.data.refreshToken);
         setUser({
           ...user,
           isLoggedIn: true,
-          data: data.data.user,
+          data: response.data.user,
         });
       }
     } catch (error) {

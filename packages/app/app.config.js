@@ -2,7 +2,7 @@ require("dotenv").config();
 
 module.exports = {
   name: "Icebreak",
-  slug: "app",
+  slug: "icebreak",
   owner: "icebreak",
   version: "1.0.0",
   orientation: "portrait",
@@ -42,7 +42,7 @@ module.exports = {
   },
   extra: {
     eas: {
-      projectId: "f4f6f4b7-bba5-4158-b984-01140d189c07",
+      projectId: "9753a4fe-f34e-4269-95b5-f6d0399ed1c8",
     },
     expoClientId: process.env.EXPO_CLIENT_ID,
     iosClientId: process.env.IOS_CLIENT_ID,

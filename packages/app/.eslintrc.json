@@ -1,7 +1,6 @@
 {
   "plugins": ["react", "react-native"],
   "env": {
-    "browser": true,
     "react-native/react-native": true
   },
   "parserOptions": {
@@ -9,5 +8,5 @@
     "ecmaVersion": 2023,
     "ecmaFeatures": { "jsx": true }
   },
-  "extends": "prettier"
+  "extends": ["prettier", "eslint:recommended", "plugin:react-native/all"]
 }

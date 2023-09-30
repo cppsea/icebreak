@@ -4,33 +4,35 @@ import { StyleSheet, Text, View } from "react-native";
 const styles = StyleSheet.create({
   description: {
     marginBottom: 10,
-    fontSize: 12
+    fontSize: 12,
   },
   eventTitle: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   smallText: {
     fontSize: 9,
-    color: 'grey'
-  }
+    color: "grey",
+  },
 });
 
-export default function EventCardText(props) {
+export default function EventCardText({
+  timeBegin,
+  timeEnd,
+  title,
+  location,
+  description,
+}) {
   return (
     <View>
       <Text style={styles.smallText}>
-        {props.timeBegin} - {props.timeEnd}
+        {timeBegin} - {timeEnd}
       </Text>
-      <Text style={styles.eventTitle}>
-        {props.title}
-      </Text>
-      <Text style={styles.smallText}>
-        📌 {props.location}
-      </Text>
+      <Text style={styles.eventTitle}>{title}</Text>
+      <Text style={styles.smallText}>📌 {location}</Text>
       <Text style={styles.description} numberOfLines={3}>
-        {props.description}
+        {description}
       </Text>
     </View>
-  )
+  );
 }
