@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "expo start --dev-client",
+    "cold-start": "expo start -c --dev-client",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
