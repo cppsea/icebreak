@@ -28,26 +28,29 @@ function LandingScreen() {
 
   const handleOnLoginWithGoogle = useCallback(async () => {
     try {
-      const result = await promptAsync();
+      const result = await promptAsync({ showInRecents: true });
 
       if (result.type !== "success") {
         throw new Error("Failed to authenticate with Google's OAuth");
       }
 
-      const id_token = result.params.id_token;
+      const idToken = result.params.id_token;
 
       const body = {
-        token: id_token,
+        token: idToken,
       };
 
-      SecureStore.save("google_auth_token", id_token);
-
-      const { data } = await axios.post(`${ENDPOINT}/auth/google`, body);
-      if (data?.success) {
+      const { data: response } = await axios.post(
+        `${ENDPOINT}/auth/google`,
+        body
+      );
+      if (response.status === "success") {
+        await SecureStore.save("accessToken", response.data.accessToken);
+        await SecureStore.save("refreshToken", response.data.refreshToken);
         setUser({
           ...user,
           isLoggedIn: true,
-          data: data.payload,
+          data: response.data.user,
         });
       }
     } catch (error) {
