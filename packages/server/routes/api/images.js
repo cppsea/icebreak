@@ -151,6 +151,13 @@ router.patch(
     const imageType = request.params.type;
     const imageUUID = request.params.UUID;
     const imageData = request.body.imageData;
+    if (!imageData.startsWith("/9j/")){
+      response.status(400).json({
+        status: "fail",
+        message: `Invalid Base64-encoded JPEG`,
+      });
+      return;
+    }
     if (!VALID_IMAGE_TYPES.includes(imageType)) {
       response.status(400).json({
         status: "fail",
