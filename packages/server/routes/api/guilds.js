@@ -21,6 +21,27 @@ router.get("/", AuthController.authenticate, async (request, response) => {
   }
 });
 
+router.post(
+  "/insert",
+  AuthController.authenticate,
+  async (request, response) => {
+    try {
+      const newGuild = await GuildController.insertGuild(request.body);
+      response.json({
+        status: "success",
+        data: {
+          newGuild: newGuild,
+        },
+      });
+    } catch (error) {
+      response.status(403).send({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 router.get(
   "/:guildId",
   AuthController.authenticate,
