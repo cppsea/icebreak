@@ -1,4 +1,5 @@
 import * as Express from "express";
+import { Send } from "express-serve-static-core";
 
 /**
  * @template T, V
@@ -7,16 +8,17 @@ import * as Express from "express";
  *
  * void = optional generic parameters
  */
-export type Request<T = void, V = void> = Express.Request<T, any, V>;
+export type APIRequest<T = void, V = void> = Express.Request<T, any, V>;
 
 /**
  * @template T
  * @param T - structure of response body
  */
-export interface Response<T = Record<string, any>> extends Express.Response {
-  json: (
-    body: SuccessResponseBody<T> | FailResponseBody<T> | ErrorResponseBody
-  ) => this;
+export interface APIResponse<T = Record<string, any>> extends Express.Response {
+  json: Send<
+    SuccessResponseBody<T> | FailResponseBody<T> | ErrorResponseBody,
+    this
+  >;
 }
 
 type SuccessResponseBody<T = Record<string, any>> = {
