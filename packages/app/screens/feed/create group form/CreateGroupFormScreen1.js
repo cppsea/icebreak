@@ -92,7 +92,7 @@ function CreateGroupFormScreen1({ navigation }) {
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0.2,
+      quality: 0,
       base64: true,
     });
   
@@ -183,8 +183,7 @@ function CreateGroupFormScreen1({ navigation }) {
             />
           </View>
 
-          <View>
-            {/* Replace with image/media picker */}
+          {/* <View>
             <Text style={styles.header}>
               Banner<Text style={styles.important}>* {bannerError}</Text>
             </Text>
@@ -200,7 +199,6 @@ function CreateGroupFormScreen1({ navigation }) {
           </View>
 
           <View>
-            {/* Replace with image/media picker */}
             <Text style={styles.header}>
               Icon<Text style={styles.important}>* {iconError}</Text>
             </Text>
@@ -213,7 +211,7 @@ function CreateGroupFormScreen1({ navigation }) {
                 <Button title="Select image" onPress={selectIconImage} />
               </View>
             </View>
-          </View>
+          </View> */}
 
           <View style={styles.btnContainer}>
             <Button

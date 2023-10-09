@@ -26,8 +26,6 @@ async function insertGuild(guildData) {
         location: guildData.location || null, // optional field
         website: guildData.websiteUrl || null,
         tags: guildData.tags,
-        banner: guildData.bannerUrl,
-        icon: guildData.iconUrl,
         media: media || null,
         isInviteOnly: guildData.isInviteOnly,
       },

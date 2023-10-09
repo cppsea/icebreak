@@ -10,8 +10,8 @@ export function GroupProvider({ children }) {
   const [title, setTitle] = useState("");
   const [handler, setHandler] = useState("");
   const [description, setDescription] = useState("");
-  const [bannerUrl, setBanner] = useState("");
-  const [iconUrl, setIcon] = useState("");
+  const [bannerUrl, setBanner] = useState("https://www.cppsea.com/assets/images/full-logo.png");
+  const [iconUrl, setIcon] = useState("https://www.cppsea.com/assets/images/seal-in-triangle.png");
 
   // 2nd SCREEN INPUTS
   const [category, setCategory] = useState("");
@@ -57,8 +57,8 @@ export function GroupProvider({ children }) {
         handler,
         description,
         category,
-        bannerUrl,
-        iconUrl,
+        // bannerUrl,
+        // iconUrl,
         location,
         websiteUrl,
         tags,
@@ -70,16 +70,30 @@ export function GroupProvider({ children }) {
         githubUrl,
         isInviteOnly,
       };
+
+      // submit images TODO
+      console.info(title);
+      console.info(handler);
+      console.info(description);
+
+      console.info(category);
+      console.info(location);
+      console.info(websiteUrl);
+
+      console.info(tags[0]);
+
+      // submits the rest of the data
       const response = await axios.post(`${ENDPOINT}/guilds/insert`, formData);
 
       Alert.alert('Success', 'Group created successfully!');
-      console.log("error");
 
       resetForm();
+      return true;
     } catch (error) {
       // handle errors
       Alert.alert('Error', 'Failed to create group.');
       console.error('Error submitting form:', error);
+      return false;
     }
   };
 
