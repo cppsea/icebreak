@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import {
   StyleSheet,
@@ -44,16 +44,21 @@ function SignUpScreen({ navigation, route }) {
         password: inputs.password,
       });
 
-      if (response?.data.status == "success") {
+      if (response.status === 200 && response?.data.status == "success") {
         navigation.navigate("LandingScreen", { email: inputs.email });
       }
     } catch (error) {
-      console.log(error.toString());
+      const responseData = error.response.data;
+      if (responseData.data && responseData.data.email === "A user with this email already exists." ) {
+        console.log(responseData?.data.email) 
+      } else {
+        console.log(JSON.stringify(error))
+      }
     }
   };
 
   // State to change the variable with the TextInput
-  const [inputs, setInputs] = React.useState({
+  const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
     firstName: "",
     lastName: "",
@@ -61,13 +66,7 @@ function SignUpScreen({ navigation, route }) {
     passwordConfirmation: "",
   });
 
-  const [errors, setErrors] = React.useState({});
-
-  const isValidEmail = (email) => {
-    const emailRE =
-      /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
-    return email.match(emailRE);
-  };
+  const [errors, setErrors] = useState({});
 
   const validateInput = () => {
     let isValid = true;
@@ -318,6 +317,12 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
 });
+
+const isValidEmail = (email) => {
+  const emailRE =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+  return email.match(emailRE);
+};
 
 SignUpScreen.propTypes = {
   navigation: PropTypes.object,

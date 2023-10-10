@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, createRef } from "react";
 import {
   View,
   Text,
@@ -30,7 +30,7 @@ function GroupTabs(props) {
 
   useEffect(() => {
     // Initialize viewRefs list with a ref for each view
-    viewRefs.current = tabs.map(() => React.createRef());
+    viewRefs.current = tabs.map(() => createRef());
   }, [tabs]);
 
   // Move the blue view whenever activeTab

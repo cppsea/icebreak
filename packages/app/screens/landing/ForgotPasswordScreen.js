@@ -24,11 +24,7 @@ function ForgotPasswordScreen({ route }) {
 
   const [errors, setErrors] = useState({});
 
-  const isValidEmail = (email) => {
-    const emailRE =
-      /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
-    return email.match(emailRE);
-  };
+
 
   const handleOnChange = (inputKey, text) => {
     setInputs((prevState) => ({ ...prevState, [inputKey]: text }));
@@ -119,6 +115,12 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
 });
+
+const isValidEmail = (email) => {
+  const emailRE =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+  return email.match(emailRE);
+};
 
 ForgotPasswordScreen.propTypes = {
   navigation: PropTypes.object,

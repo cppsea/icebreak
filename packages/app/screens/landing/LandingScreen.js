@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import {
   StyleSheet,
@@ -91,17 +91,11 @@ function LandingScreen({ navigation, route }) {
   };
 
   // State to change the variable with the TextInput
-  const [inputs, setInputs] = React.useState({
+  const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
     password: "",
   });
-  const [errors, setErrors] = React.useState({});
-
-  const isValidEmail = (email) => {
-    const emailRE =
-      /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
-    return email.match(emailRE);
-  };
+  const [errors, setErrors] = useState({});
 
   const validateInput = () => {
     let isValid = true;
@@ -151,7 +145,16 @@ function LandingScreen({ navigation, route }) {
         console.log(response?.data.message);
       }
     } catch (error) {
-      console.log(error.toString());
+      const responseData = error.response.data;
+      if (
+        responseData.data &&
+        (responseData.data.email === "A user with that email does not exist." ||
+          responseData.data.password === "Incorrect password")
+      ) {
+        handleError("email", "Invalid email or password.");
+      } else {
+        console.log(JSON.stringify(error));
+      }
     }
   };
 
@@ -328,6 +331,12 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
 });
+
+const isValidEmail = (email) => {
+  const emailRE =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+  return email.match(emailRE);
+};
 
 LandingScreen.propTypes = {
   navigation: PropTypes.object,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {forwardRef, useState} from "react";
 import {
   TextInput as RNTextInput,
   StyleSheet,
@@ -35,8 +35,8 @@ const styles = StyleSheet.create({
   },
 });
 
-const TextInput = React.forwardRef(function textInput(props, ref) {
-  const [hidePassword, setHidePassword] = React.useState(props.password);
+const TextInput = forwardRef(function textInput(props, ref) {
+  const [hidePassword, setHidePassword] = useState(props.password);
 
   return (
     <View testID={props.testID} style={[styles.container, props.container]}>
