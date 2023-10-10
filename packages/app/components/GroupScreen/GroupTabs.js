@@ -7,7 +7,12 @@ import {
   StyleSheet,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import PropTypes from "prop-types";
 
+const BLUE = "#3498DB";
+const LIGHT_GRAY = "#E4E4E4";
+const GRAY = "#717171";
+const DARK_GRAY = "#2C2C2C";
 
 const blueViewWidth = 60;
 const blueViewPosition = new Animated.ValueXY({
@@ -16,10 +21,8 @@ const blueViewPosition = new Animated.ValueXY({
 });
 
 function GroupTabs(props) {
-  
-  const [scrollOffset, setScrollOffset] = useState(0);
   const [isAnimationComplete, setIsAnimationComplete] = useState(true);
-  const { selectTab, tabs, activeTab } = props
+  const { selectTab, tabs, activeTab } = props;
 
   // viewRefs.current to access the list
   // viewRefs.current[index].current to access the view
@@ -38,37 +41,37 @@ function GroupTabs(props) {
 
   function animateBlueSlider() {
     getPosition()
-    .then((position) => {
-      Animated.spring(blueViewPosition, {
-        toValue: { x: position, y: blueViewPosition.y },
-        useNativeDriver: true,
-        speed: 100,
-        restSpeedThreshold: 100, 
-        restDisplacementThreshold: 40
-      }).start(({ finished }) => {
-        if (finished) {
-          setIsAnimationComplete(true);
-        }
+      .then((position) => {
+        Animated.spring(blueViewPosition, {
+          toValue: { x: position, y: blueViewPosition.y },
+          useNativeDriver: true,
+          speed: 100,
+          restSpeedThreshold: 100,
+          restDisplacementThreshold: 40,
+        }).start(({ finished }) => {
+          if (finished) {
+            setIsAnimationComplete(true);
+          }
+        });
+      })
+      .catch((error) => {
+        console.log(error);
       });
-    })
-    .catch((error) => {
-      console.log(error);
-    });
   }
 
   // Set starting position for Blue View
   useEffect(() => {
-    setIsAnimationComplete(true)
-  }, [])
+    setIsAnimationComplete(true);
+  }, []);
 
   function getPosition() {
     return new Promise((resolve, reject) => {
       for (let index = 0; index < tabs.length; index++) {
         if (tabs[index] == activeTab && viewRefs.current[index].current) {
           viewRefs.current[index].current.measure(
-            (x, y, width, height, pageX, pageY) => {
+            (x, y, width, height, pageX) => {
               const tabCenter = pageX + width / 2;
-              const position = tabCenter - (blueViewWidth / 2);
+              const position = tabCenter - blueViewWidth / 2;
               resolve(position);
             }
           );
@@ -79,10 +82,6 @@ function GroupTabs(props) {
     });
   }
 
-  function handleScroll(event) {
-    setScrollOffset(event.nativeEvent.contentOffset.x);
-  }
-
   return (
     <View style={props.style} testID={props.testID}>
       <View>
@@ -91,28 +90,23 @@ function GroupTabs(props) {
           style={styles.tabScrollView}
           horizontal
           showsHorizontalScrollIndicator={false}
-          scrollEventThrottle={16}
-          onScroll={handleScroll}
-        >
+          scrollEventThrottle={16}>
           <View style={styles.innerTabView}>
             {tabs.map((tab, index) => (
               <TouchableWithoutFeedback
                 key={index}
                 onPress={() => {
                   selectTab(tab);
-                }}
-              >
+                }}>
                 <View style={styles.tab} ref={viewRefs.current[index]}>
-                  <View style={{ alignItems: "center" }}>
+                  <View style={styles.tabTextContainer}>
                     <Text
                       style={[
                         styles.tabText,
                         {
-                          color:
-                            activeTab.name === tab.name ? "#2C2C2C" : "#717171",
+                          color: activeTab.name === tab.name ? DARK_GRAY : GRAY,
                         },
-                      ]}
-                    >
+                      ]}>
                       {tab.name}
                     </Text>
                   </View>
@@ -121,6 +115,7 @@ function GroupTabs(props) {
                     <View
                       style={[
                         styles.staticBlueView,
+                        // eslint-disable-next-line react-native/no-inline-styles
                         isAnimationComplete ? {} : { opacity: 0 },
                       ]}
                     />
@@ -133,12 +128,8 @@ function GroupTabs(props) {
 
         <Animated.View
           style={[
-            {
-              transform: blueViewPosition.getTranslateTransform(),
-              left: 0,
-              right: 0,
-            },
             styles.blueView,
+            // eslint-disable-next-line react-native/no-inline-styles
             isAnimationComplete ? { opacity: 0 } : {},
           ]}
         />
@@ -150,44 +141,58 @@ function GroupTabs(props) {
 }
 
 const styles = StyleSheet.create({
+  blueView: {
+    backgroundColor: BLUE,
+    borderRadius: 2,
+    height: 3,
+    left: 0,
+    marginTop: -2,
+    right: 0,
+    transform: blueViewPosition.getTranslateTransform(),
+    width: blueViewWidth,
+  },
+  bottomBorder: {
+    backgroundColor: LIGHT_GRAY,
+    height: 3,
+    width: "100%",
+  },
+  innerTabView: {
+    flexDirection: "row",
+  },
+  staticBlueView: {
+    backgroundColor: BLUE,
+    borderRadius: 2,
+    height: 3,
+    marginBottom: -10,
+    transform: [{ translateY: 7 }],
+    width: blueViewWidth,
+  },
   tab: {
     alignItems: "center",
-    paddingTop: 10,
     paddingBottom: 10,
+    paddingTop: 10,
+  },
+  tabScrollView: {
+    marginLeft: 5,
+    marginRight: 5,
   },
   tabText: {
     fontWeight: "600",
     paddingLeft: 10,
     paddingRight: 10,
   },
-  tabScrollView: {
-    marginLeft: 5,
-    marginRight: 5,
+  tabTextContainer: {
+    alignItems: "center",
   },
-  innerTabView: {
-    flexDirection: "row",
-  },
-  blueView: {
-    width: blueViewWidth,
-    height: 3,
-    backgroundColor: "#3498DB",
-    marginTop: -2,
-    borderRadius: 2,
-  },
-  staticBlueView: {
-    width: blueViewWidth,
-    height: 3,
-    backgroundColor: "#3498DB",
-    marginBottom: -10,
-    borderRadius: 2,
-    transform: [{ translateY: 7 }],
-  },
-  bottomBorder: {
-    height: 3,
-    width: "100%",
-    backgroundColor: "#E4E4E4",
-  },
-
 });
+
+GroupTabs.propTypes = {
+  activeTab: PropTypes.object,
+  selectTab: PropTypes.func,
+  size: PropTypes.number,
+  style: PropTypes.object,
+  tabs: PropTypes.arrayOf(PropTypes.object),
+  testID: PropTypes.string,
+};
 
 export default GroupTabs;

@@ -14,10 +14,6 @@ import GroupStack from "@app/screens/group/GroupStack";
 import ExploreStack from "@app/screens/explore/ExploreStack";
 import axios from "axios";
 
-const LINKING_CONFIG = {
-  prefixes: ["icebreak://"],
-};
-
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 

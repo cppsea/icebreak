@@ -8,5 +8,10 @@
     "ecmaVersion": 2023,
     "ecmaFeatures": { "jsx": true }
   },
-  "extends": ["prettier", "eslint:recommended", "plugin:react-native/all"]
+  "extends": [
+    "prettier",
+    "eslint:recommended",
+    "plugin:react-native/all",
+    "plugin:react/recommended"
+  ]
 }

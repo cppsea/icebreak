@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, Image, StyleSheet, View, FlatList } from "react-native";
+import { Text, Image, StyleSheet, FlatList } from "react-native";
 import axios from "axios";
 
 import Screen from "@app/components/Screen";
@@ -23,16 +23,19 @@ function FeedScreen() {
     try {
       // Revoke the refresh token
       const refreshToken = await SecureStore.getValueFor("refreshToken");
+      // eslint-disable-next-line no-unused-vars
       const response = await axios.post(`${ENDPOINT}/auth/token/revoke`, {
         refreshToken: refreshToken,
       });
 
-      // Remove tokens from SecureStore and logout user
-      await logoutUser();
-      await GoogleSignin.signOut();
-      setUser({
-        isLoggedIn: false,
-      });
+      if (response.status === 200) {
+        // Remove tokens from SecureStore and logout user
+        await logoutUser();
+        await GoogleSignin.signOut();
+        setUser({
+          isLoggedIn: false,
+        });
+      }
     } catch (error) {
       console.log(error);
     }
@@ -99,12 +102,9 @@ function FeedScreen() {
 
 const styles = StyleSheet.create({
   avatar: {
-    width: 80,
-    height: 80,
     borderRadius: 100,
-  },
-  h1: {
-    fontWeight: "bold",
+    height: 80,
+    width: 80,
   },
 });
 

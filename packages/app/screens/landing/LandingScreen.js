@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import axios from "axios";
 import {
   StyleSheet,
@@ -7,13 +7,11 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  Alert,
   TouchableOpacity,
   Platform,
 } from "react-native";
 
 import * as WebBrowser from "expo-web-browser";
-import * as Google from "expo-auth-session/providers/google";
 
 import Button from "@app/components/Button";
 import Screen from "@app/components/Screen";
@@ -22,24 +20,31 @@ import GoogleIcon from "@app/assets/google-icon";
 
 import { useUserContext } from "@app/utils/UserContext";
 import { ENDPOINT } from "@app/utils/constants";
-import { getUserInfo } from "@app/utils/datalayer";
 
-import EyeOff from "@app/assets/eye-line-off";
-import EyeOn from "@app/assets/eye-line-on";
 import * as SecureStore from "@app/utils/SecureStore";
 
 import Constants from "expo-constants";
 
 import {
   GoogleSignin,
-  GoogleSigninButton,
   statusCodes,
 } from "@react-native-google-signin/google-signin";
 
+import PropTypes from "prop-types";
+
 WebBrowser.maybeCompleteAuthSession();
+
+const BLUE = "#0b91e0";
+const DARK_GRAY = "#a3a3a3";
+const GRAY = "#c4c4c4";
+const LIGHT_GRAY = "#ebebeb";
 
 function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
+
+  useEffect(() => {
+    console.log("hello");
+  }, []);
 
   GoogleSignin.configure({
     webClientId: Constants.expoConfig.extra.webClientId,
@@ -94,7 +99,7 @@ function LandingScreen({ navigation, route }) {
 
   const isValidEmail = (email) => {
     const emailRE =
-      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
+      /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
     return email.match(emailRE);
   };
 
@@ -247,7 +252,7 @@ function LandingScreen({ navigation, route }) {
       <View style={styles.lineDivider} />
 
       <View style={styles.signupContainer}>
-        <Text>Don't have an account? </Text>
+        <Text>Don&#39;t have an account? </Text>
 
         <TouchableOpacity
           testID="signupButton"
@@ -263,65 +268,70 @@ function LandingScreen({ navigation, route }) {
 
 // Style sheet to keep all the styles in one place
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  component: {
     alignItems: "center",
+    borderRadius: 10,
+    height: 50,
     justifyContent: "center",
     width: "100%",
+  },
+  container: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
     paddingLeft: 20,
     paddingRight: 20,
-  },
-  signupContainer: {
-    flexDirection: "row",
-  },
-  component: {
-    height: 50,
     width: "100%",
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  textInput: {
-    backgroundColor: "#ebebeb",
-    borderWidth: 1,
-    paddingLeft: 10,
-    paddingRight: 10,
-    justifyContent: "space-between",
-    marginBottom: 7,
-  },
-  loginButton: {
-    borderColor: "#0b91e0",
-    backgroundColor: "#0b91e0",
-    marginTop: 30,
-  },
-  googleButton: {
-    borderWidth: 1,
-    borderColor: "#a3a3a3",
-  },
-  textButton: {
-    color: "#0b91e0",
-    fontWeight: "bold",
   },
   forgotPassContainer: {
     alignSelf: "flex-end",
   },
-  lineDivider: {
-    backgroundColor: "#c4c4c4",
-    height: 1,
-    width: "100%",
-    marginTop: 20,
-    marginBottom: 20,
+  googleButton: {
+    borderColor: DARK_GRAY,
+    borderWidth: 1,
   },
   imageStyle: {
     height: 20,
-    width: 20,
     marginRight: 10,
+    width: 20,
+  },
+  lineDivider: {
+    backgroundColor: GRAY,
+    height: 1,
+    marginBottom: 20,
+    marginTop: 20,
+    width: "100%",
+  },
+  loginButton: {
+    backgroundColor: BLUE,
+    borderColor: BLUE,
+    marginTop: 30,
   },
   logo: {
-    margin: 20,
-    fontWeight: "bold",
     fontSize: 40,
+    fontWeight: "bold",
+    margin: 20,
+  },
+  signupContainer: {
+    flexDirection: "row",
+  },
+  textButton: {
+    color: BLUE,
+    fontWeight: "bold",
+  },
+  textInput: {
+    backgroundColor: LIGHT_GRAY,
+    borderWidth: 1,
+    justifyContent: "space-between",
+    marginBottom: 7,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 });
+
+LandingScreen.propTypes = {
+  navigation: PropTypes.object,
+  route: PropTypes.object,
+};
 
 export default LandingScreen;

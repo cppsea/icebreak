@@ -2,25 +2,27 @@ import React from "react";
 import { Image, StyleSheet, View } from "react-native";
 import EventCardText from "./EventCardText";
 import EventCardRegistration from "./EventCardRegistration";
+import PropTypes from "prop-types";
+
+const cardColor = "white";
 
 const styles = StyleSheet.create({
   banner: {
-    width: "100%",
-    height: 144,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
+    height: 144,
     margin: 0,
+    width: "100%",
   },
   card: {
+    backgroundColor: cardColor,
     borderRadius: 15,
-    padding: 0,
     margin: 5,
-    backgroundColor: "white",
+    padding: 0,
   },
-  faceIcon: {
-    flex: 1,
-    justifyContent: "flex-start",
-    flexDirection: "row",
+  container: {
+    marginBottom: 0,
+    padding: 10,
   },
 });
 
@@ -39,8 +41,8 @@ const EventCard = ({
 
   return (
     <View style={[styles.card, style]}>
-      {banner ? <Image source={banner} style={banner} /> : null}
-      <View style={{ padding: 10, marginBottom: 0 }}>
+      {banner ? <Image source={banner} style={styles.banner} /> : null}
+      <View style={styles.container}>
         <EventCardText
           title={title}
           timeBegin={timeBegin}
@@ -52,6 +54,16 @@ const EventCard = ({
       </View>
     </View>
   );
+};
+
+EventCard.propTypes = {
+  banner: PropTypes.number,
+  description: PropTypes.string.isRequired,
+  location: PropTypes.string.isRequired,
+  style: PropTypes.object,
+  timeBegin: PropTypes.string.isRequired,
+  timeEnd: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default EventCard;

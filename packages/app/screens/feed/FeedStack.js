@@ -1,8 +1,8 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 // import FeedScreen from './FeedScreen';
-import FeedDrawer from './FeedDrawer';
+import FeedDrawer from "./FeedDrawer";
 
 const Feed = createNativeStackNavigator();
 

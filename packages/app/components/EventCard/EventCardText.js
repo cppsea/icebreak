@@ -1,28 +1,25 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
+import PropTypes from "prop-types";
+
+const GRAY = "grey";
 
 const styles = StyleSheet.create({
   description: {
-    marginBottom: 10,
     fontSize: 12,
+    marginBottom: 10,
   },
   eventTitle: {
     fontSize: 20,
     fontWeight: "bold",
   },
   smallText: {
+    color: GRAY,
     fontSize: 9,
-    color: "grey",
   },
 });
 
-export default function EventCardText({
-  timeBegin,
-  timeEnd,
-  title,
-  location,
-  description,
-}) {
+function EventCardText({ timeBegin, timeEnd, title, location, description }) {
   return (
     <View>
       <Text style={styles.smallText}>
@@ -36,3 +33,13 @@ export default function EventCardText({
     </View>
   );
 }
+
+EventCardText.propTypes = {
+  description: PropTypes.string,
+  location: PropTypes.string,
+  timeBegin: PropTypes.string,
+  timeEnd: PropTypes.string,
+  title: PropTypes.string,
+};
+
+export default EventCardText;
