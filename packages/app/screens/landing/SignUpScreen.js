@@ -30,10 +30,8 @@ import * as SecureStore from "@app/utils/SecureStore";
 import Constants from "expo-constants";
 import DividerWithText from "@app/components/DividerWithText";
 
-WebBrowser.maybeCompleteAuthSession();
 
 function SignUpScreen({ navigation, route }) {
-  const { user, setUser } = useUserContext();
 
   const register = async () => {
     console.log(
@@ -50,6 +48,9 @@ function SignUpScreen({ navigation, route }) {
 
       if (response?.data.status == "success") {
         navigation.navigate("LandingScreen", { email: inputs.email });
+      }
+      else{
+        
       }
     } catch (error) {
       console.log(error.toString());
