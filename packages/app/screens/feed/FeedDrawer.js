@@ -4,12 +4,16 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { StyleSheet, View, Text, Image } from "react-native";
+import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
 import FeedScreen from "./FeedScreen";
 import { useUserContext } from "@app/utils/UserContext";
 
 import Profile from "./feed_tabs/Profile";
 import Settings from "./feed_tabs/Settings";
+
+import PropTypes from "prop-types";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 const Feed = createDrawerNavigator();
 
@@ -26,11 +30,23 @@ function FeedDrawer() {
         testID="navigation-drawer-item"
         name="Feed"
         component={FeedScreen}
-        options={{
+        options={({ navigation }) => ({
+          // to hide the feed in the drawer
           drawerLabelStyle: { fontSize: 100 },
           drawerLabel: "Home",
           drawerItemStyle: { display: "none" },
-        }}
+          headerLeft: () => (
+            <TouchableOpacity
+              style={styles.drawerButton}
+              onPress={() => navigation.openDrawer()}>
+              <Ionicons
+                name="reorder-three-outline"
+                size={32}
+                color="#6C6C6C"
+              />
+            </TouchableOpacity>
+          ),
+        })}
       />
       <Feed.Screen
         name="Profile"
@@ -72,6 +88,9 @@ const styles = StyleSheet.create({
     height: 40,
     width: 40,
   },
+  drawerButton: {
+    marginLeft: 18
+  },
   drawerDisplayName: {
     color: DARK_BLUE,
     fontSize: 20,
@@ -87,5 +106,9 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
   },
 });
+
+FeedDrawer.propTypes = {
+  navigation: PropTypes.object,
+};
 
 export default FeedDrawer;

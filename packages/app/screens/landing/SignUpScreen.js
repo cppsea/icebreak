@@ -22,11 +22,6 @@ import { ENDPOINT } from "@app/utils/constants";
 
 import DividerWithText from "@app/components/DividerWithText";
 
-<<<<<<< HEAD
-
-function SignUpScreen({ navigation, route }) {
-
-=======
 import PropTypes from "prop-types";
 
 const BLUE = "#0b91e0";
@@ -36,7 +31,6 @@ const GRAY = "#ebebeb";
 WebBrowser.maybeCompleteAuthSession();
 
 function SignUpScreen({ navigation, route }) {
->>>>>>> 720ed725b829dde5be409b6fc717958afa85976a
   const register = async () => {
     console.log(
       `Attempting Register with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local/register`
@@ -53,15 +47,15 @@ function SignUpScreen({ navigation, route }) {
       if (response.status === 200 && response?.data.status == "success") {
         navigation.navigate("LandingScreen", { email: inputs.email });
       }
-      else{
-        
-      }
     } catch (error) {
       const responseData = error.response.data;
-      if (responseData.data && responseData.data.email === "A user with this email already exists." ) {
-        console.log(responseData?.data.email) 
+      if (
+        responseData.data &&
+        responseData.data.email === "A user with this email already exists."
+      ) {
+        console.log(responseData?.data.email);
       } else {
-        console.log(JSON.stringify(error))
+        console.log(JSON.stringify(error));
       }
     }
   };

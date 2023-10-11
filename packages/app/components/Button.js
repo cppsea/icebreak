@@ -39,7 +39,7 @@ Button.propTypes = {
   fontColor: PropTypes.string,
   fontWeight: PropTypes.string,
   icon: PropTypes.node,
-  textStyle: PropTypes.object,
+  textStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   title: PropTypes.string,
 };
 

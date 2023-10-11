@@ -47,7 +47,7 @@ function GroupIcon(props) {
 
 GroupIcon.propTypes = {
   backgroundColor: PropTypes.string,
-  icon: PropTypes.string,
+  icon: PropTypes.number,
   size: PropTypes.number,
   testID: PropTypes.string,
 };

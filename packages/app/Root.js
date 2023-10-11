@@ -14,13 +14,15 @@ import GroupStack from "@app/screens/group/GroupStack";
 import ExploreStack from "@app/screens/explore/ExploreStack";
 import axios from "axios";
 
+import { logoutUser } from "@app/utils/datalayer";
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
 function TabNavigation() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Feed" component={FeedStack} />
+      <Tab.Screen name="Feedd" component={FeedStack} />
       <Tab.Screen name="Explore" component={ExploreStack} />
       <Tab.Screen name="Orgs" component={GroupStack} />
     </Tab.Navigator>
@@ -45,6 +47,7 @@ function App() {
         return;
       }
     } catch (err) {
+      await logoutUser();
       console.log(
         "Something went wrong trying to auto log in with stored access token"
       );

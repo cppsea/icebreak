@@ -58,12 +58,12 @@ const EventCard = ({
 
 EventCard.propTypes = {
   banner: PropTypes.number,
-  description: PropTypes.string.isRequired,
-  location: PropTypes.string.isRequired,
-  style: PropTypes.object,
-  timeBegin: PropTypes.string.isRequired,
-  timeEnd: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
+  description: PropTypes.string,
+  location: PropTypes.string,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  timeBegin: PropTypes.string,
+  timeEnd: PropTypes.string,
+  title: PropTypes.string,
 };
 
 export default EventCard;

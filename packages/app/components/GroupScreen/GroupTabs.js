@@ -190,7 +190,7 @@ GroupTabs.propTypes = {
   activeTab: PropTypes.object,
   selectTab: PropTypes.func,
   size: PropTypes.number,
-  style: PropTypes.object,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   tabs: PropTypes.arrayOf(PropTypes.object),
   testID: PropTypes.string,
 };

@@ -75,9 +75,9 @@ const TextInput = forwardRef(function textInput(props, ref) {
 
 TextInput.propTypes = {
   testID: PropTypes.string,
-  password: PropTypes.string,
+  password: PropTypes.bool,
   container: PropTypes.object,
-  style: PropTypes.object,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   error: PropTypes.string,
   borderColor: PropTypes.string,
   value: PropTypes.string,

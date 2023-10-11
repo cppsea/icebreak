@@ -46,7 +46,7 @@ function EventsScreen(props) {
 }
 
 EventsScreen.propTypes = {
-  style: PropTypes.object,
+  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   testID: PropTypes.string,
 };
 

@@ -11,7 +11,7 @@ function FeedStack() {
     <Feed.Navigator
       screenOptions={{ headerShown: false }}
       initialRouteName="LandingScreen">
-      <Feed.Screen name="FeedDrawer" component={FeedDrawer} />
+      <Feed.Screen name="FeedDrawer" component={FeedDrawer}/>
     </Feed.Navigator>
   );
 }
