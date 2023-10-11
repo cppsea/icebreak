@@ -1,4 +1,4 @@
-import React, {forwardRef, useState} from "react";
+import React, { forwardRef, useState } from "react";
 import {
   TextInput as RNTextInput,
   StyleSheet,
@@ -83,7 +83,7 @@ TextInput.propTypes = {
   value: PropTypes.string,
   onChangeText: PropTypes.func,
   onSubmitEditing: PropTypes.func,
-  placeholder: PropTypes.placeholder,
+  placeholder: PropTypes.string,
 };
 
 export default TextInput;

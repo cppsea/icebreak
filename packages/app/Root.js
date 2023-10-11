@@ -22,7 +22,7 @@ const Stack = createNativeStackNavigator();
 function TabNavigation() {
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Feedd" component={FeedStack} />
+      <Tab.Screen name="Feed" component={FeedStack} />
       <Tab.Screen name="Explore" component={ExploreStack} />
       <Tab.Screen name="Orgs" component={GroupStack} />
     </Tab.Navigator>
@@ -34,6 +34,10 @@ function App() {
 
   const currentSession = async () => {
     let accessToken = await SecureStore.getValueFor("accessToken");
+
+    if (!accessToken) {
+      return;
+    }
 
     try {
       const userResponse = await getUserInfo(accessToken);
@@ -51,6 +55,10 @@ function App() {
       console.log(
         "Something went wrong trying to auto log in with stored access token"
       );
+    }
+
+    if (!refreshToken) {
+      return;
     }
 
     // If access token is invalid/expired, try to get a new one with the refresh token
@@ -74,6 +82,7 @@ function App() {
         return;
       }
     } catch (err) {
+      await logoutUser();
       console.log(
         "Something went wrong trying to auto log in with newly fetched access token from stored refresh token"
       );

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 import {
   StyleSheet,
@@ -41,10 +41,6 @@ const LIGHT_GRAY = "#ebebeb";
 
 function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
-
-  useEffect(() => {
-    console.log("hello");
-  }, []);
 
   GoogleSignin.configure({
     webClientId: Constants.expoConfig.extra.webClientId,
