@@ -92,34 +92,7 @@ router.get(
 
 router.post("/local/register", async (request, response) => {
   try {
-    const { firstName, lastName, email, avatar, password } = request.body;
-
-    if (firstName == undefined) {
-      return response.status(400).json({
-        status: "fail",
-        data: {
-          email: "First name not provided",
-        },
-      });
-    }
-
-    if (lastName == undefined) {
-      return response.status(400).json({
-        status: "fail",
-        data: {
-          email: "Last name not provided",
-        },
-      });
-    }
-
-    if (avatar == undefined) {
-      return response.status(400).json({
-        status: "fail",
-        data: {
-          email: "Avatar URL not provided",
-        },
-      });
-    }
+    const { email, password } = request.body;
 
     if (email == undefined) {
       return response.status(400).json({

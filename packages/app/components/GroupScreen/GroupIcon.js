@@ -1,17 +1,19 @@
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
+import PropTypes from "prop-types";
+
 const styles = StyleSheet.create({
   iconContainer: {
     alignItems: "center",
     justifyContent: "center",
   },
   iconStyle: {
-    resizeMode: "cover",
     borderRadius: 5,
-    position: "absolute",
-    top: 0,
     left: 0,
+    position: "absolute",
+    resizeMode: "cover",
+    top: 0,
   },
 });
 
@@ -25,7 +27,9 @@ const styles = StyleSheet.create({
  */
 function GroupIcon(props) {
   return (
-    <View style={[styles.iconContainer, { marginTop: -props.size / 2 }]} testID={props.testID}>
+    <View
+      style={[styles.iconContainer, { marginTop: -props.size / 2 }]}
+      testID={props.testID}>
       <Image
         source={props.icon}
         style={[
@@ -40,5 +44,12 @@ function GroupIcon(props) {
     </View>
   );
 }
+
+GroupIcon.propTypes = {
+  backgroundColor: PropTypes.string,
+  icon: PropTypes.string,
+  size: PropTypes.number,
+  testID: PropTypes.string,
+};
 
 export default GroupIcon;

@@ -14,10 +14,6 @@ import GroupStack from "@app/screens/group/GroupStack";
 import ExploreStack from "@app/screens/explore/ExploreStack";
 import axios from "axios";
 
-const LINKING_CONFIG = {
-  prefixes: ["icebreak://"],
-};
-
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -35,47 +31,51 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
+    let accessToken = await SecureStore.getValueFor("accessToken");
 
-    const accessToken = await SecureStore.getValueFor("accessToken");
-    const refreshToken = await SecureStore.getValueFor("refreshToken");
-  
-    if (accessToken) {
-      const payload = await getUserInfo(accessToken);
-    
-      if (payload) {
+    try {
+      const userResponse = await getUserInfo(accessToken);
+
+      if (userResponse.status === "success") {
         setUser({
           ...user,
           isLoggedIn: true,
-          data: payload,
+          data: userResponse.data.user,
         });
         return;
       }
+    } catch (err) {
+      console.log(
+        "Something went wrong trying to auto log in with stored access token"
+      );
     }
-    
-    // If access token is invalid/expired, try to get a new one with the refresh token
-    if (refreshToken) {
-      const { data } = await axios.post(`${ENDPOINT}/auth/token`, {
-        refreshToken: refreshToken
-      });
-    
-      if (data.status === "success") {
-        await SecureStore.save("accessToken", data.data.accessToken);
-        await SecureStore.save("refreshToken", data.data.refreshToken);
-    
-        const payload = await getUserInfo(data.data.accessToken);
-    
-        if (payload) {
-          setUser({
-            ...user,
-            isLoggedIn: true,
-            data: payload,
-          });
-          return;
-        }
-      }
-    }      
-  };
 
+    // If access token is invalid/expired, try to get a new one with the refresh token
+    const refreshToken = await SecureStore.getValueFor("refreshToken");
+    try {
+      const { data: response } = await axios.post(`${ENDPOINT}/auth/token`, {
+        refreshToken: refreshToken,
+      });
+
+      await SecureStore.save("accessToken", response.data.accessToken);
+      await SecureStore.save("refreshToken", response.data.refreshToken);
+
+      const userResponse = await getUserInfo(response.data.accessToken);
+
+      if (userResponse.status === "success") {
+        setUser({
+          ...user,
+          isLoggedIn: true,
+          data: userResponse.data.user,
+        });
+        return;
+      }
+    } catch (err) {
+      console.log(
+        "Something went wrong trying to auto log in with newly fetched access token from stored refresh token"
+      );
+    }
+  };
 
   useEffect(() => {
     currentSession();

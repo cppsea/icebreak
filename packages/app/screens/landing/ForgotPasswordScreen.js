@@ -1,36 +1,30 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 
 import {
   StyleSheet,
-  View,
   Text,
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
-  Alert,
-  TouchableOpacity,
   Platform,
+  Button,
 } from "react-native";
 
-import Button from "@app/components/Button";
 import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
-import { useUserContext } from "@app/utils/UserContext";
-import { getUserInfo } from "@app/utils/datalayer";
 
-function ForgotPasswordScreen({navigation, route }) {
+import PropTypes from "prop-types";
 
+const LIGHT_GRAY = "#ebebeb";
+
+function ForgotPasswordScreen({ route }) {
   const [inputs, setInputs] = useState({
-    email: route.params?.email ?? ""
+    email: route.params?.email ?? "",
   });
 
   const [errors, setErrors] = useState({});
 
-  const isValidEmail = (email) => {
-    const emailRE =
-      /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i;
-    return email.match(emailRE);
-  };
+
 
   const handleOnChange = (inputKey, text) => {
     setInputs((prevState) => ({ ...prevState, [inputKey]: text }));
@@ -38,8 +32,6 @@ function ForgotPasswordScreen({navigation, route }) {
   const handleError = (inputKey, error) => {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
-
-
 
   const validateInput = () => {
     let isValid = true;
@@ -56,8 +48,9 @@ function ForgotPasswordScreen({navigation, route }) {
       handleError("email", "Please enter a valid email.");
       isValid = false;
     }
-  }
-  
+
+    return isValid;
+  };
 
   return (
     <Screen style={styles.container}>
@@ -65,53 +58,73 @@ function ForgotPasswordScreen({navigation, route }) {
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.container}>
-            
           <Text>This is {route.params.name}</Text>
-          
+
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
             container={{ marginBottom: 10 }}
             style={[styles.component, styles.textInput]}
             borderColor="#cccccc"
-            onChangeText=
-            {(text) => {
+            onChangeText={(text) => {
               handleOnChange("email", text);
               handleError("email", null);
             }}
             error={errors.email}
-            placeholder="Email">
-          </TextInput>
-        </KeyboardAvoidingView>
+            placeholder="Email"></TextInput>
 
+          <Button
+            testID="loginButton"
+            title="Log In"
+            onPress={() => {
+              validateInput();
+            }}
+            underlayColor="#0e81c4"
+            fontColor="#ffffff"
+            fontWeight="bold"
+            style={[styles.loginButton, styles.component]}
+            textStyle={styles.boldText}
+          />
+        </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </Screen>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    width: "100%",
-    paddingLeft: 20,
-    paddingRight: 20
-  },
   component: {
-    height: 50,
-    width: "100%",
-    borderRadius: 10,
     alignItems: "center",
+    borderRadius: 10,
+    height: 50,
     justifyContent: "center",
+    width: "100%",
+  },
+  container: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+    paddingLeft: 20,
+    paddingRight: 20,
+    width: "100%",
   },
   textInput: {
-    backgroundColor: "#ebebeb",
+    backgroundColor: LIGHT_GRAY,
     borderWidth: 1,
-    paddingLeft: 10,
-    paddingRight: 10,
     justifyContent: "space-between",
     marginBottom: 7,
+    paddingLeft: 10,
+    paddingRight: 10,
   },
 });
+
+const isValidEmail = (email) => {
+  const emailRE =
+    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+  return email.match(emailRE);
+};
+
+ForgotPasswordScreen.propTypes = {
+  navigation: PropTypes.object,
+  route: PropTypes.object,
+};
 
 export default ForgotPasswordScreen;

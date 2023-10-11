@@ -1,7 +1,7 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-import ExploreScreen from './ExploreScreen';
+import ExploreScreen from "./ExploreScreen";
 
 const Explore = createNativeStackNavigator();
 
