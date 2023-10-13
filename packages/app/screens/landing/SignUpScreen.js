@@ -17,7 +17,8 @@ import Button from "@app/components/Button";
 import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
 import GoogleIcon from "@app/assets/google-icon";
-import handleOnLoginWithGoogle from "@app/utils/handleOnLoginWithGoogle";
+import { useGoogleLogin } from "@app/utils/useGoogleLogin";
+import { useUserContext } from "@app/utils/UserContext";
 
 import { ENDPOINT } from "@app/utils/constants";
 
@@ -32,6 +33,8 @@ const GRAY = "#ebebeb";
 WebBrowser.maybeCompleteAuthSession();
 
 function SignUpScreen({ navigation, route }) {
+  const { user, setUser } = useUserContext();
+
   const register = async () => {
     console.log(
       `Attempting Register with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local/register`
@@ -201,7 +204,7 @@ function SignUpScreen({ navigation, route }) {
             testID="googleButton"
             title="Continue with Google"
             underlayColor="#ebebeb"
-            onPress={() => handleOnLoginWithGoogle()} 
+            onPress={() => useGoogleLogin(user, setUser)}
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
             imageStyle={styles.imageStyle}

@@ -16,8 +16,14 @@ import axios from "axios";
 
 import { logoutUser } from "@app/utils/datalayer";
 
+import Constants from "expo-constants";
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
+
+import {
+  GoogleSignin,
+} from "@react-native-google-signin/google-signin";
 
 function TabNavigation() {
   return (
@@ -90,6 +96,11 @@ function App() {
   };
 
   useEffect(() => {
+    GoogleSignin.configure({
+      webClientId: Constants.expoConfig.extra.webClientId,
+      iosClientId: Constants.expoConfig.extra.iosClientId,
+    });
+    
     currentSession();
   }, []);
 

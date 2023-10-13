@@ -23,12 +23,7 @@ import { ENDPOINT } from "@app/utils/constants";
 
 import * as SecureStore from "@app/utils/SecureStore";
 
-import Constants from "expo-constants";
-
-import {
-  GoogleSignin,
-  statusCodes,
-} from "@react-native-google-signin/google-signin";
+import { useGoogleLogin } from "@app/utils/useGoogleLogin";
 
 import PropTypes from "prop-types";
 
@@ -41,50 +36,6 @@ const LIGHT_GRAY = "#ebebeb";
 
 function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
-
-  GoogleSignin.configure({
-    webClientId: Constants.expoConfig.extra.webClientId,
-    iosClientId: Constants.expoConfig.extra.iosClientId,
-  });
-
-  let handleOnLoginWithGoogle = async () => {
-    try {
-      await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
-      const idToken = userInfo.idToken;
-
-      const body = {
-        token: idToken,
-      };
-
-      const { data: response } = await axios.post(
-        `${ENDPOINT}/auth/google`,
-        body
-      );
-
-      if (response?.status == "success") {
-        await SecureStore.save("accessToken", response.data.accessToken);
-        await SecureStore.save("refreshToken", response.data.refreshToken);
-        setUser({
-          ...user,
-          isLoggedIn: true,
-          data: response.data.user,
-        });
-      }
-    } catch (error) {
-      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-        console.log("Google Error: User cancelled the login flow");
-      } else if (error.code === statusCodes.IN_PROGRESS) {
-        console.log(
-          "Google Error: Operation (e.g. sign in) is in progress already"
-        );
-      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-        console.log("Google Error: Play services not available or outdated");
-      } else {
-        console.log(error);
-      }
-    }
-  };
 
   // State to change the variable with the TextInput
   const [inputs, setInputs] = useState({
@@ -238,7 +189,7 @@ function LandingScreen({ navigation, route }) {
           <Button
             testID="googleButton"
             title="Continue with Google"
-            onPress={() => handleOnLoginWithGoogle()}
+            onPress={() => useGoogleLogin(user, setUser)}
             underlayColor="#ebebeb"
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
