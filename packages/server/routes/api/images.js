@@ -47,6 +47,15 @@ router.put(
       });
       return;
     }
+    if (!imageData.startsWith("/9j/")) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageData: "Invalid Base64-encoded JPEG.",
+        },
+      });
+      return;
+    }
     if (!(await ImagesController.exists(imageType, imageUUID))) {
       response.status(400).json({
         status: "fail",
@@ -54,6 +63,7 @@ router.put(
           imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
         },
       });
+      return;
     }
 
     try {
