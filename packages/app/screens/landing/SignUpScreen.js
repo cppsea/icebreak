@@ -17,6 +17,7 @@ import Button from "@app/components/Button";
 import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
 import GoogleIcon from "@app/assets/google-icon";
+import handleOnLoginWithGoogle from "@app/utils/handleOnLoginWithGoogle";
 
 import { ENDPOINT } from "@app/utils/constants";
 
@@ -37,8 +38,6 @@ function SignUpScreen({ navigation, route }) {
     );
     try {
       const response = await axios.post(`${ENDPOINT}/auth/local/register`, {
-        firstName: inputs.firstName,
-        lastName: inputs.lastName,
         email: inputs.email,
         avatar: "avatar",
         password: inputs.password,
@@ -63,8 +62,6 @@ function SignUpScreen({ navigation, route }) {
   // State to change the variable with the TextInput
   const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
-    firstName: "",
-    lastName: "",
     password: "",
     passwordConfirmation: "",
   });
@@ -84,16 +81,6 @@ function SignUpScreen({ navigation, route }) {
       isValid = false;
     } else if (!isValidEmail(inputs.email)) {
       handleError("email", "Please enter a valid email.");
-      isValid = false;
-    }
-
-    if (!inputs.firstName) {
-      handleError("firstName", "Please enter your first name.");
-      isValid = false;
-    }
-
-    if (!inputs.lastName) {
-      handleError("lastName", "Please enter your last name.");
       isValid = false;
     }
 
@@ -162,36 +149,6 @@ function SignUpScreen({ navigation, route }) {
           />
 
           <TextInput
-            testID="firstNameInput"
-            value={inputs["firstName"]}
-            container={{ marginBottom: 10 }}
-            style={[styles.component, styles.textInput]}
-            borderColor="#cccccc"
-            onChangeText={(text) => {
-              handleOnChange("firstName", text);
-              handleError("firstName", null);
-            }}
-            error={errors.firstName}
-            placeholder="First Name"
-            onSubmitEditing={validateInput}
-          />
-
-          <TextInput
-            testID="lastNameInput"
-            value={inputs["lastName"]}
-            container={{ marginBottom: 10 }}
-            style={[styles.component, styles.textInput]}
-            borderColor="#cccccc"
-            onChangeText={(text) => {
-              handleOnChange("lastName", text);
-              handleError("lastName", null);
-            }}
-            error={errors.lastName}
-            placeholder="Last Name"
-            onSubmitEditing={validateInput}
-          />
-
-          <TextInput
             testID="passwordInput"
             value={inputs["password"]}
             container={{ marginBottom: 10 }}
@@ -244,7 +201,7 @@ function SignUpScreen({ navigation, route }) {
             testID="googleButton"
             title="Continue with Google"
             underlayColor="#ebebeb"
-            onPress={() => {}} //TODO: Implement Google Sign Up
+            onPress={() => handleOnLoginWithGoogle()} 
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
             imageStyle={styles.imageStyle}

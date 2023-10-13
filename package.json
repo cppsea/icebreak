@@ -18,7 +18,10 @@
     "server:test": "yarn workspace server test",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
-    "dev": "node ./scripts/run.js"
+    "dev": "node ./scripts/run.js",
+    "start": "expo start --dev-client",
+    "android": "expo run:android",
+    "ios": "expo run:ios"
   },
   "description": "organization engagement platform",
   "main": "index.js",
@@ -27,8 +30,16 @@
   "packageManager": "yarn@3.2.3",
   "devDependencies": {
     "eslint": "8.39.0",
-    "eslint-config-prettier": "^9.0.0",
-    "prettier": "2.8.8"
+    "eslint-config-prettier": "8.8.0",
+    "prettier": "2.8.8",
+    "@babel/core": "^7.12.9"
   },
-  "repository": "https://github.com/cppsea/icebreak.git"
+  "repository": "https://github.com/cppsea/icebreak.git",
+  "dependencies": {
+    "expo": "~47.0.14",
+    "expo-splash-screen": "~0.17.5",
+    "expo-status-bar": "~1.4.2",
+    "react": "18.1.0",
+    "react-native": "0.70.8"
+  }
 }
