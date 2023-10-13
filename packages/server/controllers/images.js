@@ -5,6 +5,7 @@ const {
   GetObjectCommand,
   DeleteObjectCommand,
 } = require("@aws-sdk/client-s3");
+const prisma = require("../prisma/prisma");
 
 const EXPIRATION_IN_SECONDS = 3600;
 
@@ -51,7 +52,7 @@ async function remove(imageType, imageUUID) {
 }
 
 async function update(imageType, imageData, imageUUID) {
-  const key = imageType + "." + imageUUID + ".jpg"; 
+  const key = imageType + "." + imageUUID + ".jpg";
   const body = Buffer.from(imageData, "base64");
   const patchObjectCommand = new PutObjectCommand({
     Bucket: "icebreak-assets",
@@ -67,9 +68,35 @@ async function update(imageType, imageData, imageUUID) {
     expiresIn: EXPIRATION_IN_SECONDS,
   });
 }
+
+async function exists(imageType, imageUUID) {
+  switch (imageType) {
+    case "user_icon":
+      return !!(await prisma.users.findUnique({
+        where: {
+          userId: imageUUID,
+        },
+      }));
+    case "guild_icon":
+    case "guild_banner":
+      return !!(await prisma.guilds.findUnique({
+        where: {
+          guildId: imageUUID,
+        },
+      }));
+    case "event_banner":
+      return !!(await prisma.events.findUnique({
+        where: {
+          eventId: imageUUID,
+        },
+      }));
+  }
+}
+
 module.exports = {
   upload,
   retrieve,
   remove,
   update,
+  exists,
 };

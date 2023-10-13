@@ -19,7 +19,7 @@ router.put(
     const imageType = request.params.type;
     const imageUUID = request.params.UUID;
     const imageData = request.body.imageData;
-    
+
     if (!VALID_IMAGE_TYPES.includes(imageType)) {
       response.status(400).json({
         status: "fail",
@@ -47,9 +47,21 @@ router.put(
       });
       return;
     }
+    if (!(await ImagesController.exists(imageType, imageUUID))) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
+        },
+      });
+    }
 
     try {
-      const url = await ImagesController.upload(imageType, imageUUID, imageData);
+      const url = await ImagesController.upload(
+        imageType,
+        imageUUID,
+        imageData
+      );
       response.status(200).json({
         status: "success",
         data: {
@@ -129,7 +141,10 @@ router.delete(
       return;
     }
     try {
-      const deleteResponse = await ImagesController.remove(imageType, imageUUID);
+      const deleteResponse = await ImagesController.remove(
+        imageType,
+        imageUUID
+      );
       console.log(deleteResponse);
       response.status(200).json({
         status: "success",
@@ -151,7 +166,7 @@ router.patch(
     const imageType = request.params.type;
     const imageUUID = request.params.UUID;
     const imageData = request.body.imageData;
-    if (!imageData.startsWith("/9j/")){
+    if (!imageData.startsWith("/9j/")) {
       response.status(400).json({
         status: "fail",
         message: `Invalid Base64-encoded JPEG`,
@@ -184,7 +199,11 @@ router.patch(
       return;
     }
     try {
-      const url = await ImagesController.update(imageType, imageData, imageUUID);
+      const url = await ImagesController.update(
+        imageType,
+        imageData,
+        imageUUID
+      );
       response.status(200).json({
         status: "success",
         data: {
