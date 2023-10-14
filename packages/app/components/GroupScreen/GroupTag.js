@@ -1,18 +1,22 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
+import PropTypes from "prop-types";
+
+const BLUE = "#3498DB";
+const LIGHT_GRAY = "#E4E4E4";
 
 const styles = StyleSheet.create({
   tagContainer: {
-    justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#3498DB",
+    backgroundColor: BLUE,
     borderRadius: 5,
-    marginRight: 7,
+    justifyContent: "center",
     marginBottom: 4,
+    marginRight: 7,
   },
   textStyle: {
+    color: LIGHT_GRAY,
     fontSize: 12,
-    color: "#E4E4E4",
     paddingHorizontal: 5,
     paddingVertical: 2,
   },
@@ -31,5 +35,9 @@ function GroupTag(props) {
     </View>
   );
 }
+
+GroupTag.propTypes = {
+  text: PropTypes.string,
+};
 
 export default GroupTag;
