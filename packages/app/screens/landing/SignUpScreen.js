@@ -36,9 +36,6 @@ function SignUpScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
 
   const register = async () => {
-    console.log(
-      `Attempting Register with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local/register`
-    );
     try {
       const response = await axios.post(`${ENDPOINT}/auth/local/register`, {
         email: inputs.email,

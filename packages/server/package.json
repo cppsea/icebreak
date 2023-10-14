@@ -22,8 +22,6 @@
     "google-auth-library": "^8.5.2",
     "ioredis": "^5.3.2",
     "jsonwebtoken": "^8.5.1",
-    "passport": "^0.6.0",
-    "passport-google-oauth20": "^2.0.0",
     "pg": "^8.8.0",
     "redis": "^4.6.7",
     "uniqid": "^5.4.0",

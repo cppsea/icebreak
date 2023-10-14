@@ -1,28 +1,11 @@
 const express = require("express");
-const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
 const bcrypt = require("bcrypt");
 
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
 const { checkInvalidToken, addToTokenBlacklist } = require("../../utils/redis");
-
-passport.use(
-  new GoogleStrategy(
-    {
-      clientID: process.env.WEB_CLIENT_ID,
-      clientSecret: process.env.WEB_CLIENT_SECRET,
-      callbackURL: "http://localhost:5050/api/auth/google/callback",
-    },
-    AuthController.create
-  )
-);
-
-passport.serializeUser(AuthController.serialize);
-passport.deserializeUser(AuthController.deserialize);
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   const accessToken = token.generateAccessToken(request.user);
@@ -77,18 +60,6 @@ router.post("/google", AuthController.login, async (request, response) => {
     });
   }
 });
-
-router.get(
-  "/google/callback",
-  passport.authenticate("google", {
-    failureRedirect: "icebreak://",
-    session: false,
-  }),
-  (request, response) => {
-    const newToken = token.generate(request.user);
-    response.redirect(`icebreak://login?token=${newToken}`);
-  }
-);
 
 router.post("/local/register", async (request, response) => {
   try {

@@ -71,9 +71,6 @@ function LandingScreen({ navigation, route }) {
   };
 
   const login = async () => {
-    console.log(
-      `Attempting Login with ${inputs.email} and ${inputs.password} at ${ENDPOINT}/auth/local`
-    );
     try {
       const response = await axios.post(`${ENDPOINT}/auth/local`, {
         email: inputs.email,
