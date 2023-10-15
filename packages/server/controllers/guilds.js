@@ -23,6 +23,8 @@ async function insertGuild(guildData) {
         handler: guildData.handler,
         description: guildData.description,
         category: guildData.category,
+        banner: guildData.bannerUrl || null,
+        icon: guildData.iconUrl || null,
         location: guildData.location || null, // optional field
         website: guildData.websiteUrl || null,
         tags: guildData.tags,

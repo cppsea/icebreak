@@ -2,20 +2,23 @@ import React, { createContext, useState } from 'react';
 import { Alert } from 'react-native';
 import axios from 'axios';
 import { ENDPOINT } from './constants';
+import * as SecureStore from "@app/utils/SecureStore";
 
 export const GroupContext = createContext();
 
 export function GroupProvider({ children }) {
+
+  const [guildId, setGuildId] = useState("388b5bc4-7771-4514-99b7-9611cefb7e6a");
   // 1st SCREEN INPUTS
-  const [title, setTitle] = useState("");
-  const [handler, setHandler] = useState("");
-  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("aaaaa");
+  const [handler, setHandler] = useState("bbbbb");
+  const [description, setDescription] = useState("cccccc");
   const [bannerUrl, setBanner] = useState("https://www.cppsea.com/assets/images/full-logo.png");
   const [iconUrl, setIcon] = useState("https://www.cppsea.com/assets/images/seal-in-triangle.png");
 
   // 2nd SCREEN INPUTS
-  const [category, setCategory] = useState("");
-  const [tags, setTags] = useState([]);
+  const [category, setCategory] = useState("Sports");
+  const [tags, setTags] = useState(["a", "b", "c"]);
   const [websiteUrl, setWebsite] = useState("");
   const [location, setLocation] = useState("");
   const [isInviteOnly, setIsInviteOnly] = useState(false);
@@ -51,14 +54,16 @@ export function GroupProvider({ children }) {
   };
 
   const submitForm = async () => {
+
     try {
-      const formData = {
+      const guildData = {
+        guildId,
         title,
         handler,
         description,
         category,
-        // bannerUrl,
-        // iconUrl,
+        bannerUrl,
+        iconUrl,
         location,
         websiteUrl,
         tags,
@@ -72,22 +77,16 @@ export function GroupProvider({ children }) {
       };
 
       // submit images TODO
-      console.info(title);
-      console.info(handler);
-      console.info(description);
-
-      console.info(category);
-      console.info(location);
-      console.info(websiteUrl);
-
-      console.info(tags[0]);
 
       // submits the rest of the data
-      const response = await axios.post(`${ENDPOINT}/guilds/insert`, formData);
+      // const token = await axios.get(``)
+      const token = await SecureStore.getValueFor("accessToken");
+      const headers = { 'Authorization': token};
+      const response = await axios.post(`${ENDPOINT}/guilds/insert`, guildData, { headers });
 
       Alert.alert('Success', 'Group created successfully!');
 
-      resetForm();
+      // resetForm();
       return true;
     } catch (error) {
       // handle errors
