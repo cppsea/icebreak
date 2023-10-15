@@ -210,6 +210,15 @@ router.patch(
       });
       return;
     }
+    if (!(await ImagesController.exists(imageData, imageUUID))){
+      response.status(400).json({
+        status: "fail",
+        data: {
+          imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
+        },
+      });
+      return;
+    }
     try {
       const url = await ImagesController.update(
         imageType,
