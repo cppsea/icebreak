@@ -2,5 +2,7 @@
 .vscode
 node_modules/
 yarn-error.log
+.expo/
 **.env
 **/build/
+package-lock.json

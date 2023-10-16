@@ -2,7 +2,6 @@ const dotenv = require("dotenv");
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const passport = require("passport");
 
 dotenv.config();
 
@@ -23,8 +22,6 @@ app.use(
 
 app.use(cookieParser());
 app.use(express.json());
-
-app.use(passport.initialize());
 
 app.get("/", async (request, response) => {
   response.send("Hello SEA!");

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useContext, useMemo, useState } from "react";
+import PropTypes from "prop-types";
 
 const initialState = {
   isLoggedIn: false,
@@ -19,11 +20,15 @@ export function UserProvider({ children }) {
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }
 
+UserProvider.propTypes = {
+  children: PropTypes.node,
+};
+
 export function useUserContext() {
   const user = useContext(UserContext);
   if (user === undefined) {
     throw new Error(
-      "Please ensure you're using `useUserContext` within userProvider",
+      "Please ensure you're using `useUserContext` within userProvider"
     );
   }
 

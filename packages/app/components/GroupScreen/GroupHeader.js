@@ -4,6 +4,7 @@ import { View, StyleSheet, Image } from "react-native";
 import GroupIcon from "./GroupIcon";
 import GroupHeaderInfo from "./GroupHeaderInfo";
 import GroupMediaIcon from "./GroupMediaIcon";
+import PropTypes from "prop-types";
 
 const bannerHeight = 110;
 const iconSize = 62;
@@ -20,31 +21,27 @@ const orgTags = [
 
 const exampleDescription =
   "The Software Engineering Association (SEA) teaches and encourages the professional skills needed to be a Software Engineer, including code review, unit testing, communication, and software design. Our online and in-meeting exercises allow anyone, novice or professional, to sharpen and practice these skills.";
-const exampleDescription2 =
-  "The Software Engineering Association (SEA) teaches skills needed to be a Software Engineer, obviously.";
 const testURL = "https://cppsea.com";
-const testURL2 =
-  "https://asdsds8dasdasdsadasdsadasdadasdasdasdasdasdsasaasdasdsadasasdasdasdasdasasdasasdasa";
-const testGithubUrl = "https://github.com"
-const testDiscordUrl = "https://discord.com"
-const testLinkedInUrl = "https://linkedin.com"
-const testInstagramUrl = "https://instagram.com"
+const testGithubUrl = "https://github.com";
+const testDiscordUrl = "https://discord.com";
+const testLinkedInUrl = "https://linkedin.com";
+const testInstagramUrl = "https://instagram.com";
 
 function GroupHeader(props) {
   const styles = StyleSheet.create({
+    bannerStyle: {
+      height: bannerHeight,
+      resizeMode: "cover",
+      width: "100%",
+    },
     headerContainer: {
       height: "auto",
     },
     textContainer: {
+      flexDirection: "row",
       marginHorizontal: 12,
       marginTop: -0.5 * iconSize,
-      flexDirection: "row",
     },
-    mediaIconContainer: {
-      flexDirection: "row",
-      justifyContent: "flex-end",
-    },
-    bannerStyle: { width: "100%", height: bannerHeight, resizeMode: "cover" },
   });
 
   return (
@@ -54,9 +51,9 @@ function GroupHeader(props) {
         source={require("@app/assets/test-club-banner.png")}
         style={styles.bannerStyle}
       />
-      <GroupMediaIcon 
-        size={17} 
-        testID="groupMediaIcon" 
+      <GroupMediaIcon
+        size={17}
+        testID="groupMediaIcon"
         githubUrl={testGithubUrl}
         discordUrl={testDiscordUrl}
         linkedinUrl={testLinkedInUrl}
@@ -84,5 +81,9 @@ function GroupHeader(props) {
     </View>
   );
 }
+
+GroupHeader.propTypes = {
+  testID: PropTypes.string,
+};
 
 export default GroupHeader;
