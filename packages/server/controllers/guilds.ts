@@ -1,7 +1,7 @@
 import prisma from "../utils/prisma";
-import { Guild } from ".prisma/client/index";
+import { Guild } from "@prisma/client";
 
-async function getAllGuilds() {
+async function getAllGuilds(): Promise<Guild[]> {
   const query = await prisma.guild.findMany();
   return query;
 }

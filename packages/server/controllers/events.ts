@@ -1,6 +1,6 @@
 // const postgres = require("../utils/postgres");
 import prisma from "../utils/prisma";
-import { Event } from ".prisma/client/index";
+import { Event } from "@prisma/client";
 
 async function getAllEvents(): Promise<Event[]> {
   return prisma.event.findMany();
