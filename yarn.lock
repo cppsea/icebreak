@@ -2509,6 +2509,13 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/bcrypt@^5.0.0":
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/@types/bcrypt/-/bcrypt-5.0.0.tgz#a835afa2882d165aff5690893db314eaa98b9f20"
+  integrity sha512-agtcFKaruL8TmcvqbndlqHPSJgsolhf/qPWchFlgnW1gECTN/nKbFcoFnvKAQRFfKbh+BO6A3SWdJu9t+xF3Lw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/body-parser@*":
   version "1.19.2"
   resolved "https://registry.yarnpkg.com/@types/body-parser/-/body-parser-1.19.2.tgz#aea2059e28b7658639081347ac4fab3de166e6f0"
@@ -2646,6 +2653,11 @@
   version "2.0.1"
   resolved "https://registry.npmjs.org/@types/stack-utils/-/stack-utils-2.0.1.tgz"
   integrity sha512-Hl219/BT5fLAaz6NDkSuhzasy49dwQS/DSdu4MdggFB8zcXv7vflBI3xp7FEmkmdDkBUI2bPUNeMttp2knYdxw==
+
+"@types/uuid@^9.0.5":
+  version "9.0.5"
+  resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.5.tgz#25a71eb73eba95ac0e559ff3dd018fc08294acf6"
+  integrity sha512-xfHdwa1FMJ082prjSJpoEI57GZITiQz10r3vEJCHa2khEFQjKy91aWKz6+zybzssCvXUwE1LQWgWVwZ4nYUvHQ==
 
 "@types/yargs-parser@*":
   version "21.0.0"
