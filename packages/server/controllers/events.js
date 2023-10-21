@@ -53,6 +53,8 @@ async function getPages(limit) {
   return totalPages;
 }
 
+async function createEvent() {}
+
 async function getEvent(eventId) {
   const event = await prisma.events.findUnique({
     where: {

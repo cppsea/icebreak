@@ -92,6 +92,16 @@ router.get(
   }
 );
 
+router.put("/", AuthController.authenticate, async (request, response) => {
+  try {
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
 router.get(
   "/:eventId",
   AuthController.authenticate,
