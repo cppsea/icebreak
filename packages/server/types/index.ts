@@ -16,7 +16,7 @@ export type APIRequest<T = void, V = void> = Express.Request<T, any, V>;
  */
 export interface APIResponse<T = Record<string, any>> extends Express.Response {
   json: Send<
-    SuccessResponseBody<T> | FailResponseBody<T> | ErrorResponseBody,
+    SuccessResponseBody<T> | FailResponseBody | ErrorResponseBody,
     this
   >;
 }
@@ -26,9 +26,9 @@ type SuccessResponseBody<T = Record<string, any>> = {
   data: T;
 };
 
-type FailResponseBody<T = Record<string, any>> = {
+type FailResponseBody = {
   status: "fail";
-  data: Record<keyof T, string>;
+  data: Record<string, string>;
 };
 
 type ErrorResponseBody = {
