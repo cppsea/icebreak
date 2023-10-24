@@ -24,7 +24,7 @@ async function getUserByEmail(email: string): Promise<User | null> {
   return query;
 }
 
-module.exports = {
+export default {
   getUser,
   getAllUsers,
   getUserByEmail
