@@ -64,9 +64,33 @@ async function getEvent(eventId) {
   return event;
 }
 
+async function updateEvent(eventId, eventData) {
+  try {
+    const updateEvent = await prisma.events.update({
+    where: {
+      eventId: eventId,
+    },
+    //If a given data was not updated, it will be undefined and prisma will ignore the update of that field
+    data: { 
+      title: eventData.title, 
+      description: eventData.description,
+      startDate: eventData.startDate,
+      endDate: eventData.endDate,
+      location: eventData.location,
+      thumbnail: eventData.thumbnail,
+    }, 
+    });
+    return updateEvent;
+  } catch (error) {
+    return null;
+  }
+
+}
+
 module.exports = {
   getEvent,
   getEvents,
   getPages,
   getAllEvents,
+  updateEvent,
 };

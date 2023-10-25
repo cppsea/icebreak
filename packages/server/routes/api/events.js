@@ -124,4 +124,141 @@ router.get(
   }
 );
 
+router.post(
+  "/:eventId",
+  AuthController.authenticate,
+  async (request, response) => {
+    try {
+      const { eventId } = request.params;
+      //See what data was given in request. Any data not given to be updated will be undefined
+      let givenData = {
+        title: request.body.title || undefined,
+        description: request.body.description || undefined,
+        startDate: request.body.startDate || undefined,
+        endDate: request.body.endDate || undefined,
+        location: request.body.location || undefined,
+        thumbnail: request.body.thumbnail || undefined,
+      };
+
+      //Validate title
+      if (givenData.title) { //First check if field was given 
+        //Everything in if body will be the specific checks for that field
+        if (givenData.title.length > 255) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              title: "Title exceeds 255 characters",
+            }
+          });
+        }
+      }
+
+      //Validate description
+      if (givenData.description) {
+        if (givenData.description.length > 255) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              description: "Description exceeds 255 characters",
+            }
+          });
+        }
+      }
+      
+      //Validate location
+      if (givenData.location) {
+        if (givenData.location.length > 255) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              location: "Location exceeds 255 characters",
+            }
+          });
+        }
+        //Possible error check: See if the location exists?
+      }
+
+      //Validate thumbnail
+      if (givenData.thumbnail) {
+        if (givenData.legnth > 255) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              thumbnail: "Thumbnail exceeds 255 characters",
+            }
+          });
+        } //A regex to see if the thumbnail is a valid image file
+        else if (!(/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(givenData.thumbnail))) { 
+          response.status(400).json({
+            status: "fail",
+            data: {
+              thumbnail: "Thumbnail is not a valid image file",
+            }
+          });
+        }
+      }
+
+      //Validate dates
+      if (givenData.startDate && givenData.endDate) {
+        if (givenData.startDate > givenData.endDate) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              startDate: "Start date is after end date",
+              endDate: "End date is before start date",
+            }
+        });
+        }
+      }
+      else if (givenData.startDate) {
+        //Get the unmodified event to compare the unmodified date with the modified one
+        const currEvent = await EventController.getEvent(eventId);
+        if (currEvent.endDate != null && givenData.startDate > currEvent.endDate.toISOString()) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              startDate: "Start date is after end date",
+            }
+        });
+        }
+      }
+      else if (givenData.endDate) {
+        const currEvent = await EventController.getEvent(eventId);
+        if (currEvent.startDate != null && currEvent.startDate.toISOString() > givenData.endDate) {
+          response.status(400).json({
+            status: "fail",
+            data: {
+              endDate: "End date is before start date",
+            }
+        });
+        }
+      } //Possible error check: Should we check if a date is in the past? 
+    
+      const updatedEvent = await EventController.updateEvent(eventId, givenData);
+      //Note there can be more than one reason why event is null besides invalid eventId
+      //Will need to eventually figure out a way to seperate errors 
+      if (updatedEvent === null) {
+        response.status(400).json({
+            status: "fail",
+            data: {
+              eventId: "Invalid event ID provided",
+            }
+        });
+      }        
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          event: updatedEvent,
+        },
+      });
+    } catch ( error ) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      })
+    }
+  }
+);
+
 module.exports = router;
