@@ -124,6 +124,36 @@ router.get(
   }
 );
 
+router.delete(
+  "/:eventId",
+  AuthController.authenticate,
+  async (request, response) => {
+    try {
+      const { eventId } = request.params;
+      const deletedEvent = await EventController.deleteEvent(eventId);
+      // invalid eventId
+      if (deletedEvent === null) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            eventId: "Invalid event ID provided",
+          },
+        });
+      } else {
+        response.status(200).json({
+          status: "success",
+          data: null,
+        });
+      }
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 router.post(
   "/:eventId",
   AuthController.authenticate,

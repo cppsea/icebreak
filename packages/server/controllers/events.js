@@ -64,6 +64,19 @@ async function getEvent(eventId) {
   return event;
 }
 
+async function deleteEvent(eventId) {
+  try {
+    const deletedEvent = await prisma.events.delete({
+      where: {
+        eventId: eventId,
+      },
+    });
+    return deletedEvent;
+  } catch (error) {
+    return null;
+  }
+}
+
 async function updateEvent(eventId, eventData) {
   try {
     const updateEvent = await prisma.events.update({
@@ -92,5 +105,6 @@ module.exports = {
   getEvents,
   getPages,
   getAllEvents,
+  deleteEvent,
   updateEvent,
 };
