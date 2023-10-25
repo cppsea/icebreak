@@ -63,7 +63,7 @@ async function getEvent(eventId: string): Promise<Event | null> {
   return event;
 }
 
-module.exports = {
+export default {
   getEvent,
   getEvents,
   getPages,

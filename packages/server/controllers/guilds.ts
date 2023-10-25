@@ -15,7 +15,7 @@ async function getGuild(guildId: string): Promise<Guild | null> {
   return query;
 }
 
-module.exports = {
+export default {
   getGuild,
   getAllGuilds,
 };
