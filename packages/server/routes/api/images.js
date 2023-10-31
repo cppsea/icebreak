@@ -165,12 +165,22 @@ router.delete(
       return;
     }
     try {
+      await ImagesController.existsInS3(imageType, imageUUID);
       await ImagesController.remove(imageType, imageUUID);
       response.status(200).json({
         status: "success",
         data: null,
       });
     } catch (err) {
+      if (err.name === "NotFound") {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
+          },
+        });
+        return;
+      }
       response.status(500).json({
         status: "error",
         message: err.message,
@@ -230,6 +240,7 @@ router.patch(
       return;
     }
     try {
+      await ImagesController.existsInS3(imageType, imageUUID);
       const url = await ImagesController.update(
         imageType,
         imageData,
@@ -242,6 +253,15 @@ router.patch(
         },
       });
     } catch (err) {
+      if (err.name === "NotFound") {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
+          },
+        });
+        return;
+      }
       response.status(500).json({
         status: "error",
         message: err.message,
