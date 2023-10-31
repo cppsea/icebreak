@@ -4,6 +4,7 @@ const {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } = require("@aws-sdk/client-s3");
 const prisma = require("../prisma/prisma");
 
@@ -69,7 +70,16 @@ async function update(imageType, imageData, imageUUID) {
   });
 }
 
-async function exists(imageType, imageUUID) {
+async function existsInS3(imageType, imageUUID) {
+  const key = imageType + "." + imageUUID + ".jpg";
+  const command = new HeadObjectCommand({
+    Bucket: "icebreak-assets",
+    Key: key,
+  });
+  await s3Client.send(command);
+}
+
+async function existsInPrisma(imageType, imageUUID) {
   switch (imageType) {
     case "user_icon":
       return !!(await prisma.users.findUnique({
@@ -98,5 +108,6 @@ module.exports = {
   retrieve,
   remove,
   update,
-  exists,
+  existsInS3,
+  existsInPrisma,
 };

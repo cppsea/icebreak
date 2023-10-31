@@ -56,7 +56,7 @@ router.put(
       });
       return;
     }
-    if (!(await ImagesController.exists(imageType, imageUUID))) {
+    if (!(await ImagesController.existsInPrisma(imageType, imageUUID))) {
       response.status(400).json({
         status: "fail",
         data: {
@@ -114,10 +114,24 @@ router.get(
     }
 
     try {
-      const s3response = await ImagesController.retrieve(imageType, imageUUID);
-      response.status(200);
-      response.send(s3response);
+      await ImagesController.existsInS3(imageType, imageUUID);
+      const url = await ImagesController.retrieve(imageType, imageUUID);
+      response.status(200).json({
+        status: "success",
+        data: {
+          imageURL: url,
+        },
+      });
     } catch (err) {
+      if (err.name === "NotFound") {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
+          },
+        });
+        return;
+      }
       response.status(500).json({
         status: "error",
         message: err.message,
@@ -210,7 +224,7 @@ router.patch(
       });
       return;
     }
-    if (!(await ImagesController.exists(imageData, imageUUID))){
+    if (!(await ImagesController.existsInPrisma(imageData, imageUUID))) {
       response.status(400).json({
         status: "fail",
         data: {
