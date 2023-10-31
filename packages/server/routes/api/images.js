@@ -165,11 +165,7 @@ router.delete(
       return;
     }
     try {
-      const deleteResponse = await ImagesController.remove(
-        imageType,
-        imageUUID
-      );
-      console.log(deleteResponse);
+      await ImagesController.remove(imageType, imageUUID);
       response.status(200).json({
         status: "success",
         data: null,
@@ -224,7 +220,7 @@ router.patch(
       });
       return;
     }
-    if (!(await ImagesController.existsInPrisma(imageData, imageUUID))) {
+    if (!(await ImagesController.existsInPrisma(imageType, imageUUID))) {
       response.status(400).json({
         status: "fail",
         data: {
