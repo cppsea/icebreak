@@ -54,7 +54,7 @@ router.get(
 );
 
 router.get(
-  "/:guildId/users",
+  "/:users",
   AuthController.authenticate,
   async (request, response) => {
     try {
