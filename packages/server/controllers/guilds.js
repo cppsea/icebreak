@@ -15,7 +15,7 @@ async function getGuild(guildId) {
 }
 
 async function getGuildUsers(guildId) {
-  const query = await prisma.users.findMany({
+  const query = await prisma.guildMembers.findMany({
     where: {
       guildId: guildId,
     },
