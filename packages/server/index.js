@@ -12,6 +12,7 @@ const users = require("./routes/api/users");
 const guilds = require("./routes/api/guilds");
 const events = require("./routes/api/events");
 const auth = require("./routes/api/auth");
+const images = require("./routes/api/images");
 
 app.use(
   cors({
@@ -21,7 +22,7 @@ app.use(
 );
 
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: "20mb" }));
 
 app.get("/", async (request, response) => {
   response.send("Hello SEA!");
@@ -31,6 +32,7 @@ app.use("/api/auth", auth);
 app.use("/api/users", users);
 app.use("/api/guilds", guilds);
 app.use("/api/events", events);
+app.use("/api/media/images", images);
 
 const server = app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
