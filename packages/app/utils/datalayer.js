@@ -14,9 +14,10 @@ export async function getUserInfo(token) {
     },
   });
 
-  return response.data.user;
+  return response;
 }
 
 export async function logoutUser() {
-  await SecureStore.remove("local_auth_token");
+  await SecureStore.remove("accessToken");
+  await SecureStore.remove("refreshToken");
 }

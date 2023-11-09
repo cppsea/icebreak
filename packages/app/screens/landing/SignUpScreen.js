@@ -17,31 +17,55 @@ import Button from "@app/components/Button";
 import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
 import GoogleIcon from "@app/assets/google-icon";
-
+import { useGoogleLogin } from "@app/utils/useGoogleLogin";
 import { useUserContext } from "@app/utils/UserContext";
+
 import { ENDPOINT } from "@app/utils/constants";
 
-import * as SecureStore from "@app/utils/SecureStore";
-
-import { useGoogleLogin } from "@app/utils/useGoogleLogin";
+import DividerWithText from "@app/components/DividerWithText";
 
 import PropTypes from "prop-types";
 
-WebBrowser.maybeCompleteAuthSession();
-
 const BLUE = "#0b91e0";
 const DARK_GRAY = "#a3a3a3";
-const GRAY = "#c4c4c4";
-const LIGHT_GRAY = "#ebebeb";
+const GRAY = "#ebebeb";
 
-function LandingScreen({ navigation, route }) {
+WebBrowser.maybeCompleteAuthSession();
+
+function SignUpScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
+
+  const register = async () => {
+    try {
+      const response = await axios.post(`${ENDPOINT}/auth/local/register`, {
+        email: inputs.email,
+        avatar: "avatar",
+        password: inputs.password,
+      });
+
+      if (response.status === 200 && response?.data.status == "success") {
+        navigation.navigate("LandingScreen", { email: inputs.email });
+      }
+    } catch (error) {
+      const responseData = error.response.data;
+      if (
+        responseData.data &&
+        responseData.data.email === "A user with this email already exists."
+      ) {
+        console.log(responseData?.data.email);
+      } else {
+        console.log(JSON.stringify(error));
+      }
+    }
+  };
 
   // State to change the variable with the TextInput
   const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
     password: "",
+    passwordConfirmation: "",
   });
+
   const [errors, setErrors] = useState({});
 
   const validateInput = () => {
@@ -65,40 +89,22 @@ function LandingScreen({ navigation, route }) {
       isValid = false;
     }
 
-    if (isValid) {
-      login();
+    if (inputs.password && !inputs.passwordConfirmation) {
+      handleError("passwordConfirmation", "Please confirm password.");
+      isValid = false;
     }
-  };
 
-  const login = async () => {
-    try {
-      const response = await axios.post(`${ENDPOINT}/auth/local`, {
-        email: inputs.email,
-        password: inputs.password,
-      });
+    if (
+      inputs.password &&
+      inputs.passwordConfirmation &&
+      inputs.password != inputs.passwordConfirmation
+    ) {
+      handleError("passwordConfirmation", "Passwords do not match.");
+      isValid = false;
+    }
 
-      if (response?.data.status == "success") {
-        await SecureStore.save("accessToken", response.data.data.accessToken);
-        await SecureStore.save("refreshToken", response.data.data.refreshToken);
-        setUser({
-          ...user,
-          isLoggedIn: true,
-          data: response.data.data.user,
-        });
-      } else {
-        console.log(response?.data.message);
-      }
-    } catch (error) {
-      const responseData = error.response.data;
-      if (
-        responseData.data &&
-        (responseData.data.email === "A user with that email does not exist." ||
-          responseData.data.password === "Incorrect password")
-      ) {
-        handleError("email", "Invalid email or password.");
-      } else {
-        console.log(JSON.stringify(error));
-      }
+    if (isValid) {
+      register();
     }
   };
 
@@ -112,6 +118,7 @@ function LandingScreen({ navigation, route }) {
 
   // Keeps a reference to help switch from Username input to Password input
   const refPasswordInput = useRef();
+  const refPasswordConfirmationInput = useRef();
 
   return (
     <Screen style={styles.container}>
@@ -122,11 +129,10 @@ function LandingScreen({ navigation, route }) {
           <Text testID="logo" style={styles.logo}>
             icebreak
           </Text>
-
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
-            container={{ marginBottom: 10 }}
+            container={{ marginBottom: 10, marginTop: 20 }}
             style={[styles.component, styles.textInput]}
             borderColor="#cccccc"
             onChangeText={(text) => {
@@ -138,12 +144,14 @@ function LandingScreen({ navigation, route }) {
             placeholder="Email"
             onSubmitEditing={() => {
               refPasswordInput.current.focus();
+              refPasswordConfirmationInput.current.focus();
             }}
           />
 
           <TextInput
             testID="passwordInput"
             value={inputs["password"]}
+            container={{ marginBottom: 10 }}
             ref={refPasswordInput}
             style={[styles.component, styles.textInput]}
             borderColor="#cccccc"
@@ -157,20 +165,26 @@ function LandingScreen({ navigation, route }) {
             onSubmitEditing={validateInput}
           />
 
-          <TouchableOpacity
-            testID="forgotPassButton"
-            onPress={() => {
-              navigation.navigate("ForgotPasswordScreen", {
-                email: inputs.email,
-              });
+          <TextInput
+            testID="passwordConfirmationInput"
+            value={inputs["passwordConfirmation"]}
+            container={{ marginBottom: 20 }}
+            ref={refPasswordConfirmationInput}
+            style={[styles.component, styles.textInput]}
+            borderColor="#cccccc"
+            onChangeText={(text) => {
+              handleOnChange("passwordConfirmation", text);
+              handleError("passwordConfirmation", null);
             }}
-            style={styles.forgotPassContainer}>
-            <Text style={styles.textButton}>Forgot password?</Text>
-          </TouchableOpacity>
+            error={errors.passwordConfirmation}
+            password
+            placeholder="Confirm Password"
+            onSubmitEditing={validateInput}
+          />
 
           <Button
-            testID="loginButton"
-            title="Log In"
+            testID="signupButton"
+            title="Sign Up"
             onPress={() => {
               validateInput();
             }}
@@ -181,13 +195,13 @@ function LandingScreen({ navigation, route }) {
             textStyle={styles.boldText}
           />
 
-          <View style={styles.lineDivider} />
+          <DividerWithText title="or" />
 
           <Button
             testID="googleButton"
             title="Continue with Google"
-            onPress={() => useGoogleLogin(user, setUser)}
             underlayColor="#ebebeb"
+            onPress={() => useGoogleLogin(user, setUser)}
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
             imageStyle={styles.imageStyle}
@@ -196,17 +210,15 @@ function LandingScreen({ navigation, route }) {
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
 
-      <View style={styles.lineDivider} />
-
       <View style={styles.signupContainer}>
-        <Text>Don&#39;t have an account? </Text>
+        <Text>Already have an account? </Text>
 
         <TouchableOpacity
-          testID="signupButton"
+          testID="logInButton"
           onPress={() => {
-            navigation.navigate("SignUpScreen", { email: inputs.email });
+            navigation.navigate("LandingScreen", { email: inputs.email });
           }}>
-          <Text style={styles.textButton}>Sign Up.</Text>
+          <Text style={styles.textButton}>Log In.</Text>
         </TouchableOpacity>
       </View>
     </Screen>
@@ -230,9 +242,6 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     width: "100%",
   },
-  forgotPassContainer: {
-    alignSelf: "flex-end",
-  },
   googleButton: {
     borderColor: DARK_GRAY,
     borderWidth: 1,
@@ -241,13 +250,6 @@ const styles = StyleSheet.create({
     height: 20,
     marginRight: 10,
     width: 20,
-  },
-  lineDivider: {
-    backgroundColor: GRAY,
-    height: 1,
-    marginBottom: 20,
-    marginTop: 20,
-    width: "100%",
   },
   loginButton: {
     backgroundColor: BLUE,
@@ -267,7 +269,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   textInput: {
-    backgroundColor: LIGHT_GRAY,
+    backgroundColor: GRAY,
     borderWidth: 1,
     justifyContent: "space-between",
     marginBottom: 7,
@@ -282,9 +284,9 @@ const isValidEmail = (email) => {
   return email.match(emailRE);
 };
 
-LandingScreen.propTypes = {
+SignUpScreen.propTypes = {
   navigation: PropTypes.object,
   route: PropTypes.object,
 };
 
-export default LandingScreen;
+export default SignUpScreen;

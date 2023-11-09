@@ -10,26 +10,32 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import GroupTag from "./GroupTag";
 
+import PropTypes from "prop-types";
+
+const GRAY = "#2C2C2C";
+const LIGHT_GRAY = "#6C6C6C";
+const BLUE = "#3498DB";
+
 const styles = StyleSheet.create({
+  clubDetails: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
   containerStyle: {
     height: "100%",
-    width: "100%",
     marginTop: 44,
+    width: "100%",
   },
-  titleContainer: {
-    justifyContent: "center",
+  dataContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    marginRight: 10,
+    marginTop: 6,
   },
-  titleStyle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#2C2C2C",
-  },
-  handlerContainer: {
-    marginTop: -4,
-  },
-  handlerStyle: {
-    fontSize: 13,
-    color: "#6C6C6C",
+  dataTextStyle: {
+    color: LIGHT_GRAY,
+    fontSize: 12,
+    marginLeft: 5,
   },
   descriptionContainer: {
     marginTop: 6,
@@ -37,21 +43,29 @@ const styles = StyleSheet.create({
   descriptionStyle: {
     fontSize: 13, // NOTE: Default font family; change later?
   },
-  dataContainer: {
-    marginTop: 6,
-    marginRight: 10,
-    flexDirection: "row",
-    alignItems: "center",
+  handlerContainer: {
+    marginTop: -4,
   },
-  dataTextStyle: {
-    fontSize: 12,
-    marginLeft: 5,
-    color: "#6C6C6C",
+  handlerStyle: {
+    color: LIGHT_GRAY,
+    fontSize: 13,
   },
   tagContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     marginTop: 12,
+  },
+  titleContainer: {
+    justifyContent: "center",
+  },
+  titleStyle: {
+    color: GRAY,
+    fontSize: 18,
+    fontWeight: "700",
+  },
+  url: {
+    color: BLUE,
+    flexShrink: 1,
   },
 });
 
@@ -90,14 +104,13 @@ function GroupHeaderInfo(props) {
           <Text
             style={styles.descriptionStyle}
             numberOfLines={isDescriptionTruncated ? 3 : undefined}
-            ellipsizeMode={isDescriptionTruncated ? "tail" : undefined}
-          >
+            ellipsizeMode={isDescriptionTruncated ? "tail" : undefined}>
             {props.description}
           </Text>
         </TouchableWithoutFeedback>
       </View>
 
-      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+      <View style={styles.clubDetails}>
         <View style={styles.dataContainer}>
           <Ionicons name="location-sharp" size={16} color="#6C6C6C" />
           <Text style={styles.dataTextStyle}>{props.location || "N/A"}</Text>
@@ -113,17 +126,10 @@ function GroupHeaderInfo(props) {
         <View style={styles.dataContainer}>
           <Ionicons name="link-sharp" size={16} color="#6C6C6C" />
           <Text
-            style={[
-              styles.dataTextStyle,
-              {
-                color: "#3498DB",
-                flexShrink: 1,
-              },
-            ]}
+            style={[styles.dataTextStyle, styles.url]}
             numberOfLines={1}
             ellipsizeMode="tail"
-            onPress={() => Linking.openURL(props.url)}
-          >
+            onPress={() => Linking.openURL(props.url)}>
             {props.url}
           </Text>
         </View>
@@ -137,5 +143,17 @@ function GroupHeaderInfo(props) {
     </View>
   );
 }
+
+GroupHeaderInfo.propTypes = {
+  description: PropTypes.string,
+  handler: PropTypes.string,
+  location: PropTypes.string,
+  members: PropTypes.number,
+  name: PropTypes.string,
+  orgTags: PropTypes.arrayOf(PropTypes.string),
+  tags: PropTypes.arrayOf(PropTypes.string),
+  testID: PropTypes.string,
+  url: PropTypes.string,
+};
 
 export default GroupHeaderInfo;

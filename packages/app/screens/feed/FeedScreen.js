@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, Image, StyleSheet, View, FlatList } from "react-native";
+import { Text, Image, StyleSheet, FlatList } from "react-native";
 import axios from "axios";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
-import CardEvent from "@app/components/EventCard/EventCard";
+import EventCard from "@app/components/EventCard/EventCard";
 
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 function FeedScreen() {
   const { user, setUser } = useUserContext();
@@ -18,16 +19,31 @@ function FeedScreen() {
 
   const handleOnLogout = useCallback(async () => {
     console.log("logout");
-    await logoutUser();
-    setUser({
-      isLoggedIn: false,
-    });
+
+    try {
+      // Revoke the refresh token
+      const refreshToken = await SecureStore.getValueFor("refreshToken");
+      // eslint-disable-next-line no-unused-vars
+      const response = await axios.post(`${ENDPOINT}/auth/token/revoke`, {
+        refreshToken: refreshToken,
+      });
+
+      if (response.status === 200) {
+        // Remove tokens from SecureStore and logout user
+        await logoutUser();
+        await GoogleSignin.signOut();
+        setUser({
+          isLoggedIn: false,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   }, [setUser]);
 
   const getEvents = async () => {
     const token = await SecureStore.getValueFor("accessToken");
     const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
-      withCredentials: true,
       headers: {
         Authorization: token,
       },
@@ -55,7 +71,7 @@ function FeedScreen() {
 
   const handleRenderItem = useCallback(({ item }) => {
     return (
-      <CardEvent
+      <EventCard
         title={item.title}
         description={item.description}
         location={item.location}
@@ -68,7 +84,7 @@ function FeedScreen() {
   return (
     <>
       <Screen>
-        <Text>Hello, {user.data.firstName}</Text>
+        <Text>Hello, {user.firstName}</Text>
         <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
         <Text>{JSON.stringify(user)}</Text>
         <Button onPress={handleOnLogout} title="logout" />
@@ -86,12 +102,9 @@ function FeedScreen() {
 
 const styles = StyleSheet.create({
   avatar: {
-    width: 80,
-    height: 80,
     borderRadius: 100,
-  },
-  h1: {
-    fontWeight: "bold",
+    height: 80,
+    width: 80,
   },
 });
 
