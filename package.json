@@ -18,7 +18,8 @@
     "server:test": "yarn workspace server test",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
-    "dev": "node ./scripts/run.js"
+    "dev": "node ./scripts/run.js",
+    "postinstall": "husky install"
   },
   "description": "organization engagement platform",
   "main": "index.js",
@@ -28,7 +29,11 @@
   "devDependencies": {
     "eslint": "8.39.0",
     "eslint-config-prettier": "^9.0.0",
+    "husky": "^8.0.3",
     "prettier": "2.8.8"
   },
-  "repository": "https://github.com/cppsea/icebreak.git"
+  "repository": "https://github.com/cppsea/icebreak.git",
+  "dependencies": {
+    "yarn": "^1.22.19"
+  }
 }
