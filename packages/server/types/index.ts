@@ -8,7 +8,11 @@ import { Send } from "express-serve-static-core";
  *
  * void = optional generic parameters
  */
-export type APIRequest<T = void, V = void> = Express.Request<T, any, V>;
+export type APIRequest<T = Record<string, never>, V = void> = Express.Request<
+  T,
+  any,
+  V
+>;
 
 /**
  * @template T

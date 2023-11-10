@@ -163,7 +163,7 @@ async function authenticate(
   }
 }
 
-module.exports = {
+export default {
   login,
   register,
   authenticate,
