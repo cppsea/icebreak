@@ -37,8 +37,6 @@ const LIGHT_GRAY = "#ebebeb";
 function LandingScreen({ navigation, route }) {
   const { user, setUser } = useUserContext();
 
-  console.log("test");
-
   // State to change the variable with the TextInput
   const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
