@@ -11,7 +11,7 @@ type APIResponseAllGuilds = {
 }
 
 router.get("/", AuthController.authenticate, 
-async (request: APIRequest<void,void>, response:APIResponse<APIResponseAllGuilds>) => {
+async (request: APIRequest<object,void>, response: APIResponse<APIResponseAllGuilds>) => {
   try {
     const guilds: Guild[] = await GuildController.getAllGuilds();
     response.status(200).json({
@@ -47,7 +47,7 @@ type APIRequestGetGuild = {
 router.get(
   "/:guildId",
   AuthController.authenticate,
-  async (request: APIRequest<APIRequestGetGuild,void>, response:APIResponse<APIResponseGetGuild>) => {
+  async (request: APIRequest<APIRequestGetGuild,void>, response: APIResponse<APIResponseGetGuild>) => {
     try {
       const { guildId } = request.params;
       

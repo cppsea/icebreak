@@ -31,7 +31,7 @@ router.get(
   AuthController.authenticate,
   async (request: APIRequest<APIRequestCursor,void>, response: APIResponse<APIResponseCursor>) => {
     try {
-      let queryLimit: string = request.query.limit as string
+      const queryLimit: string = request.query.limit as string
 
       if (queryLimit && isNaN(parseInt(queryLimit))) {
         return response.status(400).json({
@@ -49,10 +49,10 @@ router.get(
         : "";
 
       // let [currentPage, action, eventId] = requestCursor.split("___");
-      let cursor: string[] = requestCursor.split("___");
-      let currentPage: number = parseInt(cursor[0]) || 1;
-      let action: string = cursor[1]
-      let eventId: string = cursor[2]
+      const cursor: string[] = requestCursor.split("___");
+      const currentPage: number = parseInt(cursor[0]) || 1;
+      const action: string = cursor[1]
+      const eventId: string = cursor[2]
 
       const events: Event[] = await EventController.getEvents(
         eventLimit,
@@ -133,7 +133,7 @@ type APIResponseGetEvent = {
 router.get(
   "/:eventId",
   AuthController.authenticate,
-  async (request: APIRequest<APIRequestGetEvent,void>, response:APIResponse<APIResponseGetEvent>) => {
+  async (request: APIRequest<APIRequestGetEvent,void>, response: APIResponse<APIResponseGetEvent>) => {
     try {
       const { eventId } = request.params;
       const event: Event | null = await EventController.getEvent(eventId);
