@@ -35,5 +35,8 @@
     "lint-staged": "14.0.1",
     "prettier": "2.8.8"
   },
-  "repository": "https://github.com/cppsea/icebreak.git"
+  "repository": "https://github.com/cppsea/icebreak.git",
+  "dependencies": {
+    "yarn": "^1.22.19"
+  }
 }
