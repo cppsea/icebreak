@@ -1,20 +1,19 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(false);
   return {
-    "presets": ['babel-preset-expo'],
-    "plugins": [
+    presets: ["babel-preset-expo"],
+    plugins: [
       [
-        require.resolve('babel-plugin-module-resolver'),
+        require.resolve("babel-plugin-module-resolver"),
         {
           include: ["."],
-          root: ['.'],
+          root: ["."],
           alias: {
-            '@app': '.',
+            "@app": ".",
           },
         },
       ],
-      'react-native-reanimated/plugin',
-      ["@babel/plugin-proposal-private-methods", { "loose": true }],
+      "react-native-reanimated/plugin",
     ],
   };
 };

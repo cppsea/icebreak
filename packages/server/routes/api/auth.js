@@ -1,209 +1,286 @@
 const express = require("express");
-const passport = require("passport");
 const router = express.Router();
 const token = require("../../utils/token");
-const { OAuth2Client } = require('google-auth-library');
-const bcrypt = require('bcrypt');
-const uniqid = require('uniqid'); 
-
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const bcrypt = require("bcrypt");
 
 const AuthController = require("../../controllers/auth");
-const postgres = require("../../utils/postgres");
-const user = require("../../controllers/users");
+const UserController = require("../../controllers/users");
+const { checkInvalidToken, addToTokenBlacklist } = require("../../utils/redis");
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.CLIENT_ID,
-  clientSecret: process.env.CLIENT_SECRET,
-  callbackURL: "http://localhost:5050/api/auth/google/callback"
-}, AuthController.create));
+router.get("/user", AuthController.authenticate, (request, response) => {
+  const accessToken = token.generateAccessToken(request.user);
+  const refreshToken = token.generateRefreshToken(request.user);
 
-passport.serializeUser(AuthController.serialize);
-passport.deserializeUser(AuthController.deserialize);
+  // destructuring so we don't send JWT iat and expiration properties in
+  // response
+  const { userId, firstName, lastName, avatar, email } = request.user;
 
-const CLIENT_ID = '1080245081969-u9lnl9ospj757rq75kiumttqconhnfcc.apps.googleusercontent.com';
-
-const client = new OAuth2Client(CLIENT_ID);
-router.post('/verify', async (request, response) => {
-  try {
-    const { accessToken } = request.body;
-    if (accessToken == undefined) {
-      throw new Error("AccessToken isn't defined in body.");
-    }
-
-    const { payload } = await client.verifyIdToken({
-      idToken: accessToken,
-      audience: CLIENT_ID
-    });
-
-    response.send({
-      success: true,
-      payload: {
-        email: payload.email,
-        firstName: payload.given_name,
-        lastName: payload.family_name,
-        picture: payload.picture
-      }
-    });
-
-  } catch(error) {
-    response.send({
-      message: error.message,
-      success: false
-    });
-  }
-});
-
-router.get('/user', AuthController.authenticate, (request, response) => {
-  try {
-    response.send(request.user);
-  } catch(error) {
-    response.status(403).send({
-      message: error.message,
-      success: false
-    });
-  }
+  response.status(200).json({
+    status: "success",
+    data: {
+      user: {
+        userId,
+        firstName,
+        lastName,
+        avatar,
+        email,
+      },
+      accessToken,
+      refreshToken,
+    },
+  });
 });
 
 router.post("/google", AuthController.login, async (request, response) => {
   try {
+    const { userId, firstName, lastName, email, avatar, isNew } = request.user;
 
-    const { 
-      user_id,
-      joined_date,
-      last_login,
-      first_name,
-      last_name,
-      email,
-      avatar
-    } = request.user;
+    const accessToken = token.generateAccessToken(request.user);
+    const refreshToken = token.generateRefreshToken(request.user);
 
-    response.send({
-      success: true,
-      payload: {
-        userId: user_id,
-        firstName: first_name,
-        lastName: last_name,
-        avatar: avatar,
-        email: email,
-        joinedDate: joined_date,
-        lastLogin: last_login
-      }
+    response.status(200).json({
+      status: "success",
+      data: {
+        user: {
+          userId,
+          firstName,
+          lastName,
+          avatar,
+          email,
+          isNew,
+        },
+        accessToken,
+        refreshToken,
+      },
     });
-  } catch(error) {
-    response.status(403).send({
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
       message: error.message,
-      success: false
     });
   }
 });
 
-router.get("/google/callback", passport.authenticate("google", {
-  failureRedirect: "icebreak://",
-  session: false
-}), (request, response) => {
-  const newToken = token.generate(request.user);
-  response.redirect(`icebreak://login?token=${newToken}`);
-});
-
-router.post("/register", async (request, response) => {
+router.post("/local/register", async (request, response) => {
   try {
     const { email, password } = request.body;
 
-    if (email == undefined || password == undefined) {
-      return response.status(400).send({
-        message: "Email and Passsword must be provided.",
-        success: false
+    if (email == undefined) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "Email not provided",
+        },
       });
     }
 
-    let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-
-    if(!emailRegex.test(email)){ // check if email is valid, doesn't include or no spaces
-      throw new Error("Email is invalid.");
-    }
-
-    const requestedUser = await user.getUserByEmail(email);
-
-    if(requestedUser?.email === email){ // check if email is already in the database
-      throw new Error("User already exists with this email.");
-    }
-
-    const saltRounds = 10;
-
-    bcrypt.genSalt(saltRounds, function(error, salt) {
-      bcrypt.hash(password, salt, async function(error, hash) { // encrypt the user password using bcrypt
-
-        // create unique User ID as bytes (18 byte)
-        const user_id = uniqid();
-
-        await postgres.query(`
-          INSERT INTO users (user_id, first_name, last_name, email, avatar, password)
-          VALUES ('${user_id}', 'firstName', 'lastName', '${email}', 'avatar', '${hash}');
-        `); // create new user in DB, (DO NOT STORE ACTUAL PASSWORD, STORE HASHED VERSION)
-        
-        const newToken = token.generate({ email }); // create a signed jwt token
-
-        response.send({
-          success: true,
-          newToken
-        }); 
-
+    if (password === undefined) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          password: "Password not provided",
+        },
       });
+    }
+
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+    if (!emailRegex.test(email)) {
+      // check if email is valid, doesn't include or no spaces
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "Invalid email was provided",
+        },
+      });
+    }
+
+    const requestedUser = await UserController.getUserByEmail(email);
+
+    if (requestedUser?.email === email) {
+      // check if email is already in the database
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "A user with this email already exists.",
+        },
+      });
+    }
+
+    await AuthController.register(request.body);
+
+    // users will have to log in manually after successfully registering
+    response.status(200).json({
+      status: "success",
+      data: null,
     });
-  } catch(error) {
-    response.status(403).send({
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
       message: error.message,
-      success: false
     });
   }
 });
 
-
-router.post("/login", async (request, response) => {
+router.post("/local", async (request, response) => {
   try {
-    // Get user input
-    const { email, password } =  request.body;
+    // get user input
+    const { email, password } = request.body;
 
-    if (email == undefined || password == undefined) {
-      return response.status(400).send({
-        message: "email and passsword must be provided.",
-        success: false
+    if (email == undefined) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "Email not provided",
+        },
       });
     }
 
-    let emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g;
-
-    if(!emailRegex.test(email)){ // check if email is valid, doesn't include or no spaces
-      throw new Error("Email is invalid.");
-    }
-
-    const requestedUser = await user.getUserByEmail(email);
-
-    if(requestedUser?.email !== email){ // check if email is in the database
-      throw new Error("Email does not exist.");
-    }
-    
-    const isValidPassword = await bcrypt.compare(password, requestedUser.password); 
-    if (isValidPassword) {
-      const newToken = token.generate({ email });
-      response.send({  
-        success: true,
-        newToken
-      }); 
-    } else {
-      response.send({
-        message: "Password was incorrect.",
-        success: false
+    if (password == undefined) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          password: "Password not provided",
+        },
       });
     }
 
-  } catch(error) {
-    response.status(403).send({
+    const emailRegex = /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/g;
+
+    if (!emailRegex.test(email)) {
+      // check if email is valid, doesn't include or no spaces
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "Invalid email provided",
+        },
+      });
+    }
+
+    const requestedUser = await UserController.getUserByEmail(email);
+
+    if (requestedUser?.email !== email) {
+      // check if email is in the database
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          email: "A user with that email does not exist.",
+        },
+      });
+    }
+
+    const isValidPassword = await bcrypt.compare(
+      password,
+      requestedUser.password
+    );
+
+    if (!isValidPassword) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          password: "Incorrect password",
+        },
+      });
+    }
+
+    const refreshToken = token.generateRefreshToken(requestedUser);
+    const accessToken = token.generateAccessToken(requestedUser);
+
+    response.status(200).json({
+      status: "success",
+      data: {
+        user: {
+          userId: requestedUser.userId,
+          firstName: requestedUser.firstName,
+          lastName: requestedUser.lastName,
+          email: requestedUser.email,
+          avatar: requestedUser.avatar,
+          isNew: requestedUser.isNew,
+        },
+        accessToken,
+        refreshToken,
+      },
+    });
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
       message: error.message,
-      success: false
     });
   }
 });
 
-module.exports = router; 
+router.post("/token", async (request, response) => {
+  try {
+    const { refreshToken } = request.body;
+
+    if (!refreshToken) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          refreshToken: "Refresh token not provided",
+        },
+      });
+    }
+
+    const isInvalidToken = await checkInvalidToken(refreshToken);
+
+    if (isInvalidToken) {
+      return response.status(401).json({
+        status: "fail",
+        data: {
+          refreshToken: "Provided refresh token is revoked",
+        },
+      });
+    }
+
+    const { userId } = token.verifyRefreshToken(refreshToken);
+    const user = await UserController.getUser(userId);
+
+    const accessToken = token.generateAccessToken(user);
+    const newRefreshToken = token.generateRefreshToken(user);
+
+    response.status(200).json({
+      status: "success",
+      data: {
+        accessToken,
+        refreshToken: newRefreshToken,
+      },
+    });
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
+router.post("/token/revoke", async (request, response) => {
+  const { refreshToken } = request.body;
+
+  if (!refreshToken) {
+    return response.status(400).json({
+      status: "fail",
+      data: {
+        refreshToken: "Refresh token not provided",
+      },
+    });
+  }
+
+  try {
+    token.verifyRefreshToken(refreshToken);
+
+    await addToTokenBlacklist(refreshToken);
+
+    response.status(200).json({
+      status: "success",
+      data: null,
+    });
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
+module.exports = router;

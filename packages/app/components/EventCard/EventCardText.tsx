@@ -2,42 +2,42 @@ import { EventTextProps } from "@app/types/EventCard";
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+const GRAY = "grey";
+
 const styles = StyleSheet.create({
   description: {
+    fontSize: 12,
     marginBottom: 10,
-    fontSize: 12
   },
   eventTitle: {
     fontSize: 20,
-    fontWeight: 'bold'
+    fontWeight: "bold",
   },
   smallText: {
+    color: GRAY,
     fontSize: 9,
-    color: 'grey'
-  }
+  },
 });
 
-
 const EventCardText: React.FC<EventTextProps> = ({
-  timeBegin, timeEnd, title, location, description
+  timeBegin,
+  timeEnd,
+  title,
+  location,
+  description,
 }) => {
-
   return (
     <View>
-      <Text style={styles.smallText}> 
+      <Text style={styles.smallText}>
         {timeBegin} - {timeEnd}
       </Text>
-      <Text style={styles.eventTitle}>
-        {title}
-      </Text>
-      <Text style={styles.smallText}>
-        📌 {location}
-      </Text>
+      <Text style={styles.eventTitle}>{title}</Text>
+      <Text style={styles.smallText}>📌 {location}</Text>
       <Text style={styles.description} numberOfLines={3}>
         {description}
       </Text>
     </View>
-  )
+  );
 };
 
 export default EventCardText;

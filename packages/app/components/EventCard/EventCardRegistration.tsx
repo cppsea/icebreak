@@ -1,40 +1,16 @@
 import React from "react";
-import { StyleSheet, Button, View, GestureResponderEvent } from "react-native";
+import { StyleSheet, View } from "react-native";
+import Button from "../Button";
 import FaceIcon from "./FaceIcon";
 import { EventCardRegistrationProps } from "@app/types/EventCard";
 
 // Sample array for testing
-const sampleArray = [0,1,2,3];
-
-
-
-const EventCardRegistration: React.FC<EventCardRegistrationProps> = ({register}) => {
-
-  return (
-    <View style={{ flexDirection: 'row' }}>
-      <View style={styles.buttonView}>
-        <Button
-          title='Going'
-          onPress={register}
-        />
-      </View>
-      <View style={styles.faceView}>
-        {sampleArray.slice(0,4).map(x => {
-          return <FaceIcon
-          key={sampleArray.indexOf(x)} 
-          index={x}
-          iconUrl={"https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"}
-        />
-        })}
-      </View>
-    </View>
-  )
-};
+const sampleArray = [0, 1, 2, 3];
 
 const styles = StyleSheet.create({
   buttonView: {
     flex: 7,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   button: {
     marginBottom: 0,
@@ -42,11 +18,35 @@ const styles = StyleSheet.create({
     marginRight: 0,
   },
   faceView: {
-    flexDirection: 'row',
+    flexDirection: "row",
     flex: 3,
-    justifyContent: 'center'
-  }
+    justifyContent: "center",
+  },
 });
 
+export default function EventCardRegistration(
+  props: EventCardRegistrationProps
+) {
+  const { register } = props;
 
-export default EventCardRegistration;
+  return (
+    <View style={{ flexDirection: "row" }}>
+      <View style={styles.buttonView}>
+        <Button style={styles.button} title="Going" onPress={register} />
+      </View>
+      <View style={styles.faceView}>
+        {sampleArray.slice(0, 4).map((x) => {
+          return (
+            <FaceIcon
+              key={sampleArray.indexOf(x)}
+              index={x}
+              iconUrl={
+                "https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png"
+              }
+            />
+          );
+        })}
+      </View>
+    </View>
+  );
+}

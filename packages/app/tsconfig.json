@@ -3,11 +3,10 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "types": [
-      "react-native",
-      "jest"
-    ],
+    "types": ["react-native", "jest"],
+    "allowJs": true,
     "jsx": "react-native",
+    "allowImportingTsExtensions": true,
     "noEmit": true,
     "isolatedModules": true,
     "strict": true,
@@ -19,9 +18,7 @@
     "skipLibCheck": true,
     "baseUrl": "./",
     "paths": {
-      "@app/*": [
-        "./*"
-      ]
+      "@app/*": ["./*"]
     }
   },
   "exclude": [

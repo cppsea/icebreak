@@ -1,0 +1,17 @@
+{
+  "plugins": ["react", "react-native"],
+  "env": {
+    "react-native/react-native": true
+  },
+  "parserOptions": {
+    "sourceType": "module",
+    "ecmaVersion": 2023,
+    "ecmaFeatures": { "jsx": true }
+  },
+  "extends": [
+    "prettier",
+    "eslint:recommended",
+    "plugin:react-native/all",
+    "plugin:react/recommended"
+  ]
+}
