@@ -26,6 +26,14 @@ function AboutScreen(){
         </View>
       );
 
+      const HyperlinkButton = () => {
+        return (
+          <a href="https://example.com/" target="_blank" rel="noopener noreferrer">
+            Click me
+          </a>
+        );
+      };
+
       const styles = StyleSheet.create({
         container: {
           flex: 1,
