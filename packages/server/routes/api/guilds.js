@@ -89,7 +89,7 @@ router.put();
 
 // To Do: Finalize Delete Implementation
 router.delete(
-  "/guild/delete/:guildId",
+  "/delete/:guildId",
   AuthController.authenticate,
   async (request, response) => {
     try {
