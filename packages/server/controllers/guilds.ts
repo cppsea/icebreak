@@ -7,15 +7,15 @@ async function getAllGuilds(): Promise<Guild[]> {
 }
 
 async function getGuild(guildId: string): Promise<Guild | null> {
-  const query = await prisma.guild.findFirst({
+  const query = await prisma.guild.findUnique({
     where: {
-      guildId: guildId,
-    },
+      guildId: guildId
+    }
   });
   return query;
 }
 
 export default {
   getGuild,
-  getAllGuilds,
+  getAllGuilds
 };
