@@ -1,8 +1,11 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const router = express.Router();
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
+
+router.use(bodyParser.json());
 
 router.get("/", AuthController.authenticate, async (request, response) => {
   try {
@@ -55,7 +58,7 @@ router.get(
 
 // To Do: Finish Create Guild Implementation
 router.post(
-  "/guild/create/:guildId",
+  "/create/:guildId",
   AuthController.authenticate,
   async (request, response) => {
     try {
@@ -85,9 +88,61 @@ router.post(
 );
 
 // To Do: Implement Update
-router.put();
+router.put(
+  "/update/:guildId",
+  AuthController.authenticate,
+  async (request, response) => {
+    try {
+      const { guildId } = request.params;
 
-// To Do: Finalize Delete Implementation
+      let eventdata = {
+        name: request.body.name,
+        handler: request.body.handler,
+        description: request.body.description,
+        category: request.body.category,
+        location: request.body.location,
+        website: request.body.website,
+        tags: request.body.tags,
+        banner: request.body.banner,
+        icon: request.body.icon,
+        media: request.body.media,
+        isInviteOnly: request.body.isInviteOnly,
+      };
+
+      const updated_guild = await GuildController.updateGuild(
+        guildId,
+        eventdata
+      );
+
+      // To Do: Implement Checks For
+      // name,handler, description, category, location, website, tags, banner, icon, media, isinviteonly
+      // check if boolean, check if website www or http, check if string, check if a list of strings, check if media is actually media
+
+      if (updated_guild === null) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Could not find or update requested guild.",
+          },
+        });
+      } else {
+        response.status(200).json({
+          status: "success",
+          data: {
+            updated_guild,
+            message: `Guild updated successfully.`,
+          },
+        });
+      }
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 router.delete(
   "/delete/:guildId",
   AuthController.authenticate,
@@ -95,7 +150,8 @@ router.delete(
     try {
       const { guildId } = request.params;
 
-      if (guildId === undefined) {
+      // Check if Valid Guild ID Provided
+      if (guildId === ":guildId") {
         return response.status(400).json({
           status: "fail",
           data: {
@@ -110,7 +166,7 @@ router.delete(
         response.status(400).json({
           status: "fail",
           data: {
-            message: "Could not delete requested guild.",
+            message: "Could not find or delete requested guild.",
           },
         });
       } else {
