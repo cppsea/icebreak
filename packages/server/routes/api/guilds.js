@@ -62,7 +62,7 @@ router.get(
 
 // To Do: Finish Create Guild Implementation
 router.post(
-  "/create/",
+  "/create",
   AuthController.authenticate,
   async (request, response) => {
     try {
