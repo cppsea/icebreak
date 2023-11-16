@@ -14,6 +14,7 @@ async function getGuild(guildId) {
   return query;
 }
 
+// TODO: Remove guildId param
 async function createGuild(guildId, eventdata) {
   try {
     const created_guild = await prisma.guilds.create({
