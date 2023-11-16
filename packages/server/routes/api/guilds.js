@@ -79,7 +79,7 @@ router.post(
       if (createdGuild) {
         response.status(200).json({
           status: "success",
-          message: `Guild created successfully.`,
+          message: "Guild created successfully.",
           data: {
             guild: createdGuild,
           },
