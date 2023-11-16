@@ -125,10 +125,6 @@ router.put(
         request.body
       );
 
-      // To Do: Implement Checks For
-      // name,handler, description, category, location, website, tags, banner, icon, media, isinviteonly
-      // check if boolean, check if website www or http, check if string, check if a list of strings, check if media is actually media
-
       if (updatedGuild === null) {
         response.status(400).json({
           status: "fail",
