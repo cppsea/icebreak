@@ -4,7 +4,7 @@ const router = express.Router();
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
-// Get all guilds from databs
+// Get all guilds from database
 router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     const guilds = await GuildController.getAllGuilds();
@@ -66,7 +66,6 @@ router.post(
   AuthController.authenticate,
   async (request, response) => {
     try {
-      // To Do: Implement Logic For Fields
       const createdGuild = await GuildController.createGuild(request.body);
 
       if (createdGuild) {

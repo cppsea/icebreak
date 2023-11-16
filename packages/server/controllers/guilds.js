@@ -12,12 +12,10 @@ async function getGuild(guildId) {
   });
 }
 
-// TODO: Remove guildId param
 async function createGuild(eventData) {
   const data = cleanEventData(eventData);
   try {
     return await prisma.guilds.create({
-      // Guild Data
       data: data,
     });
   } catch (error) {
@@ -32,7 +30,6 @@ async function updateGuild(guildId, eventData) {
       where: {
         guildId: guildId,
       },
-      // Guild Data
       data: data,
     });
   } catch (error) {
@@ -53,7 +50,7 @@ async function deleteGuild(guildId) {
 }
 
 // This function returns an object that only has fields
-// specified by the Prisma schema.
+// specified by the Prisma schema, cleans the request body.
 function cleanEventData(eventData) {
   return {
     guildId: eventData.guildId,
@@ -70,7 +67,7 @@ function cleanEventData(eventData) {
     isInviteOnly: eventData.isInviteOnly,
     events: eventData.events,
     members: eventData.members,
-  }
+  };
 }
 
 module.exports = {
