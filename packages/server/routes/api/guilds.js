@@ -7,22 +7,26 @@ const AuthController = require("../../controllers/auth");
 
 router.use(bodyParser.json());
 
-router.get("/", AuthController.authenticate, async (request, response) => {
-  try {
-    const guilds = await GuildController.getAllGuilds();
-    response.status(200).json({
-      status: "success",
-      data: {
-        guilds,
-      },
-    });
-  } catch (error) {
-    response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+router.get(
+  "/", 
+  AuthController.authenticate, 
+  async (request, response) => {
+    try {
+      const guilds = await GuildController.getAllGuilds();
+      response.status(200).json({
+        status: "success",
+        data: {
+          guilds,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
   }
-});
+);
 
 router.get(
   "/:guildId",
