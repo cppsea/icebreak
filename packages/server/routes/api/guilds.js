@@ -7,26 +7,22 @@ const AuthController = require("../../controllers/auth");
 
 router.use(bodyParser.json());
 
-router.get(
-  "/", 
-  AuthController.authenticate, 
-  async (request, response) => {
-    try {
-      const guilds = await GuildController.getAllGuilds();
-      response.status(200).json({
-        status: "success",
-        data: {
-          guilds,
-        },
-      });
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
+router.get("/", AuthController.authenticate, async (request, response) => {
+  try {
+    const guilds = await GuildController.getAllGuilds();
+    response.status(200).json({
+      status: "success",
+      data: {
+        guilds,
+      },
+    });
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
-);
+});
 
 router.get(
   "/:guildId",
@@ -62,20 +58,43 @@ router.get(
 
 // To Do: Finish Create Guild Implementation
 router.post(
-  "/create/",
+  "/create",
   AuthController.authenticate,
   async (request, response) => {
     try {
       // To Do: Implement Logic For Fields
-      const eventdata = request.body;
+      let eventdata = {
+        name: request.body.name,
+        handler: request.body.handler,
+        description: request.body.description,
+        category: request.body.category,
+        location: request.body.location,
+        website: request.body.website,
+        tags: request.body.tags,
+        banner: request.body.banner,
+        icon: request.body.icon,
+        media: request.body.media,
+        isInviteOnly: request.body.isInviteOnly,
+      };
 
-      const guild = await GuildController.createGuild(eventdata);
-      response.status(200).json({
-        status: "success",
-        data: {
-          guild,
-        },
-      });
+      const new_guild = await GuildController.createGuild(eventdata);
+
+      if (new_guild === null) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Could create requested guild.",
+          },
+        });
+      } else {
+        response.status(200).json({
+          status: "success",
+          data: {
+            new_guild,
+            message: `Guild created successfully.`,
+          },
+        });
+      }
 
       // Error Handling
     } catch (error) {
