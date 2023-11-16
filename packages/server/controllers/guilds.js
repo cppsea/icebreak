@@ -1,4 +1,5 @@
 const prisma = require("../prisma/prisma");
+const { v4: uuidv4 } = require("uuid");
 
 async function getAllGuilds() {
   const query = await prisma.guilds.findMany();
@@ -14,14 +15,14 @@ async function getGuild(guildId) {
   return query;
 }
 
-async function createGuild(guildId, eventdata) {
+// TODO: Remove guildId param
+async function createGuild(eventdata) {
+  const guildId = uuidv4();
   try {
     const created_guild = await prisma.guilds.create({
-      where: {
-        guildId: guildId,
-      },
       // Guild Data
       data: {
+        guildId: guildId,
         name: eventdata.name,
         handler: eventdata.handler,
         description: eventdata.description,
