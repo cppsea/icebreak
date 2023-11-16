@@ -33,7 +33,16 @@ router.get(
   AuthController.authenticate,
   async (request, response) => {
     try { 
-      const guild = await GuildController.getGuild(request.params.guildId);
+      const { guildId } = request.params;
+      if (guildId === ":guildId") {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Guild ID not provided."
+          },
+        });
+      }
+      const guild = await GuildController.getGuild(guildId);
       if (guild) {
         response.status(200).json({
           status: "success",
@@ -151,6 +160,7 @@ router.delete(
   async (request, response) => {
     try {
       const { guildId } = request.params;
+      console.log(guildId);
 
       if (guildId === ":guildId") {
         return response.status(400).json({
