@@ -62,18 +62,14 @@ router.get(
 
 // To Do: Finish Create Guild Implementation
 router.post(
-  "/create/:guildId",
+  "/create/",
   AuthController.authenticate,
   async (request, response) => {
     try {
-      const { guildId } = request.params;
-
       // To Do: Implement Logic For Fields
-      const eventdata = {};
+      const eventdata = request.body;
 
-      eventdata;
-
-      const guild = await GuildController.createGuild(guildId);
+      const guild = await GuildController.createGuild(eventdata);
       response.status(200).json({
         status: "success",
         data: {
