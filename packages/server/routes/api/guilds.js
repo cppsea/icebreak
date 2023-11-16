@@ -5,40 +5,35 @@ const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
 // Get all guilds from databs
-router.get(
-  "/", 
-  AuthController.authenticate, 
-  async (request, response) => {
-    try {
-      const guilds = await GuildController.getAllGuilds();
-      response.status(200).json({
-        status: "success",
-        data: {
-          guilds,
-        },
-      });
-    } 
-    catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
+router.get("/", AuthController.authenticate, async (request, response) => {
+  try {
+    const guilds = await GuildController.getAllGuilds();
+    response.status(200).json({
+      status: "success",
+      data: {
+        guilds,
+      },
+    });
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
-);
+});
 
 // Get guild by ID
 router.get(
   "/:guildId",
   AuthController.authenticate,
   async (request, response) => {
-    try { 
+    try {
       const { guildId } = request.params;
       if (guildId === ":guildId") {
         return response.status(400).json({
           status: "fail",
           data: {
-            guildId: "Guild ID not provided."
+            guildId: "Guild ID not provided.",
           },
         });
       }
@@ -50,15 +45,13 @@ router.get(
             guild,
           },
         });
-      }
-      else {
+      } else {
         response.status(400).json({
           status: "fail",
-          message: "Guild does not exist."
-        })  
+          message: "Guild does not exist.",
+        });
       }
-    } 
-    catch (error) {
+    } catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
@@ -84,17 +77,14 @@ router.post(
             guild: createdGuild,
           },
         });
-      } 
-      else {
+      } else {
         response.status(400).json({
           status: "fail",
           message: "Could create requested guild.",
-          data: {
-          },
+          data: {},
         });
       }
-    } 
-    catch (error) {
+    } catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
@@ -115,7 +105,7 @@ router.put(
         return response.status(400).json({
           status: "fail",
           data: {
-            guildId: "Guild ID not provided."
+            guildId: "Guild ID not provided.",
           },
         });
       }
@@ -128,7 +118,7 @@ router.put(
       if (updatedGuild === null) {
         response.status(400).json({
           status: "fail",
-          message: "Could not find or update requested guild."
+          message: "Could not find or update requested guild.",
         });
       } else {
         response.status(200).json({
@@ -139,8 +129,7 @@ router.put(
           },
         });
       }
-    } 
-    catch (error) {
+    } catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
@@ -156,7 +145,6 @@ router.delete(
   async (request, response) => {
     try {
       const { guildId } = request.params;
-      console.log(guildId);
 
       if (guildId === ":guildId") {
         return response.status(400).json({
