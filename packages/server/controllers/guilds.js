@@ -15,23 +15,11 @@ async function getGuild(guildId) {
 }
 
 // TODO: Remove guildId param
-async function createGuild(eventdata) {
+async function createGuild(eventData) {
   try {
     const created_guild = await prisma.guilds.create({
       // Guild Data
-      data: {
-        name: eventdata.name,
-        handler: eventdata.handler,
-        description: eventdata.description,
-        category: eventdata.category,
-        location: eventdata.location,
-        website: eventdata.website,
-        tags: eventdata.tags,
-        banner: eventdata.banner,
-        icon: eventdata.icon,
-        media: eventdata.media,
-        isInviteOnly: eventdata.isInviteOnly,
-      },
+      data: eventData,
     });
     return created_guild;
   } catch (error) {
@@ -39,26 +27,14 @@ async function createGuild(eventdata) {
   }
 }
 
-async function updateGuild(guildId, eventdata) {
+async function updateGuild(guildId, eventData) {
   try {
     const updated_guild = await prisma.guilds.update({
       where: {
         guildId: guildId,
       },
       // Guild Data
-      data: {
-        name: eventdata.name,
-        handler: eventdata.handler,
-        description: eventdata.description,
-        category: eventdata.category,
-        location: eventdata.location,
-        website: eventdata.website,
-        tags: eventdata.tags,
-        banner: eventdata.banner,
-        icon: eventdata.icon,
-        media: eventdata.media,
-        isInviteOnly: eventdata.isInviteOnly,
-      },
+      data: eventData,
     });
     return updated_guild;
   } catch (error) {

@@ -1,53 +1,24 @@
 const express = require("express");
-const bodyParser = require("body-parser");
 const router = express.Router();
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
-router.use(bodyParser.json());
-
-router.get("/", AuthController.authenticate, async (request, response) => {
-  try {
-    const guilds = await GuildController.getAllGuilds();
-    response.status(200).json({
-      status: "success",
-      data: {
-        guilds,
-      },
-    });
-  } catch (error) {
-    response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
-  }
-});
-
+// Get all guilds from databs
 router.get(
-  "/:guildId",
-  AuthController.authenticate,
+  "/", 
+  AuthController.authenticate, 
   async (request, response) => {
     try {
-      const { guildId } = request.params;
-
-      if (guildId === undefined) {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            guildId: "Guild ID not provided",
-          },
-        });
-      }
-
-      const guild = await GuildController.getGuild(guildId);
+      const guilds = await GuildController.getAllGuilds();
       response.status(200).json({
         status: "success",
         data: {
-          guild,
+          guilds,
         },
       });
-    } catch (error) {
+    } 
+    catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
@@ -56,48 +27,65 @@ router.get(
   }
 );
 
-// To Do: Finish Create Guild Implementation
+// Get guild by ID
+router.get(
+  "/:guildId",
+  AuthController.authenticate,
+  async (request, response) => {
+    try { 
+      const guild = await GuildController.getGuild(request.params.guildId);
+      if (guild) {
+        response.status(200).json({
+          status: "success",
+          data: {
+            guild,
+          },
+        });
+      }
+      else {
+        response.status(400).json({
+          status: "fail",
+          message: "Guild does not exist."
+        })  
+      }
+    } 
+    catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+// Create Guild
 router.post(
   "/create",
   AuthController.authenticate,
   async (request, response) => {
     try {
       // To Do: Implement Logic For Fields
-      let eventdata = {
-        name: request.body.name,
-        handler: request.body.handler,
-        description: request.body.description,
-        category: request.body.category,
-        location: request.body.location,
-        website: request.body.website,
-        tags: request.body.tags,
-        banner: request.body.banner,
-        icon: request.body.icon,
-        media: request.body.media,
-        isInviteOnly: request.body.isInviteOnly,
-      };
+      const createdGuild = await GuildController.createGuild(request.body);
 
-      const new_guild = await GuildController.createGuild(eventdata);
-
-      if (new_guild === null) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            message: "Could create requested guild.",
-          },
-        });
-      } else {
+      if (createdGuild) {
         response.status(200).json({
           status: "success",
+          message: `Guild created successfully.`,
           data: {
-            new_guild,
-            message: `Guild created successfully.`,
+            guild: createdGuild,
+          },
+        });
+      } 
+      else {
+        response.status(400).json({
+          status: "fail",
+          message: "Could create requested guild.",
+          data: {
           },
         });
       }
-
-      // Error Handling
-    } catch (error) {
+    } 
+    catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
@@ -106,7 +94,7 @@ router.post(
   }
 );
 
-// To Do: Implement Update
+// Update guild by ID
 router.put(
   "/update/:guildId",
   AuthController.authenticate,
@@ -114,46 +102,40 @@ router.put(
     try {
       const { guildId } = request.params;
 
-      let eventdata = {
-        name: request.body.name,
-        handler: request.body.handler,
-        description: request.body.description,
-        category: request.body.category,
-        location: request.body.location,
-        website: request.body.website,
-        tags: request.body.tags,
-        banner: request.body.banner,
-        icon: request.body.icon,
-        media: request.body.media,
-        isInviteOnly: request.body.isInviteOnly,
-      };
+      if (guildId === ":guildId") {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Guild ID not provided."
+          },
+        });
+      }
 
-      const updated_guild = await GuildController.updateGuild(
+      const updatedGuild = await GuildController.updateGuild(
         guildId,
-        eventdata
+        request.body
       );
 
       // To Do: Implement Checks For
       // name,handler, description, category, location, website, tags, banner, icon, media, isinviteonly
       // check if boolean, check if website www or http, check if string, check if a list of strings, check if media is actually media
 
-      if (updated_guild === null) {
+      if (updatedGuild === null) {
         response.status(400).json({
           status: "fail",
-          data: {
-            message: "Could not find or update requested guild.",
-          },
+          message: "Could not find or update requested guild."
         });
       } else {
         response.status(200).json({
           status: "success",
+          message: "Guild updated successfully.",
           data: {
-            updated_guild,
-            message: `Guild updated successfully.`,
+            updatedGuild: updatedGuild,
           },
         });
       }
-    } catch (error) {
+    } 
+    catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
@@ -162,6 +144,7 @@ router.put(
   }
 );
 
+// Delete guild by ID
 router.delete(
   "/delete/:guildId",
   AuthController.authenticate,
@@ -169,7 +152,6 @@ router.delete(
     try {
       const { guildId } = request.params;
 
-      // Check if Valid Guild ID Provided
       if (guildId === ":guildId") {
         return response.status(400).json({
           status: "fail",
