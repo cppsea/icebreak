@@ -58,7 +58,7 @@ model GuildMember {
 }
 
 model Guild {
-  guildId      String        @id(map: "guild_pkey") @map("guild_id") @db.Uuid
+  guildId      String        @id(map: "guild_pkey") @default(dbgenerated("gen_random_uuid()")) @map("guild_id") @db.Uuid
   name         String        @db.VarChar(100)
   handler      String        @db.VarChar(50)
   description  String

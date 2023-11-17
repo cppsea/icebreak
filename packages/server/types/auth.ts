@@ -1,4 +1,4 @@
-import { Request } from "express";
+import { APIRequest } from ".";
 
 // extending json web token payloads with necessary user properties
 // for our authorization
@@ -28,8 +28,10 @@ export type UserPayload = {
   lastName: string;
   avatar: string | null;
   email: string;
+  isNew: boolean;
 };
 
-export interface RequestWithUser extends Request {
-  user: UserPayload;
+export interface RequestWithUser<T = Record<string, never>, V = void>
+  extends APIRequest<T, V> {
+  user?: UserPayload;
 }

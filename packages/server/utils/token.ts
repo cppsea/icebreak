@@ -1,5 +1,5 @@
 import { User } from "@prisma/client";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import jwt from "jsonwebtoken";
 import { UserPayload } from "../types/auth";
 
 function generateRefreshToken(user: User | UserPayload) {
@@ -32,11 +32,19 @@ function generateAccessToken(user: User | UserPayload) {
   );
 }
 
-async function verifyRefreshToken(refreshToken: string) {
-  return jwt.verify(refreshToken, process.env.TOKEN_SECRET!);
+function verifyRefreshToken(refreshToken: string): Promise<UserPayload> {
+  return new Promise((resolve, reject) => {
+    jwt.verify(refreshToken, process.env.TOKEN_SECRET!, (err, decoded) => {
+      if (err) {
+        reject(err);
+      }
+
+      resolve(decoded as UserPayload);
+    });
+  });
 }
 
-async function verifyAccessToken(accessToken: string): Promise<JwtPayload> {
+async function verifyAccessToken(accessToken: string): Promise<UserPayload> {
   return new Promise((resolve, reject) => {
     jwt.verify(
       accessToken,
@@ -47,7 +55,7 @@ async function verifyAccessToken(accessToken: string): Promise<JwtPayload> {
         }
         // Token is valid
         // resolve promise with the payload of the access token
-        resolve(decoded as jwt.JwtPayload);
+        resolve(decoded as UserPayload);
       }
     );
   });
