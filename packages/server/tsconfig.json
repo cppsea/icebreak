@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "outDir": "./build",
+    "allowJs": true,
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "target": "ES2022"
+  },
+  "exclude": ["./__tests__/**/*"],
+  "include": [
+    "./controllers/**/*",
+    "./routes/**/*",
+    "./utils/**/*",
+    "./index.js"
+  ]
+}

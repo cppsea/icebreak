@@ -1,8 +1,8 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const UserController = require("../../controllers/users");
-const AuthController = require("../../controllers/auth");
+import UserController from "../../controllers/users";
+import AuthController from "../../controllers/auth";
 
 router.get("/", async (request, response) => {
   try {
@@ -10,14 +10,24 @@ router.get("/", async (request, response) => {
     response.status(200).json({
       status: "success",
       data: {
-        users,
-      },
+        users
+      }
     });
+    return;
   } catch (error) {
+    if (error instanceof Error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message
+      });
+      return;
+    }
+
     response.status(500).json({
       status: "error",
-      message: error.message,
+      message: "Internal Server Error"
     });
+    return;
   }
 });
 
@@ -29,28 +39,38 @@ router.get(
       const { userId } = request.params;
 
       if (userId === undefined) {
-        return response.status(400).json({
+        response.status(400).json({
           status: "fail",
           data: {
-            userId: "User ID not provided",
-          },
+            userId: "User ID not provided"
+          }
         });
+        return;
       }
 
       const user = await UserController.getUser(userId);
       response.status(200).json({
         status: "success",
         data: {
-          user: user,
-        },
+          user: user
+        }
       });
     } catch (error) {
+      if (error instanceof Error) {
+        response.status(500).json({
+          status: "error",
+          message: error.message
+        });
+        return;
+      }
+
       response.status(500).json({
         status: "error",
-        message: error.message,
+        message: "Internal Server Error"
       });
+      return;
     }
   }
 );
 
-module.exports = router;
+export default router;
