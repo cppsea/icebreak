@@ -1,3 +1,6 @@
+const {
+  PrismaClientKnownRequestError,
+} = require("@prisma/client/runtime/library");
 const GuildsController = require("../../controllers/guilds");
 const { prismaMock } = require("../prisma_mock");
 
@@ -23,7 +26,7 @@ describe("Guilds unit tests", () => {
   });
 
   test("should fetch guild by id", async () => {
-    prismaMock.guilds.findUnique.mockResolvedValue(testGuild);
+    prismaMock.guilds.findUniqueOrThrow.mockResolvedValue(testGuild);
 
     await expect(GuildsController.getGuild(testGuild.guildId)).resolves.toEqual(
       {
@@ -37,10 +40,12 @@ describe("Guilds unit tests", () => {
   });
 
   test("should find no guild if given nonexistent id", async () => {
-    prismaMock.guilds.findUnique.mockResolvedValue(null);
+    prismaMock.guilds.findUniqueOrThrow.mockRejectedValue(
+      new PrismaClientKnownRequestError("record not found", { code: "P2025" })
+    );
 
     await expect(
       GuildsController.getGuild("e2bdade9-4bf2-4220-8020-e09266363762")
-    ).resolves.toBe(null);
+    ).rejects.toThrow(PrismaClientKnownRequestError);
   });
 });
