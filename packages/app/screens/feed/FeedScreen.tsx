@@ -9,8 +9,7 @@ import EventCard from "@app/components/EventCard/EventCard";
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
-import { EventType, ItemType } from "@app/types/EventCard";
-
+import { EventType } from "@app/types/EventCard";
 
 import * as SecureStore from "@app/utils/SecureStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -26,7 +25,6 @@ function FeedScreen() {
     try {
       // Revoke the refresh token
       const refreshToken = await SecureStore.getValueFor("refreshToken");
-      // eslint-disable-next-line no-unused-vars
       const response = await axios.post(`${ENDPOINT}/auth/token/revoke`, {
         refreshToken: refreshToken,
       });
@@ -45,21 +43,18 @@ function FeedScreen() {
   }, [setUser]);
 
   const getEvents = async () => {
-    const token = await SecureStore.getValueFor("accessToken");
-    const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
-      headers: {
-        Authorization: token ?? "",
-      },
-    });
+    try {
+      const token = await SecureStore.getValueFor("accessToken");
+      const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
+        headers: {
+          Authorization: token ?? "",
+        },
+      });
 
-    const serializeEvents = response.data.events.map((event: EventType) => {
-      return {
-        ...event,
-        key: event.eventId,
-      };
-    });
-
-    setEvents(serializeEvents);
+      setEvents(response.data.events);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   useEffect(() => {
@@ -72,23 +67,24 @@ function FeedScreen() {
     setRefreshing(false);
   }, []);
 
-  const handleRenderItem = useCallback(( item: ItemType ) => {
+  const handleRenderItem = ({ item }: { item: EventType }) => {
     return (
       <EventCard
+        banner={require("@app/assets/test_card_banner.png")}
         title={item.title}
         description={item.description}
         location={item.location}
-        timeBegin={item.start_date}
-        timeEnd={item.end_date}
+        timeBegin={item.start_date || ""}
+        timeEnd={item.end_date || ""}
       />
     );
-  }, []);
+  };
 
   return (
     <>
       <Screen>
-        <Text>Hello, {user.firstName}</Text>
-        <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
+        <Text>Hello, {user.data?.firstName}</Text>
+        <Image style={styles.avatar} source={{ uri: user.data?.avatar }} />
         <Text>{JSON.stringify(user)}</Text>
         <Button onPress={handleOnLogout} title="logout" />
       </Screen>
@@ -97,7 +93,7 @@ function FeedScreen() {
         refreshing={refreshing}
         data={events}
         renderItem={handleRenderItem}
-        keyExtractor={(item) => item.key}
+        keyExtractor={(item) => item.eventId}
       />
     </>
   );

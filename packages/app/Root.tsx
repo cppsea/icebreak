@@ -21,9 +21,7 @@ import Constants from "expo-constants";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-import {
-  GoogleSignin,
-} from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 function TabNavigation() {
   return (
@@ -40,6 +38,7 @@ function App() {
 
   const currentSession = async () => {
     let accessToken = await SecureStore.getValueFor("accessToken");
+    let refreshToken = await SecureStore.getValueFor("refreshToken");
 
     if (!accessToken) {
       return;
@@ -68,7 +67,7 @@ function App() {
     }
 
     // If access token is invalid/expired, try to get a new one with the refresh token
-    const refreshToken = await SecureStore.getValueFor("refreshToken");
+    refreshToken = await SecureStore.getValueFor("refreshToken");
     try {
       const { data: response } = await axios.post(`${ENDPOINT}/auth/token`, {
         refreshToken: refreshToken,
@@ -97,10 +96,10 @@ function App() {
 
   useEffect(() => {
     GoogleSignin.configure({
-      webClientId: Constants.expoConfig.extra.webClientId,
-      iosClientId: Constants.expoConfig.extra.iosClientId,
+      webClientId: Constants?.expoConfig?.extra?.webClientId,
+      iosClientId: Constants?.expoConfig?.extra?.iosClientId,
     });
-    
+
     currentSession();
   }, []);
 
@@ -108,7 +107,7 @@ function App() {
     <Stack.Navigator
       initialRouteName="Landing"
       screenOptions={{ headerShown: false }}>
-      {!user?.isLoggedIn ? (
+      {user?.isLoggedIn ? (
         <Stack.Screen name="Tab" component={TabNavigation} />
       ) : (
         <Stack.Screen name="Landing" component={LandingStack} />

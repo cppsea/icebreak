@@ -1,28 +1,33 @@
-import React, { createContext, useContext, useMemo, useState, ReactElement } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useMemo,
+  useState,
+  ReactElement,
+} from "react";
 
-type Props = {
-  children: ReactElement
-}
+type UserProviderProps = {
+  children: ReactElement;
+};
 
 type Payload = {
-  userId: string,
-  firstName: string,
-  lastName: string,
-  avatar: string,
-  email: string,
-  joinedDate: string,
-  lastLogin: string
-}
+  userId: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatar: string;
+  isNew: boolean;
+};
 
 type State = {
-  isLoggedIn: boolean,
-  data: Payload
-}
+  isLoggedIn: boolean;
+  data?: Payload;
+};
 
 type userContextType = {
-  user: State,
-  setUser: React.Dispatch<React.SetStateAction<State>>
-}
+  user: State;
+  setUser: React.Dispatch<React.SetStateAction<State>>;
+};
 
 const initialState: State = {
   isLoggedIn: false,
@@ -30,34 +35,37 @@ const initialState: State = {
     userId: "",
     firstName: "",
     lastName: "",
-    avatar: "",
     email: "",
-    joinedDate: "",
-    lastLogin: ""
-  } 
+    avatar: "",
+    isNew: true,
+  },
 };
 
+export const UserContext = createContext<userContextType>({
+  user: initialState,
+  setUser: () => {}
+});
 
-const UserContext = createContext<userContextType | null>(null);
+export function UserProvider({ children }: UserProviderProps) {
+  const [user, setUser] = useState(initialState);
 
+  const value = useMemo(() => {
+    return {
+      user,
+      setUser,
+    };
+  }, [user]);
+
+  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
+}
 
 export function useUserContext() {
   const user = useContext(UserContext);
-  if (user === null) {
+  if (user === undefined) {
     throw new Error(
-      "Please ensure you're using `useUserContext` within userProvider",
+      "Please ensure you're using `useUserContext` within userProvider"
     );
   }
 
   return user;
-}
-
-export function UserProvider({children}: Props) {
-  const [user, setUser] = useState(initialState);
-
-  const value = useMemo(() => {
-    return {user, setUser};
-  }, [user]);
-
-  return <UserContext.Provider value={value}>{children}</UserContext.Provider>;
 }

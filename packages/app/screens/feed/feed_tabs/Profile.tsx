@@ -1,9 +1,9 @@
 import React from "react";
 import { View, Button, Text, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
+import { ProfileScreenNavigationProps } from "@app/types/Feed";
 
 // Placeholder profile screen
-function Profile({ navigation }) {
+function Profile({ navigation }: ProfileScreenNavigationProps) {
   return (
     <View style={styles.screenContainer}>
       <Button onPress={() => navigation.navigate("Feed")} title="Back" />
@@ -19,9 +19,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-Profile.propTypes = {
-  navigation: PropTypes.object,
-};
 
 export default Profile;

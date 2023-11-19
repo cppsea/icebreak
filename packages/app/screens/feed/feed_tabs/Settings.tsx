@@ -1,9 +1,9 @@
+import { SettingsScreenNavigationProps } from "@app/types/Feed";
 import React from "react";
 import { View, Button, Text, StyleSheet } from "react-native";
-import PropTypes from "prop-types";
 
 // Placeholder settings screen
-function Settings({ navigation }) {
+function Settings({ navigation }: SettingsScreenNavigationProps) {
   return (
     <View style={styles.screenContainer}>
       <Button onPress={() => navigation.navigate("Feed")} title="Back" />
@@ -19,9 +19,5 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 });
-
-Settings.propTypes = {
-  navigation: PropTypes.object,
-};
 
 export default Settings;

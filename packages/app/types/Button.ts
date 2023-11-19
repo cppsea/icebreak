@@ -11,7 +11,7 @@ import {
 export type ButtonProps = {
   title: string;
   textStyle?: StyleProp<TextStyle>;
-  style: StyleProp<ViewStyle>;
+  style?: StyleProp<ViewStyle>;
   onPress: (ev: NativeSyntheticEvent<NativeTouchEvent>) => void;
   fontColor?: ColorValue | undefined;
   accessibilityLabel?: string | undefined;

@@ -7,7 +7,7 @@ import {
 } from "react-native";
 
 export type EventCardProps = {
-  style: StyleProp<ViewStyle> | StyleProp<ViewStyle>[];
+  style?: StyleProp<ViewStyle> | StyleProp<ViewStyle>[];
   banner: ImageSourcePropType;
   title: string;
   timeBegin: string;
@@ -29,28 +29,19 @@ export type EventTextProps = {
 };
 
 export type EventType = {
-  event_id: string;
-  guild_id: string;
+  eventId: string;
+  guildId: string;
   title: string;
   description: string;
-  start_date: number;
-  end_date: number;
+  start_date?: string;
+  end_date?: string;
   location: string;
-  thumbnail: string;
+  thumbnail?: string;
 };
 
 export type FaceIconProps = {
   index: number;
   iconUrl: string;
-};
-
-export type ItemType = {
-  banner: ImageSourcePropType;
-  title: string;
-  description: string;
-  location: string;
-  start_date: string;
-  end_date: string;
 };
 
 export type ImageProps = DefaultImageProps & {

@@ -17,10 +17,13 @@ export async function useGoogleLogin(user, setUser) {
       token: idToken,
     };
 
+    console.log(idToken);
+
     const { data: response } = await axios.post(
       `${ENDPOINT}/auth/google`,
       body
     );
+
 
     if (response?.status == "success") {
       await SecureStore.save("accessToken", response.data.accessToken);

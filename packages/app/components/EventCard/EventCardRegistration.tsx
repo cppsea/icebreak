@@ -7,15 +7,20 @@ import { EventCardRegistrationProps } from "@app/types/EventCard";
 // Sample array for testing
 const sampleArray = [0, 1, 2, 3];
 
+const BLUE = "#0b91e0";
+
 const styles = StyleSheet.create({
   buttonView: {
     flex: 7,
     justifyContent: "center",
   },
   button: {
+    height: 35,
+    borderRadius: 5,
     marginBottom: 0,
     marginLeft: 0,
     marginRight: 0,
+    backgroundColor: BLUE
   },
   faceView: {
     flexDirection: "row",
@@ -32,7 +37,7 @@ export default function EventCardRegistration(
   return (
     <View style={{ flexDirection: "row" }}>
       <View style={styles.buttonView}>
-        <Button style={styles.button} title="Going" onPress={register} />
+        <Button style={styles.button} fontColor="#ffffff" title="Going" onPress={register} />
       </View>
       <View style={styles.faceView}>
         {sampleArray.slice(0, 4).map((x) => {

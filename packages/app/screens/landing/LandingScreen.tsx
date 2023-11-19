@@ -75,6 +75,7 @@ function LandingScreen({ navigation, route }) {
 
   const login = async () => {
     try {
+      console.log(`${ENDPOINT}/auth/local`)
       const response = await axios.post(`${ENDPOINT}/auth/local`, {
         email: inputs.email,
         password: inputs.password,
@@ -177,7 +178,6 @@ function LandingScreen({ navigation, route }) {
             onPress={() => {
               validateInput();
             }}
-            underlayColor="#0e81c4"
             fontColor="#ffffff"
             fontWeight="bold"
             style={[styles.loginButton, styles.component]}
@@ -190,7 +190,6 @@ function LandingScreen({ navigation, route }) {
             testID="googleButton"
             title="Continue with Google"
             onPress={() => useGoogleLogin(user, setUser)}
-            underlayColor="#ebebeb"
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
             imageStyle={styles.imageStyle}

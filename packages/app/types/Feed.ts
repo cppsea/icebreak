@@ -1,3 +1,4 @@
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { ReactNode } from "react";
 import {
   ColorValue,
@@ -8,29 +9,14 @@ import {
   ViewStyle,
 } from "react-native";
 
-export type ButtonProps = {
-  title: string;
-  textStyle?: StyleProp<TextStyle>;
-  style: StyleProp<ViewStyle>;
-  onPress: (ev: NativeSyntheticEvent<NativeTouchEvent>) => void;
-  fontColor?: ColorValue | undefined;
-  accessibilityLabel?: string | undefined;
-  disabled?: boolean | undefined;
-  icon?: ReactNode;
-  fontWeight?:
-    | "normal"
-    | "bold"
-    | "100"
-    | "200"
-    | "300"
-    | "400"
-    | "500"
-    | "600"
-    | "700"
-    | "800"
-    | "900"
-    | undefined;
+// Feed Drawer Navigation Props
 
-  // Handle all other props (for spread operator)
-  [x: string]: any;
+export type FeedStackParamList = {
+  Feed: undefined;
+  Profile: undefined;
+  Settings: undefined;
 };
+
+export type FeedScreenNavigationProps = NativeStackScreenProps<FeedStackParamList, 'Feed'>;
+export type ProfileScreenNavigationProps = NativeStackScreenProps<FeedStackParamList, 'Profile'>;
+export type SettingsScreenNavigationProps = NativeStackScreenProps<FeedStackParamList, 'Settings'>;
