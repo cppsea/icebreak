@@ -4,7 +4,7 @@ import { View, StyleSheet, Image } from "react-native";
 import GroupIcon from "./GroupIcon";
 import GroupHeaderInfo from "./GroupHeaderInfo";
 import GroupMediaIcon from "./GroupMediaIcon";
-import PropTypes from "prop-types";
+import { GroupHeaderProps } from "@app/types/GroupScreen";
 
 const bannerHeight = 110;
 const iconSize = 62;
@@ -27,7 +27,7 @@ const testDiscordUrl = "https://discord.com";
 const testLinkedInUrl = "https://linkedin.com";
 const testInstagramUrl = "https://instagram.com";
 
-function GroupHeader(props) {
+function GroupHeader(props: GroupHeaderProps) {
   const styles = StyleSheet.create({
     bannerStyle: {
       height: bannerHeight,
@@ -81,9 +81,5 @@ function GroupHeader(props) {
     </View>
   );
 }
-
-GroupHeader.propTypes = {
-  testID: PropTypes.string,
-};
 
 export default GroupHeader;

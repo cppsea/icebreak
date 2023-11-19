@@ -2,8 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Linking } from "react-native";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-
-import PropTypes from "prop-types";
+import { GroupMediaIconProps } from "@app/types/GroupScreen";
 
 const GRAY = "#2C2C2C";
 
@@ -37,7 +36,7 @@ const styles = StyleSheet.create({
  * @param {linkedinUrl} props.linkedinUrl - Url for LinkedIn
  * @param {instagramUrl} props.instagramUrl - Url for Instagram
  */
-function GroupMediaIcon(props) {
+function GroupMediaIcon(props: GroupMediaIconProps) {
   return (
     <View style={styles.containerStyle} testID={props.testID}>
       {props.githubUrl && (
@@ -90,14 +89,5 @@ function GroupMediaIcon(props) {
     </View>
   );
 }
-
-GroupMediaIcon.propTypes = {
-  size: PropTypes.number,
-  testID: PropTypes.string,
-  githubUrl: PropTypes.string,
-  discordUrl: PropTypes.string,
-  linkedinUrl: PropTypes.string,
-  instagramUrl: PropTypes.string,
-};
 
 export default GroupMediaIcon;

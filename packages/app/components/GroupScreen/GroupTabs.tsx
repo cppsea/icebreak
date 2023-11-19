@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, createRef } from "react";
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  createRef,
+  RefObject,
+} from "react";
 import {
   View,
   Text,
@@ -7,7 +13,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import PropTypes from "prop-types";
+import { GroupTabsProps } from "@app/types/GroupScreen";
 
 const BLUE = "#3498DB";
 const LIGHT_GRAY = "#E4E4E4";
@@ -20,13 +26,13 @@ const blueViewPosition = new Animated.ValueXY({
   y: -1,
 });
 
-function GroupTabs(props) {
+function GroupTabs(props: GroupTabsProps) {
   const [isAnimationComplete, setIsAnimationComplete] = useState(true);
   const { selectTab, tabs, activeTab } = props;
 
   // viewRefs.current to access the list
   // viewRefs.current[index].current to access the view
-  const viewRefs = useRef([]);
+  const viewRefs = useRef<Array<RefObject<View>>>([]);
 
   useEffect(() => {
     // Initialize viewRefs list with a ref for each view
@@ -43,7 +49,10 @@ function GroupTabs(props) {
     getPosition()
       .then((position) => {
         Animated.spring(blueViewPosition, {
-          toValue: { x: position, y: blueViewPosition.y },
+          toValue: {
+            x: position as number,
+            y: -1,
+          },
           useNativeDriver: true,
           speed: 100,
           restSpeedThreshold: 100,
@@ -68,7 +77,7 @@ function GroupTabs(props) {
     return new Promise((resolve, reject) => {
       for (let index = 0; index < tabs.length; index++) {
         if (tabs[index] == activeTab && viewRefs.current[index].current) {
-          viewRefs.current[index].current.measure(
+          viewRefs.current[index].current?.measure(
             (x, y, width, height, pageX) => {
               const tabCenter = pageX + width / 2;
               const position = tabCenter - blueViewWidth / 2;
@@ -129,7 +138,7 @@ function GroupTabs(props) {
         <Animated.View
           style={[
             styles.blueView,
-            // eslint-disable-next-line react-native/no-inline-styles
+            { transform: blueViewPosition.getTranslateTransform() },
             isAnimationComplete ? { opacity: 0 } : {},
           ]}
         />
@@ -148,7 +157,6 @@ const styles = StyleSheet.create({
     left: 0,
     marginTop: -2,
     right: 0,
-    transform: blueViewPosition.getTranslateTransform(),
     width: blueViewWidth,
   },
   bottomBorder: {
@@ -185,14 +193,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
-GroupTabs.propTypes = {
-  activeTab: PropTypes.object,
-  selectTab: PropTypes.func,
-  size: PropTypes.number,
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  tabs: PropTypes.arrayOf(PropTypes.object),
-  testID: PropTypes.string,
-};
 
 export default GroupTabs;

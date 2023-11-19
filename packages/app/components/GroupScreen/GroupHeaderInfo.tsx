@@ -10,7 +10,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import GroupTag from "./GroupTag";
 
-import PropTypes from "prop-types";
+import { GroupHeaderInfoProps } from "@app/types/GroupScreen";
 
 const GRAY = "#2C2C2C";
 const LIGHT_GRAY = "#6C6C6C";
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
  * @param {string} props.url - Link to the website of org.
  * @param {string[]} props.tags - String array of tags related to org.
  */
-function GroupHeaderInfo(props) {
+function GroupHeaderInfo(props: GroupHeaderInfoProps) {
   const [isDescriptionTruncated, setIsDescriptionTruncated] = useState(true);
 
   const toggleDescriptionTruncation = () => {
@@ -143,17 +143,5 @@ function GroupHeaderInfo(props) {
     </View>
   );
 }
-
-GroupHeaderInfo.propTypes = {
-  description: PropTypes.string,
-  handler: PropTypes.string,
-  location: PropTypes.string,
-  members: PropTypes.number,
-  name: PropTypes.string,
-  orgTags: PropTypes.arrayOf(PropTypes.string),
-  tags: PropTypes.arrayOf(PropTypes.string),
-  testID: PropTypes.string,
-  url: PropTypes.string,
-};
 
 export default GroupHeaderInfo;

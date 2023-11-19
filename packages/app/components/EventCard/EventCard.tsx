@@ -1,4 +1,4 @@
-import React from "react";
+import React, { FC } from "react";
 import { Image, StyleSheet, View } from "react-native";
 import EventCardText from "./EventCardText";
 import EventCardRegistration from "./EventCardRegistration";
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
 });
 
-const EventCard: React.FC<EventCardProps> = ({
+const EventCard: FC<EventCardProps> = ({
   style,
   banner,
   title,

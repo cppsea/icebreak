@@ -1,7 +1,7 @@
 import EventCard from "@app/components/EventCard/EventCard";
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
-import PropTypes from "prop-types";
+import { EventScreenProps } from "@app/types/GroupScreen";
 
 const DARK_GRAY = "#2C2C2C";
 const WHITE = "#F5F5F5";
@@ -21,7 +21,7 @@ const mockData = [
   },
 ];
 
-function EventsScreen(props) {
+function EventsScreen(props: EventScreenProps) {
   return (
     <View style={[props.style, styles.container]} testID={props.testID}>
       {mockData.map((section) => (
@@ -44,11 +44,6 @@ function EventsScreen(props) {
     </View>
   );
 }
-
-EventsScreen.propTypes = {
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  testID: PropTypes.string,
-};
 
 const styles = StyleSheet.create({
   card: {

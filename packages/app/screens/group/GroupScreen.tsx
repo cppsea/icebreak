@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, FC } from "react";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader";
 import GroupTabs from "../../components/GroupScreen/GroupTabs";
@@ -11,10 +11,11 @@ import MembersScreen from "../../screens/group/tabs/MembersScreen";
 import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
 import AboutScreen from "../../screens/group/tabs/AboutScreen";
 import NewsletterScreen from "../../screens/group/tabs/NewsletterScreen";
+import { Tab } from "@app/types/GroupScreen";
 
 const WHITE = "#F5F5F5";
 
-const tabs = [
+const tabs: Tab[] = [
   { name: "Events", screen: EventsScreen },
   { name: "Members", screen: MembersScreen },
   { name: "Leaderboard", screen: LeaderboardScreen },
@@ -22,7 +23,7 @@ const tabs = [
   { name: "Newsletter", screen: NewsletterScreen },
 ];
 
-function GroupScreen(): JSX.Element {
+function GroupScreen(): FC {
   const tabRef = useRef(null);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -50,7 +51,7 @@ function GroupScreen(): JSX.Element {
             style={styles.groupTabs}
             tabs={tabs}
             activeTab={activeTab}
-            selectTab={(tab) => setActiveTab(tab)}
+            selectTab={(tab: Tab) => setActiveTab(tab)}
           />
         </View>
         {activeTab.screen && (

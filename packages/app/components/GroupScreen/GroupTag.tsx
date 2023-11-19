@@ -1,6 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
 import PropTypes from "prop-types";
+import { GroupTagProps } from "@app/types/GroupScreen";
 
 const BLUE = "#3498DB";
 const LIGHT_GRAY = "#E4E4E4";
@@ -28,16 +29,12 @@ const styles = StyleSheet.create({
  * @param {object} props - Object that contains properties of this component.
  * @param {string} props.text - Text on the tag.
  */
-function GroupTag(props) {
+function GroupTag(props: GroupTagProps) {
   return (
     <View style={styles.tagContainer}>
       <Text style={styles.textStyle}>{props.text}</Text>
     </View>
   );
 }
-
-GroupTag.propTypes = {
-  text: PropTypes.string,
-};
 
 export default GroupTag;

@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
-import PropTypes from "prop-types";
+import { GroupIconProps } from "@app/types/GroupScreen";
 
 const styles = StyleSheet.create({
   iconContainer: {
@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
  * @param {string} props.backgroundColor - Background color of icon.
  * @param {string} props.icon - Icon image source.
  */
-function GroupIcon(props) {
+function GroupIcon(props: GroupIconProps) {
   return (
     <View
       style={[styles.iconContainer, { marginTop: -props.size / 2 }]}
@@ -44,12 +44,5 @@ function GroupIcon(props) {
     </View>
   );
 }
-
-GroupIcon.propTypes = {
-  backgroundColor: PropTypes.string,
-  icon: PropTypes.number,
-  size: PropTypes.number,
-  testID: PropTypes.string,
-};
 
 export default GroupIcon;

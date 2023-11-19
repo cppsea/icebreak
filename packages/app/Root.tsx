@@ -108,7 +108,7 @@ function App() {
     <Stack.Navigator
       initialRouteName="Landing"
       screenOptions={{ headerShown: false }}>
-      {user?.isLoggedIn ? (
+      {!user?.isLoggedIn ? (
         <Stack.Screen name="Tab" component={TabNavigation} />
       ) : (
         <Stack.Screen name="Landing" component={LandingStack} />
