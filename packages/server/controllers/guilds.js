@@ -53,20 +53,19 @@ async function deleteGuild(guildId) {
 // specified by the Prisma schema, cleans the request body.
 function cleanEventData(eventData) {
   return {
-    guildId: eventData.guildId,
-    name: eventData.name,
-    handler: eventData.handler,
-    description: eventData.description,
-    category: eventData.category,
-    location: eventData.location,
-    website: eventData.website,
-    tags: eventData.tags,
-    banner: eventData.banner,
-    icon: eventData.icon,
-    media: eventData.media,
-    isInviteOnly: eventData.isInviteOnly,
-    events: eventData.events,
-    members: eventData.members,
+    name: eventData.name || "",
+    handler: eventData.handler || "",
+    description: eventData.description || "",
+    category: eventData.category || "",
+    location: eventData.location || "",
+    website: eventData.website || "",
+    tags: eventData.tags || [],
+    banner: eventData.banner || "",
+    icon: eventData.icon || [],
+    media: eventData.media || "",
+    isInviteOnly: eventData.isInviteOnly || false,
+    events: eventData.events || [],
+    members: eventData.members || [],
   };
 }
 
