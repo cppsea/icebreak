@@ -1,8 +1,8 @@
-import React from 'react';
-import { Image, StyleSheet, View } from 'react-native';
-import EventCardText from './EventCardText';
-import EventCardRegistration from './EventCardRegistration';
-import { EventCardProps } from '@app/types/EventCard';
+import React from "react";
+import { Image, StyleSheet, View } from "react-native";
+import EventCardText from "./EventCardText";
+import EventCardRegistration from "./EventCardRegistration";
+import { EventCardProps } from "@app/types/EventCard";
 
 const cardColor = "white";
 
@@ -27,10 +27,14 @@ const styles = StyleSheet.create({
   },
 });
 
-
-
 const EventCard: React.FC<EventCardProps> = ({
-  style, banner, title, timeBegin, timeEnd, location, description
+  style,
+  banner,
+  title,
+  timeBegin,
+  timeEnd,
+  location,
+  description,
 }) => {
   const onRegisterClicked = () => {
     alert("Register button works!");

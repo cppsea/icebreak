@@ -15,11 +15,7 @@ const FaceIcon: React.FC<FaceIconProps> = (props) => {
   });
 
   return (
-    <Image
-      source={{ uri: iconUrl }}
-      key={index}
-      style={styles.imageStyle}
-    />
+    <Image source={{ uri: iconUrl }} key={index} style={styles.imageStyle} />
   );
 };
 

@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, TouchableHighlight, View, Text } from "react-native";
-import PropTypes from "prop-types";
 import { ButtonProps } from "@app/types/Button.ts";
 
 const styles = StyleSheet.create({
@@ -16,7 +15,11 @@ const styles = StyleSheet.create({
 
 function Button(props: ButtonProps) {
   return (
-    <TouchableHighlight {...props} style={[styles.container, props.style]} onPress={props.onPress} disabled={props.disabled}>
+    <TouchableHighlight
+      {...props}
+      style={[styles.container, props.style]}
+      onPress={props.onPress}
+      disabled={props.disabled}>
       <View style={styles.container}>
         {props.icon}
 

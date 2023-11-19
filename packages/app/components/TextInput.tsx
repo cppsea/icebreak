@@ -10,40 +10,43 @@ import {
 import EyeOff from "@app/assets/eye-line-off";
 import EyeOn from "@app/assets/eye-line-on";
 
-import PropTypes from "prop-types";
+import { TextInputProps } from "@app/types/TextInput";
 
 const RED = "#f54242";
 
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "flex-start",
-    borderRadius: 10,
-    height: "auto",
-    width: "100%",
-  },
-  error: {
-    color: RED,
-    fontSize: 12,
-  },
-  input: {
-    flex: 1,
-    height: "100%",
-  },
-  textField: {
-    alignItems: "flex-start",
-    flexDirection: "row",
-  },
-});
-
-const TextInput = forwardRef(function textInput(props, ref) {
+const TextInput = forwardRef(function textInput(
+  props: TextInputProps,
+  ref: React.ForwardedRef<RNTextInput>
+) {
   const [hidePassword, setHidePassword] = useState(props.password);
+
+  const styles = StyleSheet.create({
+    container: {
+      alignItems: "flex-start",
+      borderRadius: 10,
+      height: "auto",
+      width: "100%",
+    },
+    error: {
+      color: RED,
+      fontSize: 12,
+    },
+    input: {
+      flex: 1,
+      height: "100%",
+    },
+    textField: {
+      alignItems: "flex-start",
+      flexDirection: "row",
+      borderColor: props.error ? "#f54242" : props.borderColor,
+    },
+  });
 
   return (
     <View testID={props.testID} style={[styles.container, props.container]}>
       <View
         testID={`${props.testID}.errorBorder`}
-        style={[styles.textField, props.style]}
-        borderColor={props.error ? "#f54242" : props.borderColor}>
+        style={[styles.textField, props.style]}>
         <RNTextInput
           testID={`${props.testID}.textInput`}
           value={props.value}
@@ -72,18 +75,5 @@ const TextInput = forwardRef(function textInput(props, ref) {
     </View>
   );
 });
-
-TextInput.propTypes = {
-  testID: PropTypes.string,
-  password: PropTypes.bool,
-  container: PropTypes.object,
-  style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
-  error: PropTypes.string,
-  borderColor: PropTypes.string,
-  value: PropTypes.string,
-  onChangeText: PropTypes.func,
-  onSubmitEditing: PropTypes.func,
-  placeholder: PropTypes.string,
-};
 
 export default TextInput;

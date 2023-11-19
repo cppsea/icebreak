@@ -1,7 +1,7 @@
 import React, { useState, useRef } from "react";
 
-import GroupHeader from "../../components/GroupScreen/GroupHeader.js";
-import GroupTabs from "../../components/GroupScreen/GroupTabs.js";
+import GroupHeader from "../../components/GroupScreen/GroupHeader";
+import GroupTabs from "../../components/GroupScreen/GroupTabs";
 import Screen from "@app/components/Screen";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
