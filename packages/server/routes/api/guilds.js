@@ -41,7 +41,6 @@ router.get(
       });
       
     } catch (error) {
-
       switch (error.name) {
 
         case "PrismaClientKnownRequestError":
@@ -97,45 +96,38 @@ router.post(
 
 // Update guild by ID
 router.put(
-  "/update/:guildId",
+  "/:guildId",
   AuthController.authenticate,
   async (request, response) => {
     try {
       const { guildId } = request.params;
+      const guildData = request.body;
 
-      if (guildId === ":guildId") {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            guildId: "Guild ID not provided.",
-          },
-        });
-      }
-
-      const updatedGuild = await GuildController.updateGuild(
-        guildId,
-        request.body
-      );
-
-      if (updatedGuild === null) {
-        response.status(400).json({
-          status: "fail",
-          message: "Could not find or update requested guild.",
-        });
-      } else {
-        response.status(200).json({
-          status: "success",
-          message: "Guild updated successfully.",
-          data: {
-            updatedGuild: updatedGuild,
-          },
-        });
-      }
+      return response.status(200).json({
+        status: "success",
+        data: {
+          updatedGuild: await GuildController.updateGuild(guildId, guildData)
+        }
+      })
     } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
+      switch (error.name) {
+
+        case "PrismaClientKnownRequestError":
+          return response.status(400).json({
+            status: "error",
+            errorName: error.name,
+            errorMessage: "The guildId Provided could not be matched with an existing guild.",
+          });
+
+        // There is only one known error cases.
+        // This default acts as a redundant check if an unknown error occurs.
+        default:
+          return response.status(500).json({
+            status: "fail",
+            errorName: error.name,
+            errorMessage: error.message,
+          });
+      }
     }
   }
 );
