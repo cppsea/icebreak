@@ -1,20 +1,23 @@
-import React, { createContext, useState } from 'react';
-import { Alert } from 'react-native';
-import axios from 'axios';
-import { ENDPOINT } from './constants';
+/* eslint-disable react/prop-types */ // TODO: delete later and handle children proptype
+import React, { createContext, useState } from "react";
+import { Alert } from "react-native";
+import axios from "axios";
+import { ENDPOINT } from "./constants";
 import * as SecureStore from "@app/utils/SecureStore";
 
 export const GroupContext = createContext();
 
 export function GroupProvider({ children }) {
-
-  const [guildId, setGuildId] = useState("388b5bc4-7771-4514-99b7-9611cefb7e6a");
   // 1st SCREEN INPUTS
   const [title, setTitle] = useState("aaaaa");
   const [handler, setHandler] = useState("bbbbb");
   const [description, setDescription] = useState("cccccc");
-  const [bannerUrl, setBanner] = useState("https://www.cppsea.com/assets/images/full-logo.png");
-  const [iconUrl, setIcon] = useState("https://www.cppsea.com/assets/images/seal-in-triangle.png");
+  const [bannerUrl, setBanner] = useState(
+    "https://www.cppsea.com/assets/images/full-logo.png"
+  );
+  const [iconUrl, setIcon] = useState(
+    "https://www.cppsea.com/assets/images/seal-in-triangle.png"
+  );
 
   // 2nd SCREEN INPUTS
   const [category, setCategory] = useState("Sports");
@@ -22,7 +25,7 @@ export function GroupProvider({ children }) {
   const [websiteUrl, setWebsite] = useState("");
   const [location, setLocation] = useState("");
   const [isInviteOnly, setIsInviteOnly] = useState(false);
-  
+
   // 3rd SCREEN INPUTS
   const [twitterUrl, setTwitterLink] = useState("");
   const [facebookUrl, setFacebookLink] = useState("");
@@ -50,14 +53,11 @@ export function GroupProvider({ children }) {
     setDiscordLink("");
     setLinkedInLink("");
     setGithubLink("");
-
   };
 
   const submitForm = async () => {
-
     try {
       const guildData = {
-        guildId,
         title,
         handler,
         description,
@@ -81,17 +81,22 @@ export function GroupProvider({ children }) {
       // submits the rest of the data
       // const token = await axios.get(``)
       const token = await SecureStore.getValueFor("accessToken");
-      const headers = { 'Authorization': token};
-      const response = await axios.post(`${ENDPOINT}/guilds/insert`, guildData, { headers });
+      const headers = { Authorization: token };
+      const response = await axios.post(
+        `${ENDPOINT}/guilds/insert`,
+        guildData,
+        { headers }
+      );
+      console.log(response);
 
-      Alert.alert('Success', 'Group created successfully!');
+      Alert.alert("Success", "Group created successfully!");
 
-      // resetForm();
+      resetForm();
       return true;
     } catch (error) {
       // handle errors
-      Alert.alert('Error', 'Failed to create group.');
-      console.error('Error submitting form:', error);
+      Alert.alert("Error", "Failed to create group.");
+      console.error("Error submitting form:", error);
       return false;
     }
   };
@@ -99,29 +104,44 @@ export function GroupProvider({ children }) {
   return (
     <GroupContext.Provider
       value={{
-        title, setTitle,
-        handler, setHandler,
-        description, setDescription,
-        banner: bannerUrl, setBanner,
-        icon: iconUrl, setIcon,
+        title,
+        setTitle,
+        handler,
+        setHandler,
+        description,
+        setDescription,
+        banner: bannerUrl,
+        setBanner,
+        icon: iconUrl,
+        setIcon,
 
-        category, setCategory,
-        tags, setTags,
-        website: websiteUrl, setWebsite,
-        location, setLocation,
-        isInviteOnly, setIsInviteOnly,
+        category,
+        setCategory,
+        tags,
+        setTags,
+        website: websiteUrl,
+        setWebsite,
+        location,
+        setLocation,
+        isInviteOnly,
+        setIsInviteOnly,
 
-        twitterLink: twitterUrl, setTwitterLink,
-        facebookLink: facebookUrl, setFacebookLink,
-        instagramLink: instagramUrl, setInstagramLink,
-        discordLink: discordUrl, setDiscordLink,
-        linkedInLink: linkedinUrl, setLinkedInLink,
-        githubLink: githubUrl, setGithubLink,
+        twitterLink: twitterUrl,
+        setTwitterLink,
+        facebookLink: facebookUrl,
+        setFacebookLink,
+        instagramLink: instagramUrl,
+        setInstagramLink,
+        discordLink: discordUrl,
+        setDiscordLink,
+        linkedInLink: linkedinUrl,
+        setLinkedInLink,
+        githubLink: githubUrl,
+        setGithubLink,
 
         resetForm,
         submitForm,
-      }}
-    >
+      }}>
       {children}
     </GroupContext.Provider>
   );

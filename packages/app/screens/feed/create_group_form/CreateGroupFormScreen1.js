@@ -1,13 +1,12 @@
-import React, { useEffect, useState, useContext} from "react";
+import PropTypes from "prop-types";
+import React, { useState, useContext } from "react";
 import {
   View,
   Text,
   TextInput,
-  KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
   Image,
-  StyleSheet
 } from "react-native";
 import Button from "@app/components/Button";
 import * as ImagePicker from "expo-image-picker";
@@ -16,15 +15,20 @@ import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 
 function CreateGroupFormScreen1({ navigation }) {
-
   // 1st SCREEN INPUTS
   const {
-    title, setTitle, 
-    handler, setHandler,
-    description, setDescription,
-    banner, setBanner,
-    icon, setIcon,
-    resetForm } = useContext(GroupContext);
+    title,
+    setTitle,
+    handler,
+    setHandler,
+    description,
+    setDescription,
+    banner,
+    setBanner,
+    icon,
+    setIcon,
+    resetForm,
+  } = useContext(GroupContext);
 
   // Input Validation
   const [titleError, setTitleError] = useState("");
@@ -87,49 +91,45 @@ function CreateGroupFormScreen1({ navigation }) {
 
   const selectImage = async (imageType) => {
     Keyboard.dismiss();
-    
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
       aspect: [1, 1],
-      quality: 0,
+      quality: 0.2,
       base64: true,
     });
-  
+
     const { assets } = result;
-  
     if (!result.canceled) {
       // Process the selected image
       const { base64 } = assets[0];
-      if (imageType === 'banner') {
+      if (imageType === "banner") {
         setBanner(base64);
-      } else if (imageType === 'icon') {   
+      } else if (imageType === "icon") {
         setIcon(base64);
       }
     }
   };
-  
+
   // Usage
   const selectBannerImage = () => {
-    setBannerError('');
-    selectImage('banner');
+    setBannerError("");
+    selectImage("banner");
   };
 
   const selectIconImage = () => {
-    setIconError(''); 
-    selectImage('icon');
+    setIconError("");
+    selectImage("icon");
   };
-  
 
-  const handleOnChangeInput = (text, setText, setError) =>
-  {
+  const handleOnChangeInput = (text, setText, setError) => {
     setText(text);
-    setError('');
-  }
+    setError("");
+  };
 
   return (
     <ScrollView
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
@@ -145,12 +145,15 @@ function CreateGroupFormScreen1({ navigation }) {
 
           <View>
             <Text style={styles.header}>
-              Title<Text style={styles.important}>* {titleError}</Text>
+              <Text>Title</Text>
+              <Text style={styles.important}>* {titleError}</Text>
             </Text>
             <TextInput
               value={title}
               placeholder="title"
-              onChangeText={(newText) => handleOnChangeInput(newText, setTitle, setTitleError)}
+              onChangeText={(newText) =>
+                handleOnChangeInput(newText, setTitle, setTitleError)
+              }
               style={styles.input}
               maxLength={20}
             />
@@ -158,12 +161,15 @@ function CreateGroupFormScreen1({ navigation }) {
 
           <View>
             <Text style={styles.header}>
-              Handler<Text style={styles.important}>* {handlerError}</Text>
+              <Text>Handler</Text>
+              <Text style={styles.important}>* {handlerError}</Text>
             </Text>
             <TextInput
               value={handler}
               placeholder="@unique_name"
-              onChangeText={(newText) => handleOnChangeInput(newText, setHandler, setHandlerError)}
+              onChangeText={(newText) =>
+                handleOnChangeInput(newText, setHandler, setHandlerError)
+              }
               style={styles.input}
               maxLength={15}
             />
@@ -171,21 +177,28 @@ function CreateGroupFormScreen1({ navigation }) {
 
           <View>
             <Text style={styles.header}>
-              Description
+              <Text>Description</Text>
               <Text style={styles.important}>* {descriptionError}</Text>
             </Text>
             <TextInput
               value={description}
               placeholder="This is the description."
-              onChangeText={(newText) => handleOnChangeInput(newText, setDescription, setDescriptionError)}
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  setDescription,
+                  setDescriptionError
+                )
+              }
               style={styles.input}
               maxLength={150}
             />
           </View>
 
-          {/* <View>
+          <View>
             <Text style={styles.header}>
-              Banner<Text style={styles.important}>* {bannerError}</Text>
+              <Text>Banner</Text>
+              <Text style={styles.important}>* {bannerError}</Text>
             </Text>
             <View style={styles.imageSelectorContainer}>
               <Image
@@ -200,7 +213,8 @@ function CreateGroupFormScreen1({ navigation }) {
 
           <View>
             <Text style={styles.header}>
-              Icon<Text style={styles.important}>* {iconError}</Text>
+              <Text>Icon</Text>
+              <Text style={styles.important}>* {iconError}</Text>
             </Text>
             <View style={styles.imageSelectorContainer}>
               <Image
@@ -211,7 +225,7 @@ function CreateGroupFormScreen1({ navigation }) {
                 <Button title="Select image" onPress={selectIconImage} />
               </View>
             </View>
-          </View> */}
+          </View>
 
           <View style={styles.btnContainer}>
             <Button
@@ -230,5 +244,11 @@ function CreateGroupFormScreen1({ navigation }) {
     </ScrollView>
   );
 }
+
+CreateGroupFormScreen1.propTypes = {
+  navigation: PropTypes.shape({
+    navigate: PropTypes.func.isRequired,
+  }).isRequired,
+};
 
 export default CreateGroupFormScreen1;
