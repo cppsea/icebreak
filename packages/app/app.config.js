@@ -49,5 +49,14 @@ module.exports = {
     anroidClientId: process.env.ANDROID_CLIENT_ID,
     webClientId: process.env.WEB_CLIENT_ID,
   },
-  plugins: ["@react-native-google-signin/google-signin"],
+  plugins: [
+    "@react-native-google-signin/google-signin",
+    [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "Allow Icebreak to access your photos for choosing profile icons and thumbnail images.",
+      },
+    ],
+  ],
 };
