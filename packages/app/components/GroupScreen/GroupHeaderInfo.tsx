@@ -10,7 +10,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 
 import GroupTag from "./GroupTag";
 
-import { GroupHeaderInfoProps } from "@app/types/GroupScreen";
+import { GroupHeaderInfoProps } from "@app/types/Group";
 
 const GRAY = "#2C2C2C";
 const LIGHT_GRAY = "#6C6C6C";

@@ -1,4 +1,4 @@
-import React, { forwardRef, useState } from "react";
+import React, { forwardRef, useState, ForwardedRef } from "react";
 import {
   TextInput as RNTextInput,
   StyleSheet,
@@ -16,7 +16,7 @@ const RED = "#f54242";
 
 const TextInput = forwardRef(function textInput(
   props: TextInputProps,
-  ref: React.ForwardedRef<RNTextInput>
+  ref: ForwardedRef<RNTextInput>
 ) {
   const [hidePassword, setHidePassword] = useState(props.password);
 

@@ -1,4 +1,4 @@
-import React, { useState, useRef, FC } from "react";
+import React, { useState, useRef } from "react";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader";
 import GroupTabs from "../../components/GroupScreen/GroupTabs";
@@ -11,7 +11,7 @@ import MembersScreen from "../../screens/group/tabs/MembersScreen";
 import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
 import AboutScreen from "../../screens/group/tabs/AboutScreen";
 import NewsletterScreen from "../../screens/group/tabs/NewsletterScreen";
-import { Tab } from "@app/types/GroupScreen";
+import { Tab } from "@app/types/Group";
 
 const WHITE = "#F5F5F5";
 
@@ -23,7 +23,7 @@ const tabs: Tab[] = [
   { name: "Newsletter", screen: NewsletterScreen },
 ];
 
-function GroupScreen(): FC {
+function GroupScreen() {
   const tabRef = useRef(null);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 

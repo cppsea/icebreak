@@ -4,8 +4,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LandingScreen from "./LandingScreen";
 import SignUpScreen from "./SignUpScreen";
 import ForgotPasswordScreen from "./ForgotPasswordScreen";
+import { LandingStackParamList } from "@app/types/Landing";
 
-const Landing = createNativeStackNavigator();
+const Landing = createNativeStackNavigator<LandingStackParamList>();
 
 function LandingStack() {
   return (

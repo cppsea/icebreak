@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import axios from "axios";
+import axios, { Axios, AxiosError } from "axios";
 import {
   StyleSheet,
   View,
@@ -9,17 +9,15 @@ import {
   Keyboard,
   TouchableOpacity,
   Platform,
+  TextInput as RNTextInput,
 } from "react-native";
 
-import Button from '@app/components/Button';
-import Screen from '@app/components/Screen';
+import Button from "@app/components/Button";
+import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
 import GoogleIcon from "@app/assets/google-icon";
-import EventCard from '@app/components/EventCard/EventCard';
 
-import { UserProvider, useUserContext } from '@app/utils/UserContext';
-import { getUserInfo } from '@app/utils/datalayer';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useUserContext } from "@app/utils/UserContext";
 import * as WebBrowser from "expo-web-browser";
 
 import { ENDPOINT } from "@app/utils/constants";
@@ -27,8 +25,7 @@ import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
 
 import { useGoogleLogin } from "@app/utils/useGoogleLogin";
-
-import PropTypes from "prop-types";
+import { LandingScreenNavigationProps } from "@app/types/Landing";
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -37,7 +34,7 @@ const DARK_GRAY = "#a3a3a3";
 const GRAY = "#c4c4c4";
 const LIGHT_GRAY = "#ebebeb";
 
-function LandingScreen({ navigation, route }) {
+function LandingScreen({ navigation, route }: LandingScreenNavigationProps) {
   const { user, setUser } = useUserContext();
 
   // State to change the variable with the TextInput
@@ -45,7 +42,7 @@ function LandingScreen({ navigation, route }) {
     email: route.params?.email ?? "",
     password: "",
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({ email: null, password: null });
 
   const validateInput = () => {
     let isValid = true;
@@ -75,7 +72,7 @@ function LandingScreen({ navigation, route }) {
 
   const login = async () => {
     try {
-      console.log(`${ENDPOINT}/auth/local`)
+      console.log(`${ENDPOINT}/auth/local`);
       const response = await axios.post(`${ENDPOINT}/auth/local`, {
         email: inputs.email,
         password: inputs.password,
@@ -92,7 +89,7 @@ function LandingScreen({ navigation, route }) {
       } else {
         console.log(response?.data.message);
       }
-    } catch (error) {
+    } catch (error: any) {
       const responseData = error.response.data;
       if (
         responseData.data &&
@@ -106,16 +103,16 @@ function LandingScreen({ navigation, route }) {
     }
   };
 
-  const handleOnChange = (inputKey, text) => {
+  const handleOnChange = (inputKey: string, text: string | null) => {
     setInputs((prevState) => ({ ...prevState, [inputKey]: text }));
   };
 
-  const handleError = (inputKey, error) => {
+  const handleError = (inputKey: string, error: string | null) => {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
 
   // Keeps a reference to help switch from Username input to Password input
-  const refPasswordInput = useRef();
+  const refPasswordInput = useRef<RNTextInput>(null);
 
   return (
     <Screen style={styles.container}>
@@ -141,7 +138,7 @@ function LandingScreen({ navigation, route }) {
             error={errors.email}
             placeholder="Email"
             onSubmitEditing={() => {
-              refPasswordInput.current.focus();
+              refPasswordInput.current?.focus();
             }}
           />
 
@@ -181,7 +178,6 @@ function LandingScreen({ navigation, route }) {
             fontColor="#ffffff"
             fontWeight="bold"
             style={[styles.loginButton, styles.component]}
-            textStyle={styles.boldText}
           />
 
           <View style={styles.lineDivider} />
@@ -189,7 +185,7 @@ function LandingScreen({ navigation, route }) {
           <Button
             testID="googleButton"
             title="Continue with Google"
-            onPress={() => useGoogleLogin(user, setUser)}
+            onPress={() => useGoogleLogin({user, setUser})}
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
             imageStyle={styles.imageStyle}
@@ -278,15 +274,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const isValidEmail = (email) => {
+const isValidEmail = (email: string) => {
   const emailRE =
     /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
   return email.match(emailRE);
-};
-
-LandingScreen.propTypes = {
-  navigation: PropTypes.object,
-  route: PropTypes.object,
 };
 
 export default LandingScreen;

@@ -9,6 +9,7 @@ import {
   Keyboard,
   TouchableOpacity,
   Platform,
+  TextInput as RNTextInput,
 } from "react-native";
 
 import * as WebBrowser from "expo-web-browser";
@@ -24,7 +25,7 @@ import { ENDPOINT } from "@app/utils/constants";
 
 import DividerWithText from "@app/components/DividerWithText";
 
-import PropTypes from "prop-types";
+import { SignUpScreenNavigationProps } from "@app/types/Landing";
 
 const BLUE = "#0b91e0";
 const DARK_GRAY = "#a3a3a3";
@@ -32,7 +33,7 @@ const GRAY = "#ebebeb";
 
 WebBrowser.maybeCompleteAuthSession();
 
-function SignUpScreen({ navigation, route }) {
+function SignUpScreen({ navigation, route }: SignUpScreenNavigationProps) {
   const { user, setUser } = useUserContext();
 
   const register = async () => {
@@ -46,7 +47,7 @@ function SignUpScreen({ navigation, route }) {
       if (response.status === 200 && response?.data.status == "success") {
         navigation.navigate("LandingScreen", { email: inputs.email });
       }
-    } catch (error) {
+    } catch (error: any) {
       const responseData = error.response.data;
       if (
         responseData.data &&
@@ -66,7 +67,11 @@ function SignUpScreen({ navigation, route }) {
     passwordConfirmation: "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({
+    email: null,
+    password: null,
+    passwordConfirmation: null,
+  });
 
   const validateInput = () => {
     let isValid = true;
@@ -108,17 +113,17 @@ function SignUpScreen({ navigation, route }) {
     }
   };
 
-  const handleOnChange = (inputKey, text) => {
+  const handleOnChange = (inputKey: string, text: string | null) => {
     setInputs((prevState) => ({ ...prevState, [inputKey]: text }));
   };
 
-  const handleError = (inputKey, error) => {
+  const handleError = (inputKey: string, error: string | null) => {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
 
   // Keeps a reference to help switch from Username input to Password input
-  const refPasswordInput = useRef();
-  const refPasswordConfirmationInput = useRef();
+  const refPasswordInput = useRef<RNTextInput>(null);
+  const refPasswordConfirmationInput = useRef<RNTextInput>(null);
 
   return (
     <Screen style={styles.container}>
@@ -143,8 +148,8 @@ function SignUpScreen({ navigation, route }) {
             error={errors.email}
             placeholder="Email"
             onSubmitEditing={() => {
-              refPasswordInput.current.focus();
-              refPasswordConfirmationInput.current.focus();
+              refPasswordInput.current?.focus();
+              refPasswordConfirmationInput.current?.focus();
             }}
           />
 
@@ -192,7 +197,6 @@ function SignUpScreen({ navigation, route }) {
             fontColor="#ffffff"
             fontWeight="bold"
             style={[styles.loginButton, styles.component]}
-            textStyle={styles.boldText}
           />
 
           <DividerWithText title="or" />
@@ -201,7 +205,7 @@ function SignUpScreen({ navigation, route }) {
             testID="googleButton"
             title="Continue with Google"
             underlayColor="#ebebeb"
-            onPress={() => useGoogleLogin(user, setUser)}
+            onPress={() => useGoogleLogin({ user, setUser })}
             style={[styles.googleButton, styles.component]}
             fontWeight="bold"
             imageStyle={styles.imageStyle}
@@ -278,15 +282,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const isValidEmail = (email) => {
+const isValidEmail = (email: string) => {
   const emailRE =
     /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
   return email.match(emailRE);
-};
-
-SignUpScreen.propTypes = {
-  navigation: PropTypes.object,
-  route: PropTypes.object,
 };
 
 export default SignUpScreen;

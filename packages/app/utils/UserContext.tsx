@@ -24,7 +24,7 @@ type State = {
   data?: Payload;
 };
 
-type userContextType = {
+export type userContextType = {
   user: State;
   setUser: React.Dispatch<React.SetStateAction<State>>;
 };
@@ -43,7 +43,7 @@ const initialState: State = {
 
 export const UserContext = createContext<userContextType>({
   user: initialState,
-  setUser: () => {}
+  setUser: () => {},
 });
 
 export function UserProvider({ children }: UserProviderProps) {

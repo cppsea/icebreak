@@ -2,7 +2,7 @@ import React from "react";
 import { View, StyleSheet, TouchableOpacity, Linking } from "react-native";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { GroupMediaIconProps } from "@app/types/GroupScreen";
+import { GroupMediaIconProps } from "@app/types/Group";
 
 const GRAY = "#2C2C2C";
 

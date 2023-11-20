@@ -7,29 +7,28 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  Button,
 } from "react-native";
 
 import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
+import Button from "@app/components/Button";
 
-import PropTypes from "prop-types";
+import { ForgotPasswordScreenNavigationProps } from "@app/types/Landing";
 
+const BLUE = "#0b91e0";
 const LIGHT_GRAY = "#ebebeb";
 
-function ForgotPasswordScreen({ route }) {
+function ForgotPasswordScreen({ route }: ForgotPasswordScreenNavigationProps) {
   const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
   });
 
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState({ email: null });
 
-
-
-  const handleOnChange = (inputKey, text) => {
+  const handleOnChange = (inputKey: string, text: string | null) => {
     setInputs((prevState) => ({ ...prevState, [inputKey]: text }));
   };
-  const handleError = (inputKey, error) => {
+  const handleError = (inputKey: string, error: string | null) => {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
 
@@ -58,8 +57,6 @@ function ForgotPasswordScreen({ route }) {
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.container}>
-          <Text>This is {route.params.name}</Text>
-
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
@@ -71,19 +68,20 @@ function ForgotPasswordScreen({ route }) {
               handleError("email", null);
             }}
             error={errors.email}
-            placeholder="Email"></TextInput>
+            placeholder="Email"
+            onSubmitEditing={() => console.log("Run Forgot Password...")}
+          />
 
           <Button
-            testID="loginButton"
-            title="Log In"
+            testID="resetButton"
+            title="Reset Password"
             onPress={() => {
               validateInput();
             }}
             underlayColor="#0e81c4"
             fontColor="#ffffff"
             fontWeight="bold"
-            style={[styles.loginButton, styles.component]}
-            textStyle={styles.boldText}
+            style={[styles.resetButton, styles.component]}
           />
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
@@ -106,6 +104,10 @@ const styles = StyleSheet.create({
     paddingRight: 20,
     width: "100%",
   },
+  resetButton: {
+    backgroundColor: BLUE,
+    borderColor: BLUE,
+  },
   textInput: {
     backgroundColor: LIGHT_GRAY,
     borderWidth: 1,
@@ -116,15 +118,10 @@ const styles = StyleSheet.create({
   },
 });
 
-const isValidEmail = (email) => {
+const isValidEmail = (email: string) => {
   const emailRE =
     /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
   return email.match(emailRE);
-};
-
-ForgotPasswordScreen.propTypes = {
-  navigation: PropTypes.object,
-  route: PropTypes.object,
 };
 
 export default ForgotPasswordScreen;

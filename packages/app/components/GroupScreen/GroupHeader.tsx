@@ -4,7 +4,7 @@ import { View, StyleSheet, Image } from "react-native";
 import GroupIcon from "./GroupIcon";
 import GroupHeaderInfo from "./GroupHeaderInfo";
 import GroupMediaIcon from "./GroupMediaIcon";
-import { GroupHeaderProps } from "@app/types/GroupScreen";
+import { GroupHeaderProps } from "@app/types/Group";
 
 const bannerHeight = 110;
 const iconSize = 62;

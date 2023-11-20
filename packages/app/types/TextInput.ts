@@ -1,7 +1,5 @@
-import { ReactNode } from "react";
 import {
   StyleProp,
-  TextStyle,
   ViewStyle,
   NativeSyntheticEvent,
   TextInputSubmitEditingEventData,
@@ -9,10 +7,10 @@ import {
 
 export type TextInputProps = {
   testID: string;
-  password: boolean;
-  container: StyleProp<ViewStyle>;
+  password?: boolean;
+  container?: StyleProp<ViewStyle>;
   style: StyleProp<ViewStyle> | StyleProp<ViewStyle>[];
-  error: string;
+  error: string | null;
   borderColor: string;
   value: string;
   onChangeText: (text: string) => void;

@@ -1,7 +1,6 @@
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
-import PropTypes from "prop-types";
-import { GroupTagProps } from "@app/types/GroupScreen";
+import { GroupTagProps } from "@app/types/Group";
 
 const BLUE = "#3498DB";
 const LIGHT_GRAY = "#E4E4E4";

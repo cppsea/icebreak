@@ -1,4 +1,4 @@
-import { NewsletterScreenProps } from "@app/types/GroupScreen";
+import { NewsletterScreenProps } from "@app/types/Group";
 import React from "react";
 import { View } from "react-native";
 

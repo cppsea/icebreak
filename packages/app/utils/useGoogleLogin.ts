@@ -6,8 +6,9 @@ import {
 import { ENDPOINT } from "@app/utils/constants";
 import axios from "axios";
 import * as SecureStore from "@app/utils/SecureStore";
+import { userContextType } from "./UserContext";
 
-export async function useGoogleLogin(user, setUser) {
+export async function useGoogleLogin({ user, setUser }: userContextType) {
   try {
     await GoogleSignin.hasPlayServices();
     const userInfo = await GoogleSignin.signIn();
@@ -24,7 +25,6 @@ export async function useGoogleLogin(user, setUser) {
       body
     );
 
-
     if (response?.status == "success") {
       await SecureStore.save("accessToken", response.data.accessToken);
       await SecureStore.save("refreshToken", response.data.refreshToken);
@@ -35,7 +35,7 @@ export async function useGoogleLogin(user, setUser) {
         data: response.data.user,
       });
     }
-  } catch (error) {
+  } catch (error: any) {
     if (error.code === statusCodes.SIGN_IN_CANCELLED) {
       console.log("Google Error: User cancelled the login flow");
     } else if (error.code === statusCodes.IN_PROGRESS) {

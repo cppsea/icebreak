@@ -13,7 +13,7 @@ import {
   StyleSheet,
 } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
-import { GroupTabsProps } from "@app/types/GroupScreen";
+import { GroupTabsProps } from "@app/types/Group";
 
 const BLUE = "#3498DB";
 const LIGHT_GRAY = "#E4E4E4";

@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { ComponentType } from "react";
 import { ViewStyle, StyleProp } from "react-native";
 
 export type GroupHeaderProps = {
@@ -36,7 +36,6 @@ export type GroupMediaIconProps = {
 export type GroupTabsProps = {
   activeTab: Tab;
   selectTab: Function;
-  size: number;
   style: StyleProp<ViewStyle> | StyleProp<ViewStyle>[];
   tabs: Tab[];
   testID: string;
@@ -48,7 +47,7 @@ export type GroupTagProps = {
 
 export type Tab = {
   name: string;
-  screen: FC;
+  screen: ComponentType<any>;
 };
 
 export type AboutScreenProps = {

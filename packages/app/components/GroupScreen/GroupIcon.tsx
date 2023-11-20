@@ -1,7 +1,7 @@
 import React from "react";
 import { View, StyleSheet, Image } from "react-native";
 
-import { GroupIconProps } from "@app/types/GroupScreen";
+import { GroupIconProps } from "@app/types/Group";
 
 const styles = StyleSheet.create({
   iconContainer: {

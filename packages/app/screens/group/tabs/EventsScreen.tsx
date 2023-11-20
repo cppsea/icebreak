@@ -1,7 +1,7 @@
 import EventCard from "@app/components/EventCard/EventCard";
 import React from "react";
 import { View, StyleSheet, Text } from "react-native";
-import { EventScreenProps } from "@app/types/GroupScreen";
+import { EventScreenProps } from "@app/types/Group";
 
 const DARK_GRAY = "#2C2C2C";
 const WHITE = "#F5F5F5";
