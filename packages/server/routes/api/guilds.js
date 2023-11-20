@@ -9,7 +9,9 @@ router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     response.status(200).json({
       status: "success",
-      data: await GuildController.getAllGuilds(),
+      data: {
+        guilds: await GuildController.getAllGuilds(),
+      }
     });
   } catch (error) {
     response.status(400).json({
@@ -29,7 +31,9 @@ router.get(
 
       return response.status(200).json({
         status: "success",
-        data: await GuildController.getGuild(request.params.guildId),
+        data: {
+          guild: await GuildController.getGuild(request.params.guildId),
+        }
       });
       
     } catch (error) {
@@ -40,7 +44,7 @@ router.get(
           return response.status(400).json({
             status: "error",
             errorName: error.name,
-            errorMessage: error.message,
+            errorMessage: "The guildId Provided had invalid format.",
           });
           
         case "NotFoundError":
@@ -86,6 +90,7 @@ router.post(
           data: {},
         });
       }
+      
     } catch (error) {
       response.status(500).json({
         status: "error",
