@@ -14,6 +14,10 @@ router.get("/", AuthController.authenticate, async (request, response) => {
       }
     });
   } catch (error) {
+    // Should never error.
+    // In the case that there are no guilds, 
+    // the return would be an empty array.
+    // Here for redudancy.
     response.status(400).json({
       status: "error",
       errorName: error.name,
@@ -69,32 +73,23 @@ router.get(
 
 // Create Guild
 router.post(
-  "/create",
+  "/",
   AuthController.authenticate,
   async (request, response) => {
     try {
-      const createdGuild = await GuildController.createGuild(request.body);
-
-      if (createdGuild) {
-        response.status(200).json({
-          status: "success",
-          message: "Guild created successfully.",
-          data: {
-            guild: createdGuild,
-          },
-        });
-      } else {
-        response.status(400).json({
-          status: "fail",
-          message: "Could create requested guild.",
-          data: {},
-        });
-      }
-      
+      return response.status(200).json({
+        status: "success",
+        data:{
+          createdGuild: await GuildController.createGuild(request.body),
+        }
+      });
     } catch (error) {
-      response.status(500).json({
+      // This will say that the cause of the error is in controllers/guilds.js
+      // However, the real cause is that the request was missing required fields.
+      return response.status(400).json({
         status: "error",
-        message: error.message,
+        errorName: error.name,
+        errorMessage: error.message,
       });
     }
   }
