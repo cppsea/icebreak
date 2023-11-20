@@ -7,17 +7,15 @@ const AuthController = require("../../controllers/auth");
 // Get all guilds from database
 router.get("/", AuthController.authenticate, async (request, response) => {
   try {
-    const guilds = await GuildController.getAllGuilds();
     response.status(200).json({
       status: "success",
-      data: {
-        guilds,
-      },
+      data: await GuildController.getAllGuilds(),
     });
   } catch (error) {
-    response.status(500).json({
+    response.status(400).json({
       status: "error",
-      message: error.message,
+      errorName: error.name,
+      errorMessage: error.message,
     });
   }
 });
@@ -28,34 +26,39 @@ router.get(
   AuthController.authenticate,
   async (request, response) => {
     try {
-      const { guildId } = request.params;
-      if (guildId === ":guildId") {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            guildId: "Guild ID not provided.",
-          },
-        });
-      }
-      const guild = await GuildController.getGuild(guildId);
-      if (guild) {
-        response.status(200).json({
-          status: "success",
-          data: {
-            guild,
-          },
-        });
-      } else {
-        response.status(400).json({
-          status: "fail",
-          message: "Guild does not exist.",
-        });
-      }
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
+
+      return response.status(200).json({
+        status: "success",
+        data: await GuildController.getGuild(request.params.guildId),
       });
+      
+    } catch (error) {
+
+      switch (error.name) {
+
+        case "PrismaClientKnownRequestError":
+          return response.status(400).json({
+            status: "error",
+            errorName: error.name,
+            errorMessage: error.message,
+          });
+          
+        case "NotFoundError":
+          return response.status(500).json({
+            status: "fail",
+            errorName: error.name,
+            errorMessage: error.message,
+          });
+        
+        // There are only two known error cases.
+        // This default acts as a redundant check if an unknown error occurs.
+        default:
+          return response.status(500).json({
+            status: "fail",
+            errorName: error.name,
+            errorMessage: error.message,
+          });
+      }
     }
   }
 );
