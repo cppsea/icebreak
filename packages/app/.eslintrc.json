@@ -1,17 +1,21 @@
 {
-  "plugins": ["react", "react-native"],
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["react", "react-native","@typescript-eslint"],
   "env": {
     "react-native/react-native": true
   },
   "parserOptions": {
     "sourceType": "module",
     "ecmaVersion": 2023,
-    "ecmaFeatures": { "jsx": true }
+    "ecmaFeatures": { "jsx": true },
+    "project": ["./tsconfig.json"]
   },
   "extends": [
     "prettier",
     "eslint:recommended",
     "plugin:react-native/all",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:@typescript-eslint/recommended"
   ]
 }

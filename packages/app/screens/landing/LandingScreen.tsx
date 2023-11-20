@@ -29,6 +29,8 @@ import { LandingScreenNavigationProps } from "@app/types/Landing";
 
 WebBrowser.maybeCompleteAuthSession();
 
+let bat = "";
+
 const BLUE = "#0b91e0";
 const DARK_GRAY = "#a3a3a3";
 const GRAY = "#c4c4c4";
