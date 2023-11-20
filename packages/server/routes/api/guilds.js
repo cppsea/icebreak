@@ -134,43 +134,36 @@ router.put(
 
 // Delete guild by ID
 router.delete(
-  "/delete/:guildId",
+  "/:guildId",
   AuthController.authenticate,
   async (request, response) => {
     try {
       const { guildId } = request.params;
-
-      if (guildId === ":guildId") {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            guildId: "Guild ID not provided.",
-          },
-        });
-      }
-
-      const deleted_guild = await GuildController.deleteGuild(guildId);
-
-      if (deleted_guild === null) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            message: "Could not find or delete requested guild.",
-          },
-        });
-      } else {
-        response.status(200).json({
-          status: "success",
-          data: {
-            guildId: "Guild deleted successfully.",
-          },
-        });
-      }
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
+      return response.status(200).json({
+        status: "success",
+        data: {
+          deletedGuild: await GuildController.deleteGuild(guildId),
+        }
       });
+    } catch (error) {
+      switch (error.name) {
+
+        case "PrismaClientKnownRequestError":
+          return response.status(400).json({
+            status: "error",
+            errorName: error.name,
+            errorMessage: "The guildId Provided could not be matched with an existing guild.",
+          });
+
+        // There is only one known error cases.
+        // This default acts as a redundant check if an unknown error occurs.
+        default:
+          return response.status(500).json({
+            status: "fail",
+            errorName: error.name,
+            errorMessage: error.message,
+          });
+      }
     }
   }
 );
