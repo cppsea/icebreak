@@ -2,7 +2,6 @@ import React from "react";
 import FeedDrawer from "../screens/feed/FeedDrawer";
 import { render } from "@testing-library/react-native";
 import { NavigationContainer } from "@react-navigation/native";
-import jest, { test, expect } from "jest";
 
 // This section is used to mock the user data information within the FeedScreen.
 // Without this, Jest does not recognize the user data and throws an error.

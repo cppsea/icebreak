@@ -1,7 +1,7 @@
 import * as React from "react";
 import Svg, { Path } from "react-native-svg";
 
-const GoogleIcon = (props) => (
+const GoogleIcon = (props: any) => (
   <Svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 48 48"

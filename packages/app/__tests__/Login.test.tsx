@@ -1,7 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import LandingScreen from "@app/screens/landing/LandingScreen";
-import jest, { describe, it, expect } from "jest";
 
 // Need these to avoid "Cannot use import statement outside a module" error
 jest.mock("expo-web-browser", () => ({
@@ -14,16 +13,23 @@ jest.mock("expo-constants", () => ({
   Constants: () => null,
 }));
 
+let props: any;
+const mockedNavigate = jest.fn();
+
+jest.mock("@react-navigation/native", () => ({
+  useNavigation: () => ({ navigate: mockedNavigate }),
+}));
+
 describe(LandingScreen, () => {
   it("renders logo text", () => {
-    const { getByTestId } = render(<LandingScreen />);
+    const { getByTestId } = render(<LandingScreen {...props} />);
     const logo = getByTestId("logo");
     expect(logo).toBeTruthy();
   });
 
   describe("Email/Password Text Inputs", () => {
     it("renders correctly", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
       const emailInput = getByTestId("emailInput.textInput");
       const passwordInput = getByTestId("passwordInput.textInput");
       expect(emailInput).toBeTruthy();
@@ -31,7 +37,7 @@ describe(LandingScreen, () => {
     });
 
     it("displays the placeholder text", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
 
       const emailInput = getByTestId("emailInput.textInput");
       const passwordInput = getByTestId("passwordInput.textInput");
@@ -41,7 +47,7 @@ describe(LandingScreen, () => {
     });
 
     it("accepts inputs", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
 
       const emailInput = getByTestId("emailInput.textInput");
       const passwordInput = getByTestId("passwordInput.textInput");
@@ -54,7 +60,9 @@ describe(LandingScreen, () => {
     });
 
     it("doesn't accept an invalid email/password", () => {
-      const { queryByTestId, getByTestId } = render(<LandingScreen />);
+      const { queryByTestId, getByTestId } = render(
+        <LandingScreen {...props} />
+      );
       const loginButton = getByTestId("loginButton");
       const emailInput = getByTestId("emailInput.textInput");
       const passwordInput = getByTestId("passwordInput.textInput");
@@ -69,7 +77,7 @@ describe(LandingScreen, () => {
     });
 
     it("visibility icon toggles password visibility", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
       const hidePasswordButton = getByTestId("passwordInput.visibility");
       const passwordInput = getByTestId("passwordInput.textInput");
 
@@ -81,14 +89,14 @@ describe(LandingScreen, () => {
 
   describe("Buttons", () => {
     it("login button renders correctly", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
       const loginButton = getByTestId("loginButton");
       expect(loginButton).toBeTruthy();
       fireEvent.press(loginButton);
     });
 
     it("google button renders correctly", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
       const googleButton = getByTestId("googleButton");
       expect(googleButton).toBeTruthy();
       fireEvent.press(googleButton);
@@ -99,7 +107,7 @@ describe(LandingScreen, () => {
         navigate: jest.fn(),
       };
       const { getByTestId } = render(
-        <LandingScreen navigation={mockNavigation} />
+        <LandingScreen navigation={mockedNavigate} {...props} />
       );
       const signupButton = getByTestId("signupButton");
       expect(signupButton).toBeTruthy();
@@ -107,7 +115,7 @@ describe(LandingScreen, () => {
     });
 
     it("forgot password button renders correctly", () => {
-      const { getByTestId } = render(<LandingScreen />);
+      const { getByTestId } = render(<LandingScreen {...props} />);
       const forgotPassButton = getByTestId("forgotPassButton");
       expect(forgotPassButton).toBeTruthy();
       fireEvent.press(forgotPassButton);
