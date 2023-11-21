@@ -22,11 +22,7 @@ app.use(
 );
 
 app.use(cookieParser());
-<<<<<<< HEAD
-app.use(express.json());
-=======
 app.use(express.json({ limit: "20mb" }));
->>>>>>> main
 
 app.get("/", async (request, response) => {
   response.send("Hello SEA!");
