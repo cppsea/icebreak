@@ -12,15 +12,14 @@ describe("Guilds Unit Tests", () => {
   */
 
   // Define Test Data For Fetching By ID
-  const testFetchGuild = {
-    guildId: "1f050f81-fbef-485a-84b2-516dfbb3d0da",
-    name: "Software Engineering Association",
-    handler: "sea",
-    description: "test description",
-    category: "software engineering",
-  };
-
   test("should fetch guild by id", async () => {
+    const testFetchGuild = {
+      guildId: "1f050f81-fbef-485a-84b2-516dfbb3d0da",
+      name: "Software Engineering Association",
+      handler: "sea",
+      description: "test description",
+      category: "software engineering",
+    };
     prismaMock.guilds.findUniqueOrThrow.mockResolvedValue(testFetchGuild);
 
     await expect(
@@ -51,22 +50,15 @@ describe("Guilds Unit Tests", () => {
   NOTE: use objectContaining to test for specific fields in the guildObject ✅
   */
 
-  // Define Test Data For Create
-  const testCreateGuild = {
-    name: "Software Engineering Association",
-    handler: "sea",
-    description: "test description",
-    category: "software engineering",
-  };
-
-  const testinvalidCreateGuild = {
-    location: "San Diego",
-    website: "apple.com",
-    banner: "apple.jpeg",
-    icon: "appleicon.jpeg",
-  };
-
   test("should sucessfully create new guild", async () => {
+    // Define Test Data For Create
+    const testCreateGuild = {
+      name: "Software Engineering Association",
+      handler: "sea",
+      description: "test description",
+      category: "software engineering",
+    };
+
     prismaMock.guilds.create.mockResolvedValue(testCreateGuild);
 
     await expect(
@@ -75,6 +67,13 @@ describe("Guilds Unit Tests", () => {
   });
 
   test("should fail guild creation due to missing required fields", async () => {
+    const testinvalidCreateGuild = {
+      location: "San Diego",
+      website: "apple.com",
+      banner: "apple.jpeg",
+      icon: "appleicon.jpeg",
+    };
+
     prismaMock.guilds.create.mockResolvedValue(
       new PrismaClientKnownRequestError("Missing required field error", {
         code: "P2012",
@@ -94,94 +93,65 @@ describe("Guilds Unit Tests", () => {
   - Trying to update a nonexistent guild (should throw error)
   */
 
-  // Define Test Data For Update
-  const initialMultipleUpdateGuildResponse = {
-    name: "Apple",
-    handler: "Tim Cook",
-    description: "Come buy our overpriced iphones.",
-    category: "Guild Category",
-    location: "Optional Location",
-    website: "Optional Website",
-    tags: ["Tag1", "Tag2", "apple 15"],
-    banner: "URL to Banner Image",
-    icon: "URL to Icon Image",
-    media: ["Media1", "Media2", "Media3"],
-    isInviteOnly: true,
-  };
-
-  const expectedUpdateGuildResponse = {
-    guildId: "308b5bc4-7771-4514-99b7-9611cefb7e1d",
-    name: "Apple",
-    handler: "Tim Cook",
-    description: "Come buy our overpriced iphones.",
-    category: "Guild Category",
-    location: "Optional Location",
-    website: "Optional Website",
-    tags: ["Tag1", "Tag2", "apple 15"],
-    banner: "URL to Banner Image",
-    icon: "URL to Icon Image",
-    media: ["Media1", "Media2", "Media3"],
-    isInviteOnly: true,
-  };
-
-  const initialMultipleUpdateGuildResponseOneField = {
-    name: "Facebook",
-  };
-
-  const expectedUpdateGuildResponseOneField = {
-    guildId: "308b5bc4-7771-4514-99b7-9611cefb7e1d",
-    name: "Facebook",
-  };
-
   test("should update multiple guild properties successfully", async () => {
-    prismaMock.guilds.update.mockResolvedValue(expectedUpdateGuildResponse);
+    const initial = {
+      name: "Apple",
+      handler: "Tim Cook",
+      description: "Come buy our overpriced iphones.",
+      category: "Guild Category",
+      location: "Optional Location",
+      website: "Optional Website",
+      tags: ["Tag1", "Tag2", "apple 15"],
+      banner: "URL to Banner Image",
+      icon: "URL to Icon Image",
+      media: ["Media1", "Media2", "Media3"],
+      isInviteOnly: true,
+    };
+
+    const expected = {
+      guildId: "308b5bc4-7771-4514-99b7-9611cefb7e1d",
+      name: "Apple",
+      handler: "Tim Cook",
+      description: "Come buy our overpriced iphones.",
+      category: "Guild Category",
+      location: "Optional Location",
+      website: "Optional Website",
+      tags: ["Tag1", "Tag2", "apple 15"],
+      banner: "URL to Banner Image",
+      icon: "URL to Icon Image",
+      media: ["Media1", "Media2", "Media3"],
+      isInviteOnly: true,
+    };
+
+    prismaMock.guilds.update.mockResolvedValue(expected);
 
     const result = await GuildsController.updateGuild(
       "308b5bc4-7771-4514-99b7-6666cefb7e1d",
-      initialMultipleUpdateGuildResponse
+      initial
     );
 
-    expect(result).toEqual(
-      expect.objectContaining(expectedUpdateGuildResponse)
-    );
+    expect(result).toEqual(expect.objectContaining(expected));
   });
 
   test("should update one guild property successfully", async () => {
-    prismaMock.guilds.update.mockResolvedValue(
-      expectedUpdateGuildResponseOneField
-    );
+    const initial = {
+      name: "Facebook",
+    };
+
+    const expected = {
+      guildId: "308b5bc4-7771-4514-99b7-9611cefb7e1d",
+      name: "Facebook",
+    };
+
+    prismaMock.guilds.update.mockResolvedValue(expected);
 
     const result = await GuildsController.updateGuild(
       "308b5bc4-7771-4514-99b7-6666cefb7e1d",
-      initialMultipleUpdateGuildResponseOneField
+      initial
     );
 
-    expect(result).toEqual(
-      expect.objectContaining(expectedUpdateGuildResponseOneField)
-    );
+    expect(result).toEqual(expect.objectContaining(expected));
   });
-
-  // test("should fail attempting to update an nonexistent guild property", async () => {
-  //   prismaMock.guilds.update.mockResolvedValue(
-  //     new PrismaClientKnownRequestError("Missing required field error", {code: "P2012"})
-  //   );
-
-  //   await expect(
-  //     GuildsController.updateGuild(testGuild)).resolves.toThrow(
-  //       PrismaClientKnownRequestError
-  //     )
-  // });
-
-  // test("should fail attempting to update an nonexistent guild", async () => {
-  //   prismaMock.guilds.update.mockResolvedValue(
-  //     new PrismaClientKnownRequestError("Missing required field error", {code: "P2012"})
-  //   );
-
-  //   await expect(
-  //     GuildsController.updateGuild(testGuild)).resolves.toThrow(
-  //       PrismaClientKnownRequestError
-  //     )
-  // });
 
   /*
   Unit Tests: Deleting Guilds
@@ -189,13 +159,17 @@ describe("Guilds Unit Tests", () => {
   - Trying to delete a nonexistent guild (should throw error)
   */
 
-  const guildIdToDelete = "308b5bc4-7771-4514-99b7-6666cefb7e1d";
-
   test("should successfully delete a target guild", async () => {
-    prismaMock.guilds.delete.mockResolvedValue(guildIdToDelete);
+    const guildIdToDelete = "308b5bc4-7771-4514-99b7-6666cefb7e1d";
+
+    const mockGuild = {
+      id: "308b5bc4-7771-4514-99b7-6666cefb7e1d",
+      name: "Testing Delete Guild",
+    };
+    prismaMock.guilds.delete.mockResolvedValue(mockGuild);
 
     const result = await GuildsController.deleteGuild(guildIdToDelete);
 
-    expect(result).toEqual(guildIdToDelete);
+    expect(result).toEqual(mockGuild);
   });
 });
