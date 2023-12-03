@@ -62,9 +62,38 @@ async function getEvent(eventId) {
   return event;
 }
 
+async function getEventAttendees(eventId) {
+  const query = await prisma.users.findMany({
+    where: {
+      eventAttendees: {
+        some: {
+          eventId: eventId,
+        },
+      },
+    },
+    select: {
+      userId: true,
+      firstName: true,
+      lastName: true,
+      avatar: true,
+    },
+  });
+  return query;
+}
+
+async function existsInPrisma(eventId) {
+  return await prisma.events.findUnique({
+    where: {
+      eventId: eventId,
+    },
+  });
+}
+
 module.exports = {
   getEvent,
   getEvents,
   getPages,
   getAllEvents,
+  getEventAttendees,
+  existsInPrisma,
 };
