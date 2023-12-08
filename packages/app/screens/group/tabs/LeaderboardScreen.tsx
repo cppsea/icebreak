@@ -1,8 +1,9 @@
 import React from "react";
 import { View } from "react-native";
-import { LeaderboardScreenProps } from "@app/types/Group";
+//import { LeaderboardScreenProps } from "@app/types/Group";
 
-function LeaderboardScreen(props: LeaderboardScreenProps) {
+// props: LeaderboardScreenProps
+function LeaderboardScreen() {
   return <View></View>;
 }
 

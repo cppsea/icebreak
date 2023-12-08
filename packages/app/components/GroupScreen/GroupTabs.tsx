@@ -139,7 +139,7 @@ function GroupTabs(props: GroupTabsProps) {
           style={[
             styles.blueView,
             { transform: blueViewPosition.getTranslateTransform() },
-            isAnimationComplete ? { opacity: 0 } : {},
+            isAnimationComplete ? styles.hide : {},
           ]}
         />
 
@@ -163,6 +163,9 @@ const styles = StyleSheet.create({
     backgroundColor: LIGHT_GRAY,
     height: 3,
     width: "100%",
+  },
+  hide: {
+    opacity: 0,
   },
   innerTabView: {
     flexDirection: "row",

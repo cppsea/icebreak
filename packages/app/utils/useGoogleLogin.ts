@@ -35,17 +35,19 @@ export async function useGoogleLogin({ user, setUser }: userContextType) {
         data: response.data.user,
       });
     }
-  } catch (error: any) {
-    if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-      console.log("Google Error: User cancelled the login flow");
-    } else if (error.code === statusCodes.IN_PROGRESS) {
-      console.log(
-        "Google Error: Operation (e.g. sign in) is in progress already"
-      );
-    } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-      console.log("Google Error: Play services not available or outdated");
-    } else {
-      console.log(error);
+  } catch (error) {
+    if (error && typeof error === "object" && "code" in error) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.log("Google Error: User cancelled the login flow");
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.log(
+          "Google Error: Operation (e.g. sign in) is in progress already"
+        );
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.log("Google Error: Play services not available or outdated");
+      } else {
+        console.log(error);
+      }
     }
   }
 }

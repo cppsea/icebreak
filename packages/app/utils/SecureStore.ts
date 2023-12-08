@@ -5,7 +5,7 @@ export async function save(key: string, value: string) {
 }
 
 export async function getValueFor(key: string) {
-  let result = await SecureStore.getItemAsync(key);
+  const result = await SecureStore.getItemAsync(key);
   return result;
 }
 

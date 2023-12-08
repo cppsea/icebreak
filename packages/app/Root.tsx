@@ -37,7 +37,7 @@ function App() {
   const { user, setUser } = useUserContext();
 
   const currentSession = async () => {
-    let accessToken = await SecureStore.getValueFor("accessToken");
+    const accessToken = await SecureStore.getValueFor("accessToken");
     let refreshToken = await SecureStore.getValueFor("refreshToken");
 
     if (!accessToken) {

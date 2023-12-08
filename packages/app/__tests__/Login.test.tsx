@@ -1,6 +1,7 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react-native";
 import LandingScreen from "@app/screens/landing/LandingScreen";
+import { LandingScreenNavigationProps } from "@app/types/Landing";
 
 // Need these to avoid "Cannot use import statement outside a module" error
 jest.mock("expo-web-browser", () => ({
@@ -13,7 +14,7 @@ jest.mock("expo-constants", () => ({
   Constants: () => null,
 }));
 
-let props: any;
+let props: LandingScreenNavigationProps;
 const mockedNavigate = jest.fn();
 
 jest.mock("@react-navigation/native", () => ({
@@ -103,11 +104,8 @@ describe(LandingScreen, () => {
     });
 
     it("signup button renders correctly", () => {
-      const mockNavigation = {
-        navigate: jest.fn(),
-      };
       const { getByTestId } = render(
-        <LandingScreen navigation={mockedNavigate} {...props} />
+        <LandingScreen {...props} />
       );
       const signupButton = getByTestId("signupButton");
       expect(signupButton).toBeTruthy();

@@ -1,8 +1,9 @@
 import React from "react";
 import { View } from "react-native";
-import { AboutScreenProps } from "@app/types/Group";
+//import { AboutScreenProps } from "@app/types/Group";
 
-function AboutScreen(props: AboutScreenProps) {
+// props: AboutScreenProps
+function AboutScreen() {
   return <View></View>;
 }
 

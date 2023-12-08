@@ -32,5 +32,6 @@ export type ButtonProps = {
     | undefined;
 
   // Handle all other props (for spread operator)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [x: string]: any;
 };

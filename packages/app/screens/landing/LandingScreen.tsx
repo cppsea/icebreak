@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import axios, { Axios, AxiosError } from "axios";
+import axios, { AxiosError } from "axios";
 import {
   StyleSheet,
   View,
@@ -28,8 +28,6 @@ import { useGoogleLogin } from "@app/utils/useGoogleLogin";
 import { LandingScreenNavigationProps } from "@app/types/Landing";
 
 WebBrowser.maybeCompleteAuthSession();
-
-let bat = "";
 
 const BLUE = "#0b91e0";
 const DARK_GRAY = "#a3a3a3";
@@ -91,16 +89,18 @@ function LandingScreen({ navigation, route }: LandingScreenNavigationProps) {
       } else {
         console.log(response?.data.message);
       }
-    } catch (error: any) {
-      const responseData = error.response.data;
-      if (
-        responseData.data &&
-        (responseData.data.email === "A user with that email does not exist." ||
-          responseData.data.password === "Incorrect password")
-      ) {
-        handleError("email", "Invalid email or password.");
-      } else {
-        console.log(JSON.stringify(error));
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const responseData = error.response?.data;
+        if (
+          responseData.data &&
+          (responseData.data.email === "A user with that email does not exist." ||
+            responseData.data.password === "Incorrect password")
+        ) {
+          handleError("email", "Invalid email or password.");
+        } else {
+          console.log(JSON.stringify(error));
+        }
       }
     }
   };

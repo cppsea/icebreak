@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import {
   StyleSheet,
   View,
@@ -47,15 +47,17 @@ function SignUpScreen({ navigation, route }: SignUpScreenNavigationProps) {
       if (response.status === 200 && response?.data.status == "success") {
         navigation.navigate("LandingScreen", { email: inputs.email });
       }
-    } catch (error: any) {
-      const responseData = error.response.data;
-      if (
-        responseData.data &&
-        responseData.data.email === "A user with this email already exists."
-      ) {
-        console.log(responseData?.data.email);
-      } else {
-        console.log(JSON.stringify(error));
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        const responseData = error.response?.data;
+        if (
+          responseData.data &&
+          responseData.data.email === "A user with this email already exists."
+        ) {
+          console.log(responseData?.data.email);
+        } else {
+          console.log(JSON.stringify(error));
+        }
       }
     }
   };

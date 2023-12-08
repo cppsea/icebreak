@@ -37,8 +37,8 @@ const TextInput = forwardRef(function textInput(
     },
     textField: {
       alignItems: "flex-start",
+      borderColor: props.error ? RED : props.borderColor,
       flexDirection: "row",
-      borderColor: props.error ? "#f54242" : props.borderColor,
     },
   });
 

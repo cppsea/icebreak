@@ -1,8 +1,9 @@
 import React from "react";
 import { View } from "react-native";
-import { MembersScreenProps } from "@app/types/Group";
+// import { MembersScreenProps } from "@app/types/Group";
 
-function MembersScreen(props: MembersScreenProps) {
+// props: MembersScreenProps
+function MembersScreen() {
   return <View></View>;
 }
 

@@ -2,6 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react-native";
 import GroupScreen from "@app/screens/group/GroupScreen";
 import GroupHeader from "@app/components/GroupScreen/GroupHeader";
+import { GroupHeaderProps } from "@app/types/Group";
 
 jest.mock("@expo/vector-icons/Ionicons", () => ({
   Ionicons: () => null,
@@ -11,7 +12,7 @@ jest.mock("@expo/vector-icons/FontAwesome5", () => ({
   FontAwesome5: () => null,
 }));
 
-let props: any;
+let props: GroupHeaderProps;
 
 describe("GroupScreen Tests", () => {
   describe(GroupScreen, () => {

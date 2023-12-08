@@ -10,17 +10,20 @@ const sampleArray = [0, 1, 2, 3];
 const BLUE = "#0b91e0";
 
 const styles = StyleSheet.create({
+  button: {
+    backgroundColor: BLUE,
+    borderRadius: 5,
+    height: 35,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
+  },
   buttonView: {
     flex: 7,
     justifyContent: "center",
   },
-  button: {
-    height: 35,
-    borderRadius: 5,
-    marginBottom: 0,
-    marginLeft: 0,
-    marginRight: 0,
-    backgroundColor: BLUE
+  container: {
+    flexDirection: "row",
   },
   faceView: {
     flexDirection: "row",
@@ -35,9 +38,14 @@ export default function EventCardRegistration(
   const { register } = props;
 
   return (
-    <View style={{ flexDirection: "row" }}>
+    <View style={styles.container}>
       <View style={styles.buttonView}>
-        <Button style={styles.button} fontColor="#ffffff" title="Going" onPress={register} />
+        <Button
+          style={styles.button}
+          fontColor="#ffffff"
+          title="Going"
+          onPress={register}
+        />
       </View>
       <View style={styles.faceView}>
         {sampleArray.slice(0, 4).map((x) => {
