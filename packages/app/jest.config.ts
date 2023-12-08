@@ -1,5 +1,5 @@
-/** @type {import('jest').Config} */
-const config = {
+import type {Config} from 'jest';
+const config: Config = {
   verbose: true,
   preset: "react-native",
   setupFiles: ["./jest-setup.ts"],

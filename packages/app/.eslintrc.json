@@ -12,6 +12,7 @@
     "project": ["./tsconfig.json"],
     "tsconfigRootDir": "packages/app/"
   },
+  "ignorePatterns": ["babel.config.js", "metro.config.js"],
   "extends": [
     "prettier",
     "eslint:recommended",

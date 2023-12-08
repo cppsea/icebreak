@@ -1,3 +1,3 @@
-const URL = "https://aa1c-107-198-190-216.ngrok-free.app";
+const URL = "https://0576-107-198-190-216.ngrok-free.app";
 
 export const ENDPOINT = `${URL}/api`;
