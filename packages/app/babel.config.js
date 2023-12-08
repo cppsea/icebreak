@@ -18,7 +18,6 @@ module.exports = function (api) {
         },
       ],
       "react-native-reanimated/plugin",
-      ["@babel/plugin-transform-private-methods", { loose: true }], // for jest
     ],
   };
 };
