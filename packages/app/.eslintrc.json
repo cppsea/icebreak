@@ -9,7 +9,8 @@
     "sourceType": "module",
     "ecmaVersion": 2023,
     "ecmaFeatures": { "jsx": true },
-    "project": ["./tsconfig.json"]
+    "project": ["./tsconfig.json"],
+    "tsconfigRootDir": "packages/app/"
   },
   "extends": [
     "prettier",
