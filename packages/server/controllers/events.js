@@ -1,4 +1,3 @@
-// const postgres = require("../utils/postgres");
 const prisma = require("../prisma/prisma");
 
 async function getAllEvents() {
