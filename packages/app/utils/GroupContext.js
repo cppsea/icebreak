@@ -62,8 +62,8 @@ export function GroupProvider({ children }) {
         handler,
         description,
         category,
-        bannerUrl,
-        iconUrl,
+        // bannerUrl,
+        // iconUrl,
         location,
         websiteUrl,
         tags,
@@ -76,8 +76,6 @@ export function GroupProvider({ children }) {
         isInviteOnly,
       };
 
-      // submit images TODO
-
       // submits the rest of the data
       // const token = await axios.get(``)
       const token = await SecureStore.getValueFor("accessToken");
@@ -87,7 +85,26 @@ export function GroupProvider({ children }) {
         guildData,
         { headers }
       );
-      console.log(response);
+
+      const generatedUUID = response.uuid; // Access the generated UUID here
+      console.log("Generated UUID:", generatedUUID);
+
+      // const typeOfImage = 'your_image_type'; // Replace 'your_image_type' with the actual type
+      // const imageUUID = 'your_image_UUID'; // Replace 'your_image_UUID' with the actual UUID
+
+      // const response2 = await axios.put(
+      //   `${ENDPOINT}/media/images/${typeOfImage}/${imageUUID}`,
+      //   iconUrl,
+      //   { headers }
+      // );
+
+      // const response3 = await axios.put(
+      //   `${ENDPOINT}/media/images/:type/:UUID`,
+      //   iconUrl,
+      //   { headers }
+      // );
+      // console.log(response2 === null)
+      // console.log(response3 === null)
 
       Alert.alert("Success", "Group created successfully!");
 
