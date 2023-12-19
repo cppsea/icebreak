@@ -92,15 +92,129 @@ router.get(
   }
 );
 
-router.put("/", AuthController.authenticate, async (request, response) => {
-  try {
-  } catch (error) {
-    response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+router.put(
+  "/:guildId",
+  AuthController.authenticate,
+  async (request, response) => {
+    const guildId = request.params.guildId;
+    const eventData = request.body;
+    let givenData = {
+      title: request.body.title || undefined,
+      description: request.body.description || undefined,
+      startDate: request.body.startDate || undefined,
+      endDate: request.body.endDate || undefined,
+      location: request.body.location || undefined,
+      thumbnail: request.body.thumbnail || undefined,
+    };
+    //input validation
+    if (givenData.title) {
+      if (givenData.title.length > 255) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            title: "Title exceeds 255 characters",
+          },
+        });
+      }
+    }
+    if (givenData.description) {
+      if (givenData.description.length > 255) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            description: "Description exceeds 255 characters",
+          },
+        });
+      }
+    }
+    if (givenData.location) {
+      if (givenData.location.length > 255) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            location: "Location exceeds 255 characters",
+          },
+        });
+      }
+    }
+    if (givenData.thumbnail) {
+      if (givenData.length > 255) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            thumbnail: "Thumbnail exceeds 255 characters",
+          },
+        });
+      } //A regex to see if the thumbnail is a valid image file
+      else if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(givenData.thumbnail)) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            thumbnail: "Thumbnail is not a valid image file",
+          },
+        });
+      }
+    }
+    if (givenData.startDate && givenData.endDate) {
+      if (givenData.startDate > givenData.endDate) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            startDate: "Start date is after end date",
+            endDate: "End date is before start date",
+          },
+        });
+      }
+    } else if (givenData.startDate) {
+      if (
+        givenData.endDate != null &&
+        givenData.startDate > givenData.endDate.toISOString()
+      ) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            startDate: "Start date is after end date",
+          },
+        });
+      }
+    } else if (givenData.endDate) {
+      if (
+        givenData.startDate != null &&
+        givenData.startDate.toISOString() > givenData.endDate
+      ) {
+        response.status(400).json({
+          status: "fail",
+          data: {
+            endDate: "End date is before start date",
+          },
+        });
+      }
+    }
+
+    const updatedEvent = await EventController.updateEvent(eventId, givenData);
+    if (updatedEvent === null) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          eventId: "Invalid event ID provided",
+        },
+      });
+    }
+
+    try {
+      const newEvent = await EventController.createEvent(eventData, guildId);
+      response.status(200).json({
+        status: "success",
+        event: newEvent,
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
   }
-});
+);
 
 router.get(
   "/:eventId",
@@ -171,14 +285,15 @@ router.post(
       };
 
       //Validate title
-      if (givenData.title) { //First check if field was given 
+      if (givenData.title) {
+        //First check if field was given
         //Everything in if body will be the specific checks for that field
         if (givenData.title.length > 255) {
           response.status(400).json({
             status: "fail",
             data: {
               title: "Title exceeds 255 characters",
-            }
+            },
           });
         }
       }
@@ -190,11 +305,11 @@ router.post(
             status: "fail",
             data: {
               description: "Description exceeds 255 characters",
-            }
+            },
           });
         }
       }
-      
+
       //Validate location
       if (givenData.location) {
         if (givenData.location.length > 255) {
@@ -202,7 +317,7 @@ router.post(
             status: "fail",
             data: {
               location: "Location exceeds 255 characters",
-            }
+            },
           });
         }
         //Possible error check: See if the location exists?
@@ -210,20 +325,20 @@ router.post(
 
       //Validate thumbnail
       if (givenData.thumbnail) {
-        if (givenData.legnth > 255) {
+        if (givenData.length > 255) {
           response.status(400).json({
             status: "fail",
             data: {
               thumbnail: "Thumbnail exceeds 255 characters",
-            }
+            },
           });
         } //A regex to see if the thumbnail is a valid image file
-        else if (!(/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(givenData.thumbnail))) { 
+        else if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(givenData.thumbnail)) {
           response.status(400).json({
             status: "fail",
             data: {
               thumbnail: "Thumbnail is not a valid image file",
-            }
+            },
           });
         }
       }
@@ -236,45 +351,52 @@ router.post(
             data: {
               startDate: "Start date is after end date",
               endDate: "End date is before start date",
-            }
-        });
+            },
+          });
         }
-      }
-      else if (givenData.startDate) {
+      } else if (givenData.startDate) {
         //Get the unmodified event to compare the unmodified date with the modified one
         const currEvent = await EventController.getEvent(eventId);
-        if (currEvent.endDate != null && givenData.startDate > currEvent.endDate.toISOString()) {
+        if (
+          currEvent.endDate != null &&
+          givenData.startDate > currEvent.endDate.toISOString()
+        ) {
           response.status(400).json({
             status: "fail",
             data: {
               startDate: "Start date is after end date",
-            }
-        });
+            },
+          });
         }
-      }
-      else if (givenData.endDate) {
+      } else if (givenData.endDate) {
         const currEvent = await EventController.getEvent(eventId);
-        if (currEvent.startDate != null && currEvent.startDate.toISOString() > givenData.endDate) {
+        if (
+          currEvent.startDate != null &&
+          currEvent.startDate.toISOString() > givenData.endDate
+        ) {
           response.status(400).json({
             status: "fail",
             data: {
               endDate: "End date is before start date",
-            }
-        });
+            },
+          });
         }
-      } //Possible error check: Should we check if a date is in the past? 
-    
-      const updatedEvent = await EventController.updateEvent(eventId, givenData);
+      } //Possible error check: Should we check if a date is in the past?
+
+      const updatedEvent = await EventController.updateEvent(
+        eventId,
+        givenData
+      );
       //Note there can be more than one reason why event is null besides invalid eventId
-      //Will need to eventually figure out a way to seperate errors 
+      //Will need to eventually figure out a way to seperate errors
       if (updatedEvent === null) {
         response.status(400).json({
-            status: "fail",
-            data: {
-              eventId: "Invalid event ID provided",
-            }
+          status: "fail",
+          data: {
+            eventId: "Invalid event ID provided",
+          },
         });
-      }        
+      }
 
       response.status(200).json({
         status: "success",
@@ -282,11 +404,11 @@ router.post(
           event: updatedEvent,
         },
       });
-    } catch ( error ) {
+    } catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
-      })
+      });
     }
   }
 );

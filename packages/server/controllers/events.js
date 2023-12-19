@@ -53,7 +53,22 @@ async function getPages(limit) {
   return totalPages;
 }
 
-async function createEvent() {}
+async function createEvent(eventData, guildId) {
+  //const guildId = eventData.guildId;
+  const newEvent = await prisma.events.create({
+    data: {
+      //eventId: eventData.eventId,
+      guildId: guildId,
+      title: eventData.title,
+      description: eventData.description,
+      startDate: eventData.startDate,
+      endDate: eventData.endDate,
+      location: eventData.location,
+      thumbnail: eventData.thumbnail,
+    },
+  });
+  return newEvent;
+}
 
 async function getEvent(eventId) {
   const event = await prisma.events.findUnique({
@@ -80,24 +95,23 @@ async function deleteEvent(eventId) {
 async function updateEvent(eventId, eventData) {
   try {
     const updateEvent = await prisma.events.update({
-    where: {
-      eventId: eventId,
-    },
-    //If a given data was not updated, it will be undefined and prisma will ignore the update of that field
-    data: { 
-      title: eventData.title, 
-      description: eventData.description,
-      startDate: eventData.startDate,
-      endDate: eventData.endDate,
-      location: eventData.location,
-      thumbnail: eventData.thumbnail,
-    }, 
+      where: {
+        eventId: eventId,
+      },
+      //If a given data was not updated, it will be undefined and prisma will ignore the update of that field
+      data: {
+        title: eventData.title,
+        description: eventData.description,
+        startDate: eventData.startDate,
+        endDate: eventData.endDate,
+        location: eventData.location,
+        thumbnail: eventData.thumbnail,
+      },
     });
     return updateEvent;
   } catch (error) {
     return null;
   }
-
 }
 
 module.exports = {
@@ -107,4 +121,5 @@ module.exports = {
   getAllEvents,
   deleteEvent,
   updateEvent,
+  createEvent,
 };
