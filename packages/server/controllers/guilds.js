@@ -1,5 +1,7 @@
 const prisma = require("../prisma/prisma");
 
+const MINIMUM_SIMILARITY = 0.3;
+
 async function getAllGuilds() {
   const query = await prisma.guilds.findMany();
   return query;
@@ -15,7 +17,7 @@ async function getGuild(guildId) {
 }
 
 async function searchGuild(pattern) {
-  return prisma.$queryRaw`SELECT * FROM guilds WHERE SIMILARITY(name, ${pattern}) > 0.3 ORDER BY SIMILARITY(name, ${pattern}) DESC;`;
+  return prisma.$queryRaw`SELECT * FROM guilds WHERE SIMILARITY(name, ${pattern}) > ${MINIMUM_SIMILARITY} ORDER BY SIMILARITY(name, ${pattern}) DESC;`;
 }
 
 module.exports = {
