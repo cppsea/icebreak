@@ -6,20 +6,12 @@ const AuthController = require("../../controllers/auth");
 
 router.get("/", AuthController.authenticate, async (request, response) => {
   if (!request.query.search) {
-    try {
-      const guilds = await GuildController.getAllGuilds();
-      response.status(200).json({
-        status: "success",
-        data: {
-          guilds,
-        },
-      });
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
+    response.status(400).json({
+      status: "fail",
+      data: {
+        search: "Missing search parameter",
+      },
+    });
   } else {
     try {
       const guilds = await GuildController.searchGuild(request.query.search);
