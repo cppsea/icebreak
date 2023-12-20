@@ -5,19 +5,45 @@ const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
 router.get("/", AuthController.authenticate, async (request, response) => {
-  try {
-    const guilds = await GuildController.getAllGuilds();
-    response.status(200).json({
-      status: "success",
-      data: {
-        guilds,
-      },
-    });
-  } catch (error) {
-    response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+  if (!request.query.search) {
+    try {
+      const guilds = await GuildController.getAllGuilds();
+      response.status(200).json({
+        status: "success",
+        data: {
+          guilds,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  } else {
+    try {
+      const guilds = await GuildController.searchGuild(request.query.search);
+      if (guilds.length === 0) {
+        response.status(404).json({
+          status: "fail",
+          data: {
+            search: "A guild was not found in the query.",
+          },
+        });
+      } else {
+        response.status(200).json({
+          status: "success",
+          data: {
+            guilds,
+          },
+        });
+      }
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
   }
 });
 
