@@ -46,6 +46,7 @@ async function getGuildMembers(guildId) {
           userId: true,
           firstName: true,
           lastName: true,
+          avatar: true,
         },
       },
     },
