@@ -9,7 +9,7 @@ router.get("/", AuthController.authenticate, async (request, response) => {
     response.status(400).json({
       status: "fail",
       data: {
-        search: "Missing search parameter",
+        search: "Missing search parameter.",
       },
     });
   } else {
