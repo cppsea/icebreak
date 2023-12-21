@@ -18,7 +18,7 @@ async function getGuild(guildId) {
 
 async function searchGuild(pattern) {
   return prisma.$queryRaw`
-    SELECT * FROM guilds 
+    SELECT guild_id, name, handler, icon FROM guilds 
     WHERE SIMILARITY(name, ${pattern}) > ${MINIMUM_SIMILARITY}
     ORDER BY SIMILARITY(name, ${pattern}) DESC;`;
 }
