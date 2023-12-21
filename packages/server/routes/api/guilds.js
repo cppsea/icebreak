@@ -5,37 +5,45 @@ const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
 router.get("/", AuthController.authenticate, async (request, response) => {
-  if (!request.query.search) {
+  const search = request.query.search;
+
+  if (!search) {
     response.status(400).json({
       status: "fail",
       data: {
         search: "Missing search parameter.",
       },
     });
-  } else {
-    try {
-      const guilds = await GuildController.searchGuild(request.query.search);
-      if (guilds.length === 0) {
-        response.status(404).json({
-          status: "fail",
-          data: {
-            search: "A guild was not found in the query.",
-          },
-        });
-      } else {
-        response.status(200).json({
-          status: "success",
-          data: {
-            guilds,
-          },
-        });
-      }
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
+    return;
+  }
+
+  let guilds;
+  try {
+    if (search.startsWith("@")) {
+      guilds = await GuildController.searchGuildByHandler(search);
+    } else {
+      guilds = await GuildController.searchGuildByName(search);
+    }
+    if (guilds.length === 0) {
+      response.status(404).json({
+        status: "fail",
+        data: {
+          search: "A guild was not found in the query.",
+        },
+      });
+    } else {
+      response.status(200).json({
+        status: "success",
+        data: {
+          guilds,
+        },
       });
     }
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
 });
 
