@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { validate: uuidValidate } = require("uuid");
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
@@ -90,6 +91,24 @@ router.get(
           status: "fail",
           data: {
             guildId: "Guild ID not provided",
+          },
+        });
+      }
+
+      if (!uuidValidate(guildId)) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Invalid Guild ID format",
+          },
+        });
+      }
+
+      if (!(await GuildController.guildExists(guildId))) {
+        return response.status(404).json({
+          status: "fail",
+          data: {
+            error: "Guild not found",
           },
         });
       }

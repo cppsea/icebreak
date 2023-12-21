@@ -25,6 +25,16 @@ async function searchGuildByHandler(pattern) {
     ORDER BY SIMILARITY(handler, ${pattern}) DESC;`;
 }
 
+async function guildExists(guildId) {
+  const guild = await prisma.guilds.findFirst({
+    where: {
+      guildId: guildId,
+    },
+  });
+
+  return !!guild;
+}
+
 async function getGuildMembers(guildId) {
   const getMembers = await prisma.guildMembers.findMany({
     where: {
@@ -51,4 +61,5 @@ module.exports = {
   searchGuildByName,
   searchGuildByHandler,
   getGuildMembers,
+  guildExists,
 };
