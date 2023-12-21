@@ -28,7 +28,7 @@ router.get("/", AuthController.authenticate, async (request, response) => {
       response.status(404).json({
         status: "fail",
         data: {
-          search: "A guild was not found in the query.",
+          search: `A guild was not found with the query ${search}`,
         },
       });
     } else {
