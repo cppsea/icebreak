@@ -191,16 +191,6 @@ router.put(
       }
     }
 
-    const updatedEvent = await EventController.updateEvent(eventId, givenData);
-    if (updatedEvent === null) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          eventId: "Invalid event ID provided",
-        },
-      });
-    }
-
     try {
       const newEvent = await EventController.createEvent(eventData, guildId);
       response.status(200).json({
