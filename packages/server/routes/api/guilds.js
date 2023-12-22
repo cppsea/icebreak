@@ -14,10 +14,6 @@ router.get("/", AuthController.authenticate, async (request, response) => {
       },
     });
   } catch (error) {
-    // Should never error.
-    // In the case that there are no guilds,
-    // the return would be an empty array.
-    // Here for redudancy.
     response.status(400).json({
       status: "error",
       errorName: error.name,
@@ -26,19 +22,22 @@ router.get("/", AuthController.authenticate, async (request, response) => {
   }
 });
 
-// Get guild by ID
 router.get(
   "/:guildId",
   AuthController.authenticate,
   async (request, response) => {
     try {
+      const guildId = request.params.guildId;
+      const guild = await GuildController.getGuild(guildId);
+
       return response.status(200).json({
         status: "success",
         data: {
-          guild: await GuildController.getGuild(request.params.guildId),
+          guild,
         },
       });
     } catch (error) {
+      console.log(error.code);
       if (error.name === "PrismaClientKnownRequestError") {
         switch (error.code) {
           case "P2023":
@@ -56,13 +55,25 @@ router.get(
                 guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
               },
             });
+
+          default:
+            return response.status(500).json({
+              status: "fail",
+              errorName: error.name,
+              errorMessage: error.message,
+            });
         }
+      } else if (error.name === "NotFoundError") {
+        return response.status(500).json({
+          status: "fail",
+          errorName: error.name,
+          errorMessage: error.message,
+        });
       } else {
         return response.status(500).json({
           status: "fail",
-          message: error.message,
           errorName: error.name,
-          errorcode: error.code,
+          errorMessage: error.message,
         });
       }
     }
