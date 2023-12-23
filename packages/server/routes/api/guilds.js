@@ -4,7 +4,7 @@ const router = express.Router();
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 
-// Get all guilds from database (Note: This route is just for testing, not meant to be used.)
+// Get all guilds from database (Note: This route is just for testing purposes, not meant to be used.)
 router.get("/", AuthController.authenticate, async (request, response) => {
   try {
     response.status(200).json({
@@ -37,14 +37,23 @@ router.get(
         },
       });
     } catch (error) {
-      console.log(error.code);
+      // Note: Keep this here until Prisma NotFoundError is fully deprecated with the future version of the client, as of now, it will not reach the P2025 case in the conditional below.
+      if (error.code === "P2025") {
+        return response.status(404).json({
+          status: "fail",
+          data: {
+            guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
+          },
+        });
+      }
+
       if (error.name === "PrismaClientKnownRequestError") {
         switch (error.code) {
           case "P2023":
             return response.status(400).json({
               status: "fail",
               data: {
-                guildId: "Provided guild ID is not a UUID.",
+                guildId: "Provided guild ID is not a valid UUID.",
               },
             });
 
@@ -63,12 +72,6 @@ router.get(
               errorMessage: error.message,
             });
         }
-      } else if (error.name === "NotFoundError") {
-        return response.status(500).json({
-          status: "fail",
-          errorName: error.name,
-          errorMessage: error.message,
-        });
       } else {
         return response.status(500).json({
           status: "fail",
@@ -90,8 +93,7 @@ router.post("/", AuthController.authenticate, async (request, response) => {
       },
     });
   } catch (error) {
-    // This will say that the cause of the error is in controllers/guilds.js
-    // However, the real cause is that the request was missing required fields.
+    // Note: When errored, this route returns a huge error message, the end of the message contains missing arugments/fields required for the route to function properly.
     return response.status(400).json({
       status: "error",
       errorName: error.name,
@@ -116,23 +118,37 @@ router.put(
         },
       });
     } catch (error) {
-      switch (error.name) {
-        case "PrismaClientKnownRequestError":
-          return response.status(400).json({
-            status: "error",
-            errorName: error.name,
-            message:
-              "The provided guildId could not be matched with an existing guild.",
-          });
+      if (error.name === "PrismaClientKnownRequestError") {
+        switch (error.code) {
+          case "P2023":
+            return response.status(400).json({
+              status: "fail",
+              data: {
+                guildId: "Provided guild ID is not a valid UUID.",
+              },
+            });
 
-        // There is only one known error cases.
-        // This default acts as a redundant check if an unknown error occurs.
-        default:
-          return response.status(500).json({
-            status: "fail",
-            errorName: error.name,
-            message: error.message,
-          });
+          case "P2025":
+            return response.status(404).json({
+              status: "fail",
+              data: {
+                guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
+              },
+            });
+
+          default:
+            return response.status(500).json({
+              status: "fail",
+              errorName: error.name,
+              errorMessage: error.message,
+            });
+        }
+      } else {
+        return response.status(500).json({
+          status: "fail",
+          errorName: error.name,
+          errorMessage: error.message,
+        });
       }
     }
   }
@@ -152,23 +168,37 @@ router.delete(
         },
       });
     } catch (error) {
-      switch (error.name) {
-        case "PrismaClientKnownRequestError":
-          return response.status(400).json({
-            status: "error",
-            errorName: error.name,
-            message:
-              "The provided guildId could not be matched with an existing guild.",
-          });
+      if (error.name === "PrismaClientKnownRequestError") {
+        switch (error.code) {
+          case "P2023":
+            return response.status(400).json({
+              status: "fail",
+              data: {
+                guildId: "Provided guild ID is not a valid UUID.",
+              },
+            });
 
-        // There is only one known error cases.
-        // This default acts as a redundant check if an unknown error occurs.
-        default:
-          return response.status(500).json({
-            status: "fail",
-            errorName: error.name,
-            message: error.message,
-          });
+          case "P2025":
+            return response.status(404).json({
+              status: "fail",
+              data: {
+                guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
+              },
+            });
+
+          default:
+            return response.status(500).json({
+              status: "fail",
+              errorName: error.name,
+              errorMessage: error.message,
+            });
+        }
+      } else {
+        return response.status(500).json({
+          status: "fail",
+          errorName: error.name,
+          errorMessage: error.message,
+        });
       }
     }
   }
