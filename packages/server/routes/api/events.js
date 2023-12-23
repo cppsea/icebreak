@@ -3,6 +3,8 @@ const router = express.Router();
 
 const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
+const { createEventValidator } = require("../../validators/events");
+const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 
 /**
@@ -95,8 +97,25 @@ router.get(
 router.put(
   "/:guildId",
   AuthController.authenticate,
+  // put validator here right before route handler function is run
+  createEventValidator,
   async (request, response) => {
-    const guildId = request.params.guildId;
+    // access validation results
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array({ onlyFirstError: true }),
+      });
+      return;
+    }
+
+    // matchedData lets us use data.guildId, instead of having to specify req.body.guildId every time we reference it
+    const data = matchedData(request);
+
+    const guildId = data.guildId;
     const eventData = request.body;
     let givenData = {
       title: request.body.title || undefined,
