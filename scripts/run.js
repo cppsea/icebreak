@@ -74,11 +74,11 @@ setTimeout(() => {
       if (error) {
         throw error;
       } else {
-        const FILE_PATH = "./packages/app/utils/constants.js";
+        const FILE_PATH = "./packages/app/utils/constants.ts";
         fs.readFile(FILE_PATH, "utf-8", function (error, data) {
           if (error) throw error;
           const overwrite = data.replace(
-            /\b(https:\/\/)\b.*\b(.ngrok.free.app)\b/,
+            /\b(https:\/\/)\b.*\b(.ngrok-free.app)\b/,
             public_url
           );
 

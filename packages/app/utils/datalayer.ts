@@ -1,0 +1,23 @@
+import axios from "axios";
+import * as SecureStore from "./SecureStore";
+import { ENDPOINT } from "./constants";
+
+const server = axios.create({
+  baseURL: ENDPOINT,
+});
+
+// get user info for local auth only
+export async function getUserInfo(token: string) {
+  const { data: response } = await server.get("/auth/user", {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  return response;
+}
+
+export async function logoutUser() {
+  await SecureStore.remove("accessToken");
+  await SecureStore.remove("refreshToken");
+}

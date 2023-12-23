@@ -1,0 +1,30 @@
+{
+  "display": "React Native",
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "commonjs",
+    "types": ["react-native", "jest", "node"],
+    "allowJs": true,
+    "jsx": "react-native",
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "baseUrl": "./",
+    "paths": {
+      "@app/*": ["./*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+  ],
+  "extends": "expo/tsconfig.base"
+}
