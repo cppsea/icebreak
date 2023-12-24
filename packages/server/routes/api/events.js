@@ -254,8 +254,15 @@ router.delete(
     try {
       const { eventId } = request.params;
       const deletedEvent = await EventController.deleteEvent(eventId);
+      if (deletedEvent) {
+        response.status(200).json({
+          status: "success",
+          data: null,
+        });
+      }
+    } catch (error) {
       // invalid eventId
-      if (deletedEvent === null) {
+      if (error.name == "PrismaClientKnownRequestError") {
         response.status(400).json({
           status: "fail",
           data: {
@@ -263,16 +270,11 @@ router.delete(
           },
         });
       } else {
-        response.status(200).json({
-          status: "success",
-          data: null,
+        response.status(500).json({
+          status: "error",
+          message: error.message,
         });
       }
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
     }
   }
 );

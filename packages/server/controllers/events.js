@@ -70,7 +70,7 @@ async function createEvent(eventData, guildId) {
 }
 
 async function getEvent(eventId) {
-  const event = await prisma.events.findUnique({
+  const event = await prisma.events.findUniqueOrThrow({
     where: {
       eventId: eventId,
     },
@@ -79,16 +79,12 @@ async function getEvent(eventId) {
 }
 
 async function deleteEvent(eventId) {
-  try {
-    const deletedEvent = await prisma.events.delete({
-      where: {
-        eventId: eventId,
-      },
-    });
-    return deletedEvent;
-  } catch (error) {
-    return null;
-  }
+  const deletedEvent = await prisma.events.delete({
+    where: {
+      eventId: eventId,
+    },
+  });
+  return deletedEvent;
 }
 
 async function updateEvent(eventId, eventData) {
