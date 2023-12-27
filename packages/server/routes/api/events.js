@@ -94,7 +94,8 @@ router.get(
   }
 );
 
-router.put(
+router.post(
+  //Rotuer to create events
   "/:guildId",
   AuthController.authenticate,
   // put validator here right before route handler function is run
@@ -279,7 +280,8 @@ router.delete(
   }
 );
 
-router.post(
+router.put(
+  //Route handler to update event
   "/:eventId",
   AuthController.authenticate,
   async (request, response) => {
@@ -336,7 +338,7 @@ router.post(
 
       //Validate thumbnail
       if (givenData.thumbnail) {
-        if (givenData.length > 255) {
+        if (givenData.thumbnail.length > 255) {
           response.status(400).json({
             status: "fail",
             data: {
