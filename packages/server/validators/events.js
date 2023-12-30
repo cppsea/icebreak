@@ -1,4 +1,6 @@
-const { param } = require("express-validator");
+const { param, body, check } = require("express-validator");
+
+const EventController = require("../controllers/events");
 
 // validators are defined as an array of checks to perform with express-validator
 const createEventValidator = [
@@ -12,6 +14,105 @@ const createEventValidator = [
   //   add more checks for the create event route below this line as part of this array
 ];
 
+const updateEventValidator = [
+  //Event Id checks
+  param("eventId", "Invalid event ID")
+    .trim()
+    .escape()
+    .isUUID()
+    .withMessage("Not a UUID")
+    .exists({ checkFalsy: true })
+    .withMessage("Event Id cannot be null or empty")
+    .custom(async (value) => {
+      try {
+        await EventController.getEvent(value); //Check if event exists by getting it
+      } catch (error) {
+        //If event does not exists, then a NotFoundError is thrown from controller
+        throw new Error(error);
+      }
+    }),
+  //Title checks
+  body("title", "Invalid title")
+    .trim()
+    .escape()
+    .optional()
+    .isLength({ min: 1, max: 255 })
+    .withMessage("Title length must be between 1 to 255 characters"),
+  //Description checks
+  body("description", "Invalid description")
+    .trim()
+    .escape()
+    .optional()
+    .isLength({ max: 255 })
+    .withMessage("Description max length is 255 characters"),
+  //Location checks
+  body("location", "Invalid location")
+    .trim()
+    .escape()
+    .optional()
+    .isLength({ max: 255 })
+    .withMessage("Location max length is 255 characters"),
+  //Thumbnail checks
+  body("thumbnail", "Invalid thumnail")
+    .trim()
+    .escape()
+    .optional()
+    .isLength({ max: 255 })
+    .withMessage("Thumnail max length is 255 characters")
+    .custom(async (value) => {
+      if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(value)) {
+        throw new Error("Thumbnail is not a valid image file");
+      }
+    }),
+  //Start Date checks
+  //Convert end date to a Date object for easier comparison
+  check("endDate").optional().toDate(),
+  body("startDate", "Invalid dates")
+    .trim()
+    .escape()
+    .optional()
+    .isISO8601()
+    .toDate()
+    .withMessage("Start date is not in a valid date format")
+    .custom(async (startDate, { req }) => {
+      //If new end date is provided, check if start date is before the end date
+      if (req.body.endDate) {
+        if (startDate > req.body.endDate) {
+          throw new Error("Start date is after new end date");
+        }
+      } else {
+        //Checks if new start date is before kept end date
+        const currEvent = await EventController.getEvent(req.params.eventId);
+        if (currEvent.endDate != null && startDate > currEvent.endDate) {
+          throw new Error("Start date is after end date");
+        }
+      }
+    }),
+  //End Date checks
+  //Similar checks to start sate but makes sure end date is after the start
+  check("startDate").optional().toDate(),
+  body("endDate", "Invalid end date")
+    .trim()
+    .escape()
+    .optional()
+    .isISO8601()
+    .toDate()
+    .withMessage("End date is not in a valid date format")
+    .custom(async (endDate, { req }) => {
+      if (req.body.startDate) {
+        if (endDate < req.body.startDate) {
+          throw new Error("End date is before new start date");
+        }
+      } else {
+        const currEvent = await EventController.getEvent(req.params.eventId);
+        if (currEvent.startDate != null && endDate < currEvent.startDate) {
+          throw new Error("End date is before start date");
+        }
+      }
+    }),
+];
+
 module.exports = {
   createEventValidator,
+  updateEventValidator,
 };
