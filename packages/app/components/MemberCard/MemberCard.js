@@ -41,15 +41,13 @@ const styles = StyleSheet.create({
     },
 });
 
-const MemberCard = ({ name }) => {
+const MemberCard = (props) => {
     return (
-    <View>
         <View style={styles.container}>
             <RoundedIcon /*image={SOMETHING}*/ />
-            <Text style={styles.name}>{name}</Text>
+            <Text style={styles.name}>{props.name}</Text>
             <ThreeDotsButton />
         </View>
-    </View>
     );
 };
 

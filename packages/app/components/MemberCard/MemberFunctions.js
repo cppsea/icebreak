@@ -13,6 +13,8 @@ const styles = StyleSheet.create({
     buttonText:{
         color: white,
         fontSize: 20,
+        lineHeight: 20,
+        textAlignVertical: 'center',
     }
 })
 
@@ -25,7 +27,7 @@ export const ThreeDotsButton = () => {
             style = {styles.button}
             onPress={() => Alert.alert("Three dots button pressed")}
         >
-            <Text style={styles.buttonText}>...</Text>
+            <Text style={styles.buttonText}>{"\u22EE"}</Text>
         </TouchableOpacity>
     )
 }
