@@ -5,13 +5,6 @@ const GuildsController = require("../../controllers/guilds");
 const { prismaMock } = require("../prisma_mock");
 
 describe("Guilds Unit Tests", () => {
-  /*
-  Unit Tests: Fetch Guild By ID
-  - Successfully fetching guild by ID ✅
-  - Fetching a guild with an invalid ID that doesn't exist in database (should throw error) ✅
-  */
-
-  // Define Test Data For Fetching By ID
   test("should fetch guild by id", async () => {
     const testFetchGuild = {
       guildId: "1f050f81-fbef-485a-84b2-516dfbb3d0da",
@@ -33,7 +26,7 @@ describe("Guilds Unit Tests", () => {
     });
   });
 
-  test("should find no guild if given nonexistent id", async () => {
+  test("should throw error if no guild has given id", async () => {
     prismaMock.guilds.findUniqueOrThrow.mockRejectedValue(
       new PrismaClientKnownRequestError("record not found", { code: "P2025" })
     );
@@ -43,15 +36,7 @@ describe("Guilds Unit Tests", () => {
     ).rejects.toThrow(PrismaClientKnownRequestError);
   });
 
-  /*
-  Unit Tests: Creating Guilds
-  - Successfully creating guild ✅
-  - Trying to create a guild without the required fields (should throw error) ✅
-  NOTE: use objectContaining to test for specific fields in the guildObject ✅
-  */
-
   test("should sucessfully create new guild", async () => {
-    // Define Test Data For Create
     const testCreateGuild = {
       name: "Software Engineering Association",
       handler: "sea",
@@ -66,7 +51,7 @@ describe("Guilds Unit Tests", () => {
     ).resolves.toEqual(expect.objectContaining(testCreateGuild));
   });
 
-  test("should fail guild creation due to missing required fields", async () => {
+  test("should throw error/fail guild creation due to missing required fields in body.", async () => {
     const testinvalidCreateGuild = {
       location: "San Diego",
       website: "apple.com",
@@ -74,7 +59,7 @@ describe("Guilds Unit Tests", () => {
       icon: "appleicon.jpeg",
     };
 
-    prismaMock.guilds.create.mockResolvedValue(
+    prismaMock.guilds.create.mockRejectedValue(
       new PrismaClientKnownRequestError("Missing required field error", {
         code: "P2012",
       })
@@ -82,16 +67,8 @@ describe("Guilds Unit Tests", () => {
 
     await expect(
       GuildsController.createGuild(testinvalidCreateGuild)
-    ).resolves.toThrow(PrismaClientKnownRequestError);
+    ).rejects.toThrow(PrismaClientKnownRequestError);
   });
-
-  /*
-  Unit Tests: Updating Guilds
-  - Successfully updating multiple guild properties ✅
-  - Successfully updating one guild property ✅
-  - Trying to update a noneixstent guild property (should throw error)
-  - Trying to update a nonexistent guild (should throw error)
-  */
 
   test("should update multiple guild properties successfully", async () => {
     const initial = {
@@ -152,12 +129,6 @@ describe("Guilds Unit Tests", () => {
 
     expect(result).toEqual(expect.objectContaining(expected));
   });
-
-  /*
-  Unit Tests: Deleting Guilds
-  - Successfully deleting guild by ID
-  - Trying to delete a nonexistent guild (should throw error)
-  */
 
   test("should successfully delete a target guild", async () => {
     const guildIdToDelete = "308b5bc4-7771-4514-99b7-6666cefb7e1d";

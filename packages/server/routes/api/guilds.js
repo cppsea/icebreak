@@ -14,10 +14,9 @@ router.get("/", AuthController.authenticate, async (request, response) => {
       },
     });
   } catch (error) {
-    response.status(400).json({
+    response.status(500).json({
       status: "error",
-      errorName: error.name,
-      errorMessage: error.message,
+      message: error.message,
     });
   }
 });
@@ -37,16 +36,6 @@ router.get(
         },
       });
     } catch (error) {
-      // Note: Keep this here until Prisma NotFoundError is fully deprecated with the future version of the client, as of now, it will not reach the P2025 case in the conditional below.
-      if (error.code === "P2025") {
-        return response.status(404).json({
-          status: "fail",
-          data: {
-            guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
-          },
-        });
-      }
-
       if (error.name === "PrismaClientKnownRequestError") {
         switch (error.code) {
           case "P2023":
@@ -67,16 +56,14 @@ router.get(
 
           default:
             return response.status(500).json({
-              status: "fail",
-              errorName: error.name,
-              errorMessage: error.message,
+              status: "error",
+              message: error.message,
             });
         }
       } else {
         return response.status(500).json({
-          status: "fail",
-          errorName: error.name,
-          errorMessage: error.message,
+          status: "error",
+          message: error.message,
         });
       }
     }
@@ -94,9 +81,8 @@ router.post("/", AuthController.authenticate, async (request, response) => {
     });
   } catch (error) {
     // Note: When errored, this route returns a huge error message, the end of the message contains missing arugments/fields required for the route to function properly.
-    return response.status(400).json({
+    return response.status(500).json({
       status: "error",
-      errorName: error.name,
       message: error.message,
     });
   }
@@ -138,16 +124,14 @@ router.put(
 
           default:
             return response.status(500).json({
-              status: "fail",
-              errorName: error.name,
-              errorMessage: error.message,
+              status: "error",
+              message: error.message,
             });
         }
       } else {
         return response.status(500).json({
-          status: "fail",
-          errorName: error.name,
-          errorMessage: error.message,
+          status: "error",
+          message: error.message,
         });
       }
     }
@@ -188,16 +172,14 @@ router.delete(
 
           default:
             return response.status(500).json({
-              status: "fail",
-              errorName: error.name,
-              errorMessage: error.message,
+              status: "error",
+              message: error.message,
             });
         }
       } else {
         return response.status(500).json({
-          status: "fail",
-          errorName: error.name,
-          errorMessage: error.message,
+          status: "error",
+          message: error.message,
         });
       }
     }
