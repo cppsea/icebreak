@@ -6,13 +6,40 @@ const AuthController = require("../../controllers/auth");
 
 // Get all guilds from database (Note: This route is just for testing purposes, not meant to be used.)
 router.get("/", AuthController.authenticate, async (request, response) => {
-  try {
-    response.status(200).json({
-      status: "success",
+  const search = request.query.search;
+
+  if (!search) {
+    response.status(400).json({
+      status: "fail",
       data: {
-        guilds: await GuildController.getAllGuilds(),
+        search: "Missing search parameter.",
       },
     });
+    return;
+  }
+
+  let guilds;
+  try {
+    if (search.startsWith("@")) {
+      guilds = await GuildController.searchGuildByHandler(search);
+    } else {
+      guilds = await GuildController.searchGuildByName(search);
+    }
+    if (guilds.length === 0) {
+      response.status(404).json({
+        status: "fail",
+        data: {
+          search: `A guild was not found with the query ${search}`,
+        },
+      });
+    } else {
+      response.status(200).json({
+        status: "success",
+        data: {
+          guilds,
+        },
+      });
+    }
   } catch (error) {
     response.status(500).json({
       status: "error",

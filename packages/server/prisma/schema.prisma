@@ -31,7 +31,7 @@ model eventAttendees {
 }
 
 model events {
-  eventId        String           @id(map: "event_pkey") @map("event_id") @db.Uuid
+  eventId        String           @id(map: "pk_event") @map("event_id") @db.Uuid
   guildId        String           @map("guild_id") @db.Uuid
   title          String           @db.VarChar(255)
   description    String?          @db.VarChar(255)
@@ -49,7 +49,7 @@ model guildMembers {
   guilds  guilds @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
   members users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
-  @@id([guildId, userId], map: "users_guilds_pkey")
+  @@id([guildId, userId], map: "pk_guild_member")
   @@map("guild_members")
 }
 
