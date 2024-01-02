@@ -1,31 +1,36 @@
-import React from 'react';
-import { Alert, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import React from "react";
+import { Image, StyleSheet } from "react-native";
+import OptionsMenu from "react-native-option-menu";
 
 const styles = StyleSheet.create({
-    button: {
-        alignItems: 'center',
-        backgroundColor: grey,
-        borderRadius: 15,
-        height: 30,
-        justifyContent: 'center',
-        width: 30,
-    },
-    buttonText:{
-        color: white,
-        fontSize: 20,
-    }
-})
+  buttonDots: {
+    aspectRatio: 1,
+    height: "100%",
+    width: "100%",
+  },
+});
 
-const grey = 'grey';
-const white = 'white';
+const MoreIcon = (
+  <Image
+    style={styles.buttonDots}
+    source={require("@app/assets/more-icon.png")}
+  />
+);
+
+const report = () => {
+  console.log("report");
+};
+const block = () => {
+  console.log("blocked");
+};
 
 export const ThreeDotsButton = () => {
-    return (
-        <TouchableOpacity 
-            style = {styles.button}
-            onPress={() => Alert.alert("Three dots button pressed")}
-        >
-            <Text style={styles.buttonText}>...</Text>
-        </TouchableOpacity>
-    )
-}
+  return (
+    <OptionsMenu
+      customButton={MoreIcon}
+      destructiveIndex={1}
+      options={["Report", "Block"]}
+      actions={[report, block]}
+    />
+  );
+};
