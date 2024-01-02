@@ -73,7 +73,17 @@ router.post("/", AuthController.authenticate, async (request, response) => {
       },
     });
   } catch (error) {
-    // Note: When errored, this route returns a huge error message, the end of the message contains missing arugments/fields required for the route to function properly.
+    if (error.name === "PrismaClientValidationError") {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          guildId:
+            "Guild could not be created because of missing or invalid arguments, see last line of error message below for details.",
+          message: error.message,
+        },
+      });
+    }
+
     return response.status(500).json({
       status: "error",
       message: error.message,
@@ -115,6 +125,15 @@ router.put(
               },
             });
         }
+      } else if (error.name === "PrismaClientValidationError") {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId:
+              "Guild could not be updated because of missing or invalid arguments, see last line of error message below for details.",
+            message: error.message,
+          },
+        });
       }
       return response.status(500).json({
         status: "error",
