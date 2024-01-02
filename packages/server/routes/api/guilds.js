@@ -53,19 +53,12 @@ router.get(
                 guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
               },
             });
-
-          default:
-            return response.status(500).json({
-              status: "error",
-              message: error.message,
-            });
         }
-      } else {
-        return response.status(500).json({
-          status: "error",
-          message: error.message,
-        });
       }
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
 );
@@ -121,19 +114,12 @@ router.put(
                 guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
               },
             });
-
-          default:
-            return response.status(500).json({
-              status: "error",
-              message: error.message,
-            });
         }
-      } else {
-        return response.status(500).json({
-          status: "error",
-          message: error.message,
-        });
       }
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
 );
@@ -169,19 +155,12 @@ router.delete(
                 guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
               },
             });
-
-          default:
-            return response.status(500).json({
-              status: "error",
-              message: error.message,
-            });
         }
-      } else {
-        return response.status(500).json({
-          status: "error",
-          message: error.message,
-        });
       }
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
 );
