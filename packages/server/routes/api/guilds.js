@@ -21,6 +21,7 @@ router.get("/", AuthController.authenticate, async (request, response) => {
   }
 });
 
+// Get guild by ID
 router.get(
   "/:guildId",
   AuthController.authenticate,
