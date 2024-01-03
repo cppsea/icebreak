@@ -3,6 +3,10 @@ const router = express.Router();
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
+const {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} = require("@prisma/client/runtime/library");
 
 // Get all guilds from database (Note: This route is just for testing purposes, not meant to be used.)
 router.get("/", AuthController.authenticate, async (request, response) => {
@@ -64,7 +68,7 @@ router.get(
         },
       });
     } catch (error) {
-      if (error.name === "PrismaClientKnownRequestError") {
+      if (error instanceof PrismaClientKnownRequestError) {
         switch (error.code) {
           case "P2023":
             return response.status(400).json({
@@ -101,13 +105,12 @@ router.post("/", AuthController.authenticate, async (request, response) => {
       },
     });
   } catch (error) {
-    if (error.name === "PrismaClientValidationError") {
+    if (error instanceof PrismaClientValidationError) {
       return response.status(400).json({
         status: "fail",
         data: {
           guildId:
-            "Guild could not be created because of missing or invalid arguments, see last line of error message below for details.",
-          message: error.message,
+            "Guild could not be created because of missing or invalid arguments.",
         },
       });
     }
@@ -135,7 +138,7 @@ router.put(
         },
       });
     } catch (error) {
-      if (error.name === "PrismaClientKnownRequestError") {
+      if (error instanceof PrismaClientKnownRequestError) {
         switch (error.code) {
           case "P2023":
             return response.status(400).json({
@@ -153,13 +156,11 @@ router.put(
               },
             });
         }
-      } else if (error.name === "PrismaClientValidationError") {
+      } else if (error instanceof PrismaClientValidationError) {
         return response.status(400).json({
           status: "fail",
           data: {
-            guildId:
-              "Guild could not be updated because of missing or invalid arguments, see last line of error message below for details.",
-            message: error.message,
+            guildId: "Guild could not be updated because of invalid arguments.",
           },
         });
       }
@@ -185,7 +186,7 @@ router.delete(
         },
       });
     } catch (error) {
-      if (error.name === "PrismaClientKnownRequestError") {
+      if (error instanceof PrismaClientKnownRequestError) {
         switch (error.code) {
           case "P2023":
             return response.status(400).json({
