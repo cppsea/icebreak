@@ -1,10 +1,20 @@
 {
   "parserOptions": {
-    "sourceType": "module",
+    "sourceType": "script",
     "ecmaVersion": 2023
   },
   "env": {
     "node": true
   },
-  "extends": ["prettier", "eslint:recommended"]
+  "extends": ["prettier", "eslint:recommended"],
+  "overrides": [
+    {
+      "files": ["__tests__/**", "prisma/prisma_mock.js"],
+      "plugins": ["jest"],
+      "extends": ["plugin:jest/recommended"],
+      "env": {
+        "jest/globals": true
+      }
+    }
+  ]
 }
