@@ -1,7 +1,6 @@
 import MemberCard from "@app/components/MemberCard/MemberCard";
-import React from "react";
 import { View } from "react-native";
-
+import React from "react";
 
 // max characters display should be 15?
 const mockData = [
@@ -31,17 +30,22 @@ const mockData = [
   },
   {
     key: "seven",
-    name: "Bartholemew"
-  }
+    name: "Bartholemew",
+  },
 ];
 
 function MembersScreen() {
-
   return (
     <View>
       {mockData.map((section) => (
         <View key={section.key}>
-          <MemberCard name={section.name.length <= 12 ? section.name : section.name.substring(0, 12) + "..."} />
+          <MemberCard
+            name={
+              section.name.length <= 12
+                ? section.name
+                : section.name.substring(0, 12) + "..."
+            }
+          />
         </View>
       ))}
     </View>
