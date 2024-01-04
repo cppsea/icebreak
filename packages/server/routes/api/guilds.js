@@ -81,7 +81,7 @@ router.get(
 );
 
 router.get(
-  "/members/:guildId",
+  "/:guildId/members",
   AuthController.authenticate,
   async (request, response) => {
     try {
@@ -108,7 +108,7 @@ router.get(
         return response.status(404).json({
           status: "fail",
           data: {
-            error: "Guild not found",
+            guildId: `Guild not found with an ID of ${guildId}`,
           },
         });
       }
