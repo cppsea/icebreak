@@ -115,7 +115,7 @@ router.get(
 );
 
 router.get(
-  "/eventAttendees/:eventId",
+  "/:eventId/eventAttendees",
   AuthController.authenticate,
   async (request, response) => {
     const eventId = request.params.eventId;
@@ -133,7 +133,7 @@ router.get(
       response.status(404).json({
         status: "fail",
         data: {
-          eventId: `Given eventId "${eventId}" does not exist.`,
+          eventId: `No event exists with an ID of ${eventId}`,
         },
       });
       return;
