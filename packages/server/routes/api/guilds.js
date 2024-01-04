@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { validate: uuidValidate } = require("uuid");
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
@@ -206,6 +207,55 @@ router.delete(
         }
       }
       return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.get(
+  "/:guildId/members",
+  AuthController.authenticate,
+  async (request, response) => {
+    try {
+      const { guildId } = request.params;
+      if (guildId === undefined) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Guild ID not provided",
+          },
+        });
+      }
+
+      if (!uuidValidate(guildId)) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Invalid Guild ID format",
+          },
+        });
+      }
+
+      if (!(await GuildController.guildExists(guildId))) {
+        return response.status(404).json({
+          status: "fail",
+          data: {
+            guildId: `Guild not found with an ID of ${guildId}`,
+          },
+        });
+      }
+
+      const guildMembers = await GuildController.getGuildMembers(guildId);
+      response.status(200).json({
+        status: "success",
+        data: {
+          guildMembers,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
         status: "error",
         message: error.message,
       });

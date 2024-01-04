@@ -50,6 +50,38 @@ async function searchGuildByHandler(pattern) {
     ORDER BY SIMILARITY(handler, ${pattern}) DESC;`;
 }
 
+async function guildExists(guildId) {
+  const guild = await prisma.guilds.findFirst({
+    where: {
+      guildId: guildId,
+    },
+  });
+
+  return !!guild;
+}
+
+async function getGuildMembers(guildId) {
+  const getMembers = await prisma.guildMembers.findMany({
+    where: {
+      guildId: guildId,
+    },
+    select: {
+      members: {
+        select: {
+          userId: true,
+          firstName: true,
+          lastName: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+
+  const members = getMembers.flatMap((member) => member.members);
+
+  return members;
+}
+
 module.exports = {
   getGuild,
   searchGuildByName,
@@ -58,4 +90,6 @@ module.exports = {
   createGuild,
   updateGuild,
   deleteGuild,
+  getGuildMembers,
+  guildExists,
 };
