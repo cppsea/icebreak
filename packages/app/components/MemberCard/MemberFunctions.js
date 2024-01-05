@@ -29,7 +29,7 @@ export const ThreeDotsButton = () => {
     <OptionsMenu
       customButton={MoreIcon}
       destructiveIndex={1}
-      options={["Report", "Block"]}
+      options={["Report", "Block", "Cancel"]}
       actions={[report, block]}
     />
   );
