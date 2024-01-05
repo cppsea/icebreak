@@ -115,7 +115,7 @@ router.get(
 );
 
 router.get(
-  "/:eventId/eventAttendees",
+  "/:eventId/attendees",
   AuthController.authenticate,
   async (request, response) => {
     const eventId = request.params.eventId;
@@ -124,7 +124,7 @@ router.get(
       response.status(400).json({
         status: "fail",
         data: {
-          eventId: `Given eventId "${eventId}" is invalid.`,
+          eventId: `Given eventId ${eventId} is invalid.`,
         },
       });
       return;
