@@ -8,7 +8,80 @@ const BLUE = "#3498DB";
 const GRAY = "#2C2C2C";
 
 function AboutScreen() {
-  return <View></View>;
+  return (
+    <Screen style={styles.container}>
+      <View style={styles.subContainer}>
+        <Text style={styles.title}>Description</Text>
+        <Text style={styles.description}>
+          Hey everyone, this is so fun! HOORAY!!! Hey everyone, this is so fun!
+          HOORAY!!! Hey everyone, this is so fun! HOORAY!!!
+        </Text>
+      </View>
+
+      <View style={styles.subContainer}>
+        <Text style={styles.title}>Links</Text>
+        <View style={styles.mediaContainer}>
+          <FontAwesome5
+            name="discord"
+            style={styles.mediaIconStyle}
+            size={20}
+          />
+          <Text
+            style={styles.url}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            onPress={() => Linking.openURL("https://discord.com")}>
+            https://discord.com
+          </Text>
+        </View>
+        <View style={styles.mediaContainer}>
+          <FontAwesome5
+            name="instagram"
+            style={styles.mediaIconStyle}
+            size={20}
+          />
+          <Text
+            style={styles.url}
+            numberOfLines={1}
+            ellipsizeMode="tail"
+            onPress={() => Linking.openURL("https://instagram.com")}>
+            https://instagram.com
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.subContainer}>
+        <Text style={styles.title}>More Info</Text>
+        <View style={styles.mediaContainer}>
+          <Ionicons
+            name="location-sharp"
+            style={styles.mediaIconStyle}
+            size={20}
+            color="#2C2C2C"
+          />
+          <Text>Pomona, CA</Text>
+        </View>
+        <View style={styles.mediaContainer}>
+          <Ionicons
+            name="information-circle-sharp"
+            style={styles.mediaIconStyle}
+            size={20}
+            color="#2C2C2C"
+          />
+          <Text>Joined January 3, 2024</Text>
+        </View>
+        <View style={styles.mediaContainer}>
+          <Ionicons
+            name="person"
+            style={styles.mediaIconStyle}
+            size={20}
+            color="#2C2C2C"
+          />
+          <Text>1,000 Members</Text>
+        </View>
+      </View>
+    </Screen>
+  );
 }
 
 const styles = StyleSheet.create({
