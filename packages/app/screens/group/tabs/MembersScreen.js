@@ -1,47 +1,23 @@
 import MemberCard from "@app/components/MemberCard/MemberCard";
-import React from "react";
 import { View } from "react-native";
-
-
-// max characters display should be 15?
-const mockData = [
-  {
-    key: "one",
-    name: "Carl",
-  },
-  {
-    key: "two",
-    name: "Joe",
-  },
-  {
-    key: "three",
-    name: "Bobby Jones 3rd",
-  },
-  {
-    key: "four",
-    name: "Chicken Nugget",
-  },
-  {
-    key: "five",
-    name: "Jill",
-  },
-  {
-    key: "six",
-    name: "Jack",
-  },
-  {
-    key: "seven",
-    name: "Bartholemew"
-  }
-];
+import React from "react";
+import { useGuildContext } from "@app/utils/GuildContext";
 
 function MembersScreen() {
+  const { guildMembers } = useGuildContext();
 
   return (
     <View>
-      {mockData.map((section) => (
-        <View key={section.key}>
-          <MemberCard name={section.name.length <= 12 ? section.name : section.name.substring(0, 12) + "..."} />
+      {guildMembers.map((member) => (
+        <View key={member.userId}>
+          <MemberCard
+            name={
+              (member.firstName + " " + member.lastName).length <= 12
+                ? member.firstName + " " + member.lastName
+                : (member.firstName + " " + member.lastName).substring(0, 12) +
+                  "..."
+            }
+          />
         </View>
       ))}
     </View>
