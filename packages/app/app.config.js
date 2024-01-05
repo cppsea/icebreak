@@ -21,14 +21,13 @@ module.exports = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: "com.sea.icebreak",
-    // fill with iOS URL Scheme whenever building
-    // infoPlist: {
-    //   CFBundleURLTypes: [
-    //     {
-    //       CFBundleURLSchemes: [process.env.IOS_URL_SCHEME],
-    //     },
-    //   ],
-    // },
+    infoPlist: {
+      CFBundleURLTypes: [
+        {
+          CFBundleURLSchemes: [process.env.IOS_GOOGLE_URL_SCHEME],
+        },
+      ],
+    },
   },
   android: {
     adaptiveIcon: {
@@ -50,7 +49,12 @@ module.exports = {
     webClientId: process.env.WEB_CLIENT_ID,
   },
   plugins: [
-    "@react-native-google-signin/google-signin",
+    [
+      "@react-native-google-signin/google-signin",
+      {
+        iosUrlScheme: process.env.IOS_GOOGLE_URL_SCHEME,
+      },
+    ],
     [
       "expo-image-picker",
       {
