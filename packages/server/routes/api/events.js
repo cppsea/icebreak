@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const { validate } = require("uuid");
 const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
 const DEFAULT_EVENT_LIMIT = 10;
@@ -103,6 +103,50 @@ router.get(
         status: "success",
         data: {
           event: event,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.get(
+  "/:eventId/attendees",
+  AuthController.authenticate,
+  async (request, response) => {
+    const eventId = request.params.eventId;
+
+    if (!validate(eventId)) {
+      response.status(400).json({
+        status: "fail",
+        data: {
+          eventId: `Given eventId ${eventId} is invalid.`,
+        },
+      });
+      return;
+    }
+    if (!(await EventController.existsInPrisma(eventId))) {
+      response.status(404).json({
+        status: "fail",
+        data: {
+          eventId: `No event exists with an ID of ${eventId}`,
+        },
+      });
+      return;
+    }
+    try {
+      const { eventId } = request.params;
+      const eventAttendeesData = await EventController.getEventAttendees(
+        eventId
+      );
+      response.status(200).json({
+        status: "success",
+        data: {
+          eventAttendees: eventAttendeesData,
         },
       });
     } catch (error) {

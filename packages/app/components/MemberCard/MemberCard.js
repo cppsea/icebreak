@@ -3,6 +3,7 @@ import RoundedIcon from "@app/components/MemberCard/RoundedIcon";
 import PropTypes from "prop-types";
 import { Platform, StyleSheet, Text, View } from "react-native";
 import { ThreeDotsButton } from "./MemberFunctions";
+import ProfilePopup from "./ProfilePopup";
 
 const containerBG = "rgb(245, 245, 245)";
 const shadow = "rgba(0, 0, 0, 0.25)";
@@ -42,11 +43,27 @@ const styles = StyleSheet.create({
 });
 
 const MemberCard = (props) => {
+  const [showPopup, setShowPopup] = React.useState(false);
+
+  const openPopup = () => {
+    setShowPopup(true);
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
+  };
+
   return (
     <View style={styles.container}>
-      <RoundedIcon image={props.image} />
+      <RoundedIcon image={props.image} onIconClick={openPopup} />
       <Text style={styles.name}>{props.name}</Text>
       <ThreeDotsButton />
+      <ProfilePopup
+        isVisible={showPopup}
+        image={props.image}
+        name={props.name}
+        onClose={closePopup}
+      />
     </View>
   );
 };
