@@ -31,7 +31,7 @@ model eventAttendees {
 }
 
 model events {
-  eventId        String           @id(map: "pk_event") @map("event_id") @db.Uuid
+  eventId        String           @id(map: "event_pkey") @default(dbgenerated("gen_random_uuid()")) @map("event_id") @db.Uuid
   guildId        String           @map("guild_id") @db.Uuid
   title          String           @db.VarChar(255)
   description    String?          @db.VarChar(255)

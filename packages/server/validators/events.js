@@ -1,6 +1,7 @@
 const { param, body, check } = require("express-validator");
 
 const EventController = require("../controllers/events");
+const GuildController = require("../controllers/guilds");
 
 // validators are defined as an array of checks to perform with express-validator
 const createEventValidator = [
@@ -9,9 +10,99 @@ const createEventValidator = [
   param("guildId", "Invalid guild ID")
     .trim()
     .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("guildId cannot be null or empty")
     .isUUID()
-    .withMessage("Not a UUID"),
+    .withMessage("Not a UUID")
+    .custom(async (value) => {
+      try {
+        await GuildController.getGuild(value); //Check if guild exists by getting it
+      } catch (error) {
+        //If event does not exists, then a NotFoundError is thrown from controller
+        throw new Error(error);
+      }
+    }),
   //   add more checks for the create event route below this line as part of this array
+
+  //Title checks
+  body("title", "Invalid title")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("Title cannot be null or empty")
+    .isLength({ min: 1, max: 255 })
+    .withMessage("Title length must be between 1 to 255 characters"),
+
+  //Description checks
+  body("description", "Invalid description")
+    .trim()
+    .escape()
+    .isLength({ max: 255 })
+    .withMessage("Description max length is 255 characters")
+    .exists({ checkFalsy: true })
+    .withMessage("Description cannot be null or empty"),
+
+  //Location checks
+  body("location", "Invalid location")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("location cannot be null or empty")
+    .isLength({ max: 255 })
+    .withMessage("Location max length is 255 characters"),
+
+  //Thumbnail checks
+  body("thumbnail", "Invalid thumbnail")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("thumbnail cannot be null or empty")
+    .isLength({ max: 255 })
+    .withMessage("Thumbnail max length is 255 characters")
+    .custom(async (value) => {
+      if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(value)) {
+        throw new Error("Thumbnail is not a valid image file");
+      }
+    }),
+
+  //Start Date checks
+  //Convert end date to a Date object for easier comparison
+  check("endDate").toDate(),
+  body("startDate", "Invalid dates")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("start date cannot be null or empty")
+    .isISO8601()
+    .toDate()
+    .withMessage("Start date is not in a valid date format")
+    .custom(async (startDate, { req }) => {
+      //If new end date is provided, check if start date is before the end date
+      if (req.body.endDate) {
+        if (startDate > req.body.endDate) {
+          throw new Error("Start date is after new end date");
+        }
+      }
+    }),
+
+  //End Date checks
+  //Similar checks to start sate but makes sure end date is after the start
+  check("startDate").toDate(),
+  body("endDate", "Invalid end date")
+    .trim()
+    .escape()
+    .exists({ checkFalsy: true })
+    .withMessage("end date cannot be null or empty")
+    .isISO8601()
+    .toDate()
+    .withMessage("End date is not in a valid date format")
+    .custom(async (endDate, { req }) => {
+      if (req.body.startDate) {
+        if (endDate < req.body.startDate) {
+          throw new Error("End date is before new start date");
+        }
+      }
+    }),
 ];
 
 const updateEventValidator = [
@@ -53,12 +144,12 @@ const updateEventValidator = [
     .isLength({ max: 255 })
     .withMessage("Location max length is 255 characters"),
   //Thumbnail checks
-  body("thumbnail", "Invalid thumnail")
+  body("thumbnail", "Invalid thumbnail")
     .trim()
     .escape()
     .optional()
     .isLength({ max: 255 })
-    .withMessage("Thumnail max length is 255 characters")
+    .withMessage("Thumbnail max length is 255 characters")
     .custom(async (value) => {
       if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(value)) {
         throw new Error("Thumbnail is not a valid image file");

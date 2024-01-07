@@ -98,7 +98,7 @@ router.get(
 );
 
 router.post(
-  //Rotuer to create events
+  //Router to create events
   "/:guildId",
   AuthController.authenticate,
   // put validator here right before route handler function is run
@@ -121,98 +121,6 @@ router.post(
 
     const guildId = data.guildId;
     const eventData = request.body;
-    let givenData = {
-      title: request.body.title || undefined,
-      description: request.body.description || undefined,
-      startDate: request.body.startDate || undefined,
-      endDate: request.body.endDate || undefined,
-      location: request.body.location || undefined,
-      thumbnail: request.body.thumbnail || undefined,
-    };
-    //input validation
-    if (givenData.title) {
-      if (givenData.title.length > 255) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            title: "Title exceeds 255 characters",
-          },
-        });
-      }
-    }
-    if (givenData.description) {
-      if (givenData.description.length > 255) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            description: "Description exceeds 255 characters",
-          },
-        });
-      }
-    }
-    if (givenData.location) {
-      if (givenData.location.length > 255) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            location: "Location exceeds 255 characters",
-          },
-        });
-      }
-    }
-    if (givenData.thumbnail) {
-      if (givenData.length > 255) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            thumbnail: "Thumbnail exceeds 255 characters",
-          },
-        });
-      } //A regex to see if the thumbnail is a valid image file
-      else if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(givenData.thumbnail)) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            thumbnail: "Thumbnail is not a valid image file",
-          },
-        });
-      }
-    }
-    if (givenData.startDate && givenData.endDate) {
-      if (givenData.startDate > givenData.endDate) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            startDate: "Start date is after end date",
-            endDate: "End date is before start date",
-          },
-        });
-      }
-    } else if (givenData.startDate) {
-      if (
-        givenData.endDate != null &&
-        givenData.startDate > givenData.endDate.toISOString()
-      ) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            startDate: "Start date is after end date",
-          },
-        });
-      }
-    } else if (givenData.endDate) {
-      if (
-        givenData.startDate != null &&
-        givenData.startDate.toISOString() > givenData.endDate
-      ) {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            endDate: "End date is before start date",
-          },
-        });
-      }
-    }
 
     try {
       const newEvent = await EventController.createEvent(eventData, guildId);
