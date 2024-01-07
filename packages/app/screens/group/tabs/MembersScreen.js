@@ -11,6 +11,7 @@ function MembersScreen() {
       {guildMembers.map((member) => (
         <View key={member.userId}>
           <MemberCard
+            image={member.avatar}
             name={
               (member.firstName + " " + member.lastName).length <= 12
                 ? member.firstName + " " + member.lastName

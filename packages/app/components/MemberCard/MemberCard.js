@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
 const MemberCard = (props) => {
   return (
     <View style={styles.container}>
-      <RoundedIcon /*image={SOMETHING}*/ />
+      <RoundedIcon image={props.image} />
       <Text style={styles.name}>{props.name}</Text>
       <ThreeDotsButton />
     </View>
@@ -53,6 +53,7 @@ const MemberCard = (props) => {
 
 MemberCard.propTypes = {
   name: PropTypes.string,
+  image: PropTypes.string,
 };
 
 export default MemberCard;
