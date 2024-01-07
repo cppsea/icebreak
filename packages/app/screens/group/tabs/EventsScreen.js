@@ -37,6 +37,7 @@ function EventsScreen(props) {
               timeEnd="test"
               location="test"
               description="test"
+              navigation={props.navigation}
             />
           ))}
         </View>
@@ -48,6 +49,7 @@ function EventsScreen(props) {
 EventsScreen.propTypes = {
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   testID: PropTypes.string,
+  navigation: PropTypes.object,
 };
 
 const styles = StyleSheet.create({

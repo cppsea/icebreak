@@ -55,7 +55,7 @@ EventCardText.propTypes = {
   timeBegin: PropTypes.string,
   timeEnd: PropTypes.string,
   title: PropTypes.string,
-  navigation: PropTypes.func,
+  navigation: PropTypes.object,
 };
 
 export default EventCardText;

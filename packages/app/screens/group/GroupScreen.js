@@ -66,6 +66,6 @@ function GroupScreen({ navigation }) {
   );
 }
 GroupScreen.propTypes = {
-  navigation: PropTypes.func,
+  navigation: PropTypes.object,
 };
 export default GroupScreen;
