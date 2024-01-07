@@ -1,17 +1,13 @@
 import React from "react";
-import { StyleSheet, Button, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import FaceIcon from "./FaceIcon";
 import PropTypes from "prop-types";
+import RegisterButton from "./RegisterButton";
 
 // Sample array for testing
 const sampleArray = [0, 1, 2, 3];
 
 const styles = StyleSheet.create({
-  button: {
-    marginBottom: 0,
-    marginLeft: 0,
-    marginRight: 0,
-  },
   buttonView: {
     flex: 7,
     justifyContent: "center",
@@ -27,12 +23,10 @@ const styles = StyleSheet.create({
 });
 
 function EventCardRegistration(props) {
-  const { register } = props;
-
   return (
     <View style={styles.container}>
       <View style={styles.buttonView}>
-        <Button style={styles.button} title="Going" onPress={register} />
+        <RegisterButton registerState={props.registerState} />
       </View>
       <View style={styles.faceView}>
         {sampleArray.slice(0, 4).map((x) => {
@@ -52,7 +46,7 @@ function EventCardRegistration(props) {
 }
 
 EventCardRegistration.propTypes = {
-  register: PropTypes.func,
+  registerState: PropTypes.bool,
 };
 
 export default EventCardRegistration;
