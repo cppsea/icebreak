@@ -203,7 +203,27 @@ const updateEventValidator = [
     }),
 ];
 
+const eventIdValidator = [
+  // eventId checks
+  param("eventId", "Invalid event ID")
+    .trim()
+    .escape()
+    .isUUID()
+    .withMessage("Not a UUID")
+    .exists({ checkFalsy: true })
+    .withMessage("Event Id cannot be null or empty")
+    .custom(async (value) => {
+      try {
+        await EventController.getEvent(value); //Check if event exists by getting it
+      } catch (error) {
+        //If event does not exists, then a NotFoundError is thrown from controller
+        throw new Error(error);
+      }
+    }),
+];
+
 module.exports = {
   createEventValidator,
   updateEventValidator,
+  eventIdValidator,
 };

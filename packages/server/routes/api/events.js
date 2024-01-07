@@ -6,6 +6,7 @@ const AuthController = require("../../controllers/auth");
 const {
   createEventValidator,
   updateEventValidator,
+  eventIdValidator,
 } = require("../../validators/events");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
@@ -162,7 +163,19 @@ router.get(
 router.delete(
   "/:eventId",
   AuthController.authenticate,
+  eventIdValidator,
   async (request, response) => {
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
     try {
       const { eventId } = request.params;
       const deletedEvent = await EventController.deleteEvent(eventId);
@@ -173,20 +186,10 @@ router.delete(
         });
       }
     } catch (error) {
-      // invalid eventId
-      if (error.name == "PrismaClientKnownRequestError") {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            eventId: "Invalid event ID provided",
-          },
-        });
-      } else {
-        response.status(500).json({
-          status: "error",
-          message: error.message,
-        });
-      }
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
 );
