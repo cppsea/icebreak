@@ -34,11 +34,8 @@ const EventCard = ({
   timeEnd,
   location,
   description,
+  navigation,
 }) => {
-  const onRegisterClicked = () => {
-    alert("Register button works!");
-  };
-
   return (
     <View style={[styles.card, style]}>
       {banner ? <Image source={banner} style={styles.banner} /> : null}
@@ -49,8 +46,9 @@ const EventCard = ({
           timeEnd={timeEnd}
           location={location}
           description={description}
+          navigation={navigation}
         />
-        <EventCardRegistration register={onRegisterClicked} />
+        <EventCardRegistration registerState={false} />
       </View>
     </View>
   );
@@ -64,6 +62,7 @@ EventCard.propTypes = {
   timeBegin: PropTypes.string,
   timeEnd: PropTypes.string,
   title: PropTypes.string,
+  navigation: PropTypes.func,
 };
 
 export default EventCard;

@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import PropTypes from "prop-types";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader.js";
 import GroupTabs from "../../components/GroupScreen/GroupTabs.js";
@@ -22,7 +23,7 @@ const tabs = [
   { name: "Newsletter", screen: NewsletterScreen },
 ];
 
-function GroupScreen() {
+function GroupScreen({ navigation }) {
   const tabRef = useRef(null);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -54,11 +55,17 @@ function GroupScreen() {
           />
         </View>
         {activeTab.screen && (
-          <activeTab.screen testID="tab" style={styles.screen} />
+          <activeTab.screen
+            testID="tab"
+            style={styles.screen}
+            navigation={navigation}
+          />
         )}
       </ScrollView>
     </Screen>
   );
 }
-
+GroupScreen.propTypes = {
+  navigation: PropTypes.func,
+};
 export default GroupScreen;
