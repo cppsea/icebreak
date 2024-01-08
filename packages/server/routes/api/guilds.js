@@ -53,36 +53,6 @@ router.get("/", AuthController.authenticate, async (request, response) => {
   }
 });
 
-router.post(
-  "/insert",
-  AuthController.authenticate,
-  async (request, response) => {
-    try {
-      return response.status(200).json({
-        status: "success",
-        data: {
-          createdGuild: await GuildController.insertGuild(request.body),
-        },
-      });
-    } catch (error) {
-      if (error instanceof PrismaClientValidationError) {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            guildId:
-              "Guild could not be created because of missing or invalid arguments.",
-          },
-        });
-      }
-
-      return response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
-  }
-);
-
 // Get guild by ID
 router.get(
   "/:guildId",

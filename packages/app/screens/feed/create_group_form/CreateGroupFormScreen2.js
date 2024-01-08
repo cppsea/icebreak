@@ -11,7 +11,7 @@ import {
 import Button from "@app/components/Button";
 import Dropdown from "@app/components/Dropdown";
 import TagInput from "@app/components/TagInput";
-import { GroupContext } from "@app/utils/CreateGuildContext";
+import { GroupContext } from "@app/utils/GroupContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 

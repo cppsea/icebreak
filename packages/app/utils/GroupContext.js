@@ -9,7 +9,7 @@ export const GroupContext = createContext();
 
 export function GroupProvider({ children }) {
   // 1st SCREEN INPUTS
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [handler, setHandler] = useState("");
   const [description, setDescription] = useState("");
   const [banner, setBanner] = useState("");
@@ -31,7 +31,7 @@ export function GroupProvider({ children }) {
   const [githubLink, setGithubLink] = useState("");
 
   const resetForm = () => {
-    setTitle("");
+    setName("");
     setHandler("");
     setDescription("");
     setBanner("");
@@ -51,6 +51,7 @@ export function GroupProvider({ children }) {
     setGithubLink("");
   };
 
+  // form submission logic
   const submitForm = async () => {
     try {
       const media = [
@@ -63,7 +64,7 @@ export function GroupProvider({ children }) {
       ].filter((item) => item); // filters empty strings
 
       const guildData = {
-        title,
+        title: name,
         handler,
         description,
         category,
@@ -78,11 +79,9 @@ export function GroupProvider({ children }) {
       const token = await SecureStore.getValueFor("accessToken");
       const headers = { Authorization: token };
 
-      const response = await axios.post(
-        `${ENDPOINT}/guilds/insert`,
-        guildData,
-        { headers }
-      );
+      const response = await axios.post(`${ENDPOINT}/guilds/`, guildData, {
+        headers,
+      });
 
       // image submission
       const id = response.data.data.createdGuild.guildId;
@@ -129,8 +128,8 @@ export function GroupProvider({ children }) {
   return (
     <GroupContext.Provider
       value={{
-        title,
-        setTitle,
+        name,
+        setName,
         handler,
         setHandler,
         description,
@@ -144,7 +143,7 @@ export function GroupProvider({ children }) {
         setCategory,
         tags,
         setTags,
-        website: website,
+        website,
         setWebsite,
         location,
         setLocation,

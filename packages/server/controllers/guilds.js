@@ -1,31 +1,6 @@
 const prisma = require("../prisma/prisma");
 const MINIMUM_SIMILARITY = 0.3;
 
-async function insertGuild(guildData) {
-  try {
-    const query = await prisma.guilds.create({
-      data: {
-        guildId: guildData.guildId,
-        name: guildData.title, // required field
-        handler: guildData.handler,
-        description: guildData.description,
-        category: guildData.category,
-        location: guildData.location || null, // optional field
-        website: guildData.websiteUrl || null,
-        tags: guildData.tags,
-        media: guildData.media || null,
-        isInviteOnly: guildData.isInviteOnly,
-      },
-    });
-
-    return query;
-  } catch (error) {
-    throw new Error(`Error inserting guild: ${error.message}`);
-  } finally {
-    await prisma.$disconnect();
-  }
-}
-
 async function getAllGuilds() {
   return await prisma.guilds.findMany();
 }
@@ -39,9 +14,25 @@ async function getGuild(guildId) {
 }
 
 async function createGuild(guildData) {
-  return await prisma.guilds.create({
-    data: guildData,
-  });
+  try {
+    return await prisma.guilds.create({
+      data: {
+        name: guildData.name, // required field
+        handler: guildData.handler,
+        description: guildData.description,
+        category: guildData.category,
+        location: guildData.location || null, // optional field
+        website: guildData.websiteUrl || null,
+        tags: guildData.tags,
+        media: guildData.media,
+        isInviteOnly: guildData.isInviteOnly,
+      },
+    });
+  } catch (error) {
+    throw new Error(`Error creating guild: ${error.message}`);
+  } finally {
+    await prisma.$disconnect();
+  }
 }
 
 async function updateGuild(guildId, guildData) {
@@ -109,7 +100,6 @@ async function getGuildMembers(guildId) {
 
 module.exports = {
   getGuild,
-  insertGuild,
   searchGuildByName,
   searchGuildByHandler,
   getAllGuilds,

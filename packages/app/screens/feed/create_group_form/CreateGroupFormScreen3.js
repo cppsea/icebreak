@@ -9,7 +9,7 @@ import {
   Keyboard,
 } from "react-native";
 import Button from "@app/components/Button";
-import { GroupContext } from "@app/utils/CreateGuildContext";
+import { GroupContext } from "@app/utils/GroupContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 

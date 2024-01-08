@@ -10,15 +10,15 @@ import {
 } from "react-native";
 import Button from "@app/components/Button";
 import * as ImagePicker from "expo-image-picker";
-import { GroupContext } from "@app/utils/CreateGuildContext";
+import { GroupContext } from "@app/utils/GroupContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 
 function CreateGroupFormScreen1({ navigation }) {
   // 1st SCREEN INPUTS
   const {
-    title,
-    setTitle,
+    name,
+    setName,
     handler,
     setHandler,
     description,
@@ -31,7 +31,7 @@ function CreateGroupFormScreen1({ navigation }) {
   } = useContext(GroupContext);
 
   // Input Validation
-  const [titleError, setTitleError] = useState("");
+  const [nameError, setNameError] = useState("");
   const [handlerError, setHandlerError] = useState("");
   const [descriptionError, setDescriptionError] = useState("");
   const [bannerError, setBannerError] = useState("");
@@ -43,14 +43,14 @@ function CreateGroupFormScreen1({ navigation }) {
     const titleRegex = /^(?![a-zA-Z0-9]+$).*$/;
     const handlerRegex = /^(?!(\w{1,15})$).*$/;
 
-    if (title.trim() === ``) {
-      setTitleError(`Please enter a title`);
+    if (name.trim() === ``) {
+      setNameError(`Please enter a title`);
       isValid = false;
-    } else if (titleRegex.test(title)) {
-      setTitleError(`Can only contain letters, numbers, and underscores.`);
+    } else if (titleRegex.test(name)) {
+      setNameError(`Can only contain letters, numbers, and underscores.`);
       isValid = false;
     } else {
-      setTitleError(``);
+      setNameError(``);
     }
 
     if (handler.trim() === ``) {
@@ -145,14 +145,14 @@ function CreateGroupFormScreen1({ navigation }) {
 
           <View>
             <Text style={styles.header}>
-              <Text>Title</Text>
-              <Text style={styles.important}>* {titleError}</Text>
+              <Text>Organization Name</Text>
+              <Text style={styles.important}>* {nameError}</Text>
             </Text>
             <TextInput
-              value={title}
-              placeholder="title"
+              value={name}
+              placeholder="name"
               onChangeText={(newText) =>
-                handleOnChangeInput(newText, setTitle, setTitleError)
+                handleOnChangeInput(newText, setName, setNameError)
               }
               style={styles.input}
               maxLength={20}

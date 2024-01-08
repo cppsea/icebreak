@@ -1,6 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { GroupProvider } from "@app/utils/CreateGuildContext";
+import { GroupProvider } from "@app/utils/GroupContext";
 import InitialCreateGroupScreen from "./InitialCreateGroupScreen";
 import CreateGroupFormScreen1 from "./CreateGroupFormScreen1";
 import CreateGroupFormScreen2 from "./CreateGroupFormScreen2";
