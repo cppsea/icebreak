@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, Button } from "react-native";
+import { StyleSheet, View, Button, Share, Alert } from "react-native";
 import RegisterButton from "../EventCard/RegisterButton";
 import PropTypes from "prop-types";
 
@@ -20,14 +20,25 @@ const styles = StyleSheet.create({
 });
 
 export default function EventRegister({ registerState }) {
-  const handOnShare = () => {
-    alert("Share");
+  const handleOnShare = async () => {
+    try {
+      const result = await Share.share({
+        message: "https://cppsea.com",
+      });
+      if (result.action === Share.sharedAction) {
+        console.log("Content shared successfully");
+      } else if (result.action === Share.dismissedAction) {
+        console.log("Sharing cancelled");
+      }
+    } catch (error) {
+      Alert.alert(error.message);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.shareButton}>
-        <Button title="Share" color="#1c2e4a" onPress={handOnShare} />
+        <Button title="Share" color="#1c2e4a" onPress={handleOnShare} />
       </View>
       <View style={styles.goingButton}>
         <RegisterButton registerState={registerState} />
