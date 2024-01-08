@@ -9,7 +9,7 @@ import {
   Keyboard,
 } from "react-native";
 import Button from "@app/components/Button";
-import { GroupContext } from "@app/utils/GroupContext";
+import { GroupContext } from "@app/utils/CreateGuildContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 
@@ -45,7 +45,7 @@ function CreateGroupFormScreen3({ navigation }) {
     let isValid = true;
 
     const twitterRegex =
-      /^(?!https?:\/\/(www\.)?twitter\.com\/[a-zA-Z0-9_]+\/?$)/;
+      /^(?!https?:\/\/(www\.)?(x|twitter)\.com\/[a-zA-Z0-9_]+\/?$)/;
     const facebookRegex =
       /^(?!https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9_]+\/?$)/;
     const discordRegex = /^(?!https?:\/\/(www\.)?discord\.gg\/[a-zA-Z0-9]+).*$/;
@@ -119,7 +119,7 @@ function CreateGroupFormScreen3({ navigation }) {
   };
 
   const handleSocialMediaBlur = (social, setLink) => {
-    if (!social.startsWith("https://") && social !== "") {
+    if ((social !== "") == !social.startsWith("https://")) {
       setLink("https://" + social);
     }
   };

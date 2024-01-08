@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import Button from "@app/components/Button";
 import * as ImagePicker from "expo-image-picker";
-import { GroupContext } from "@app/utils/GroupContext";
+import { GroupContext } from "@app/utils/CreateGuildContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 

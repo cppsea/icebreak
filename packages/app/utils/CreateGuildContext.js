@@ -9,19 +9,15 @@ export const GroupContext = createContext();
 
 export function GroupProvider({ children }) {
   // 1st SCREEN INPUTS
-  const [title, setTitle] = useState("aaaaa");
-  const [handler, setHandler] = useState("bbbbb");
-  const [description, setDescription] = useState("cccccc");
-  const [bannerUrl, setBanner] = useState(
-    "https://www.cppsea.com/assets/images/full-logo.png"
-  );
-  const [iconUrl, setIcon] = useState(
-    "https://www.cppsea.com/assets/images/seal-in-triangle.png"
-  );
+  const [title, setTitle] = useState("");
+  const [handler, setHandler] = useState("");
+  const [description, setDescription] = useState("");
+  const [bannerUrl, setBanner] = useState("");
+  const [iconUrl, setIcon] = useState("");
 
   // 2nd SCREEN INPUTS
-  const [category, setCategory] = useState("Sports");
-  const [tags, setTags] = useState(["a", "b", "c"]);
+  const [category, setCategory] = useState("");
+  const [tags, setTags] = useState([]);
   const [websiteUrl, setWebsite] = useState("");
   const [location, setLocation] = useState("");
   const [isInviteOnly, setIsInviteOnly] = useState(false);
@@ -57,63 +53,76 @@ export function GroupProvider({ children }) {
 
   const submitForm = async () => {
     try {
-      const guildData = {
-        title,
-        handler,
-        description,
-        category,
-        // bannerUrl,
-        // iconUrl,
-        location,
-        websiteUrl,
-        tags,
+      const media = [
         twitterUrl,
         facebookUrl,
         instagramUrl,
         discordUrl,
         linkedinUrl,
         githubUrl,
+      ].filter((item) => item);
+
+      const guildData = {
+        title,
+        handler,
+        description,
+        category,
+        location,
+        websiteUrl,
+        tags,
+        media,
         isInviteOnly,
       };
 
       // submits the rest of the data
-      // const token = await axios.get(``)
       const token = await SecureStore.getValueFor("accessToken");
       const headers = { Authorization: token };
+
       const response = await axios.post(
         `${ENDPOINT}/guilds/insert`,
         guildData,
         { headers }
       );
 
-      const generatedUUID = response.uuid; // Access the generated UUID here
-      console.log("Generated UUID:", generatedUUID);
+      // image submission
+      const id = response.data.data.createdGuild.guildId;
+      const iconType = "guild_icon";
+      const bannerType = "guild_banner";
 
-      // const typeOfImage = 'your_image_type'; // Replace 'your_image_type' with the actual type
-      // const imageUUID = 'your_image_UUID'; // Replace 'your_image_UUID' with the actual UUID
+      if (iconUrl && iconUrl.trim() !== "") {
+        const response = await axios.put(
+          `${ENDPOINT}/media/images/${iconType}/${id}`,
+          { imageData: iconUrl },
+          { headers }
+        );
+        console.log(`Icon Submitted (status): ${response.status}`);
+      }
 
-      // const response2 = await axios.put(
-      //   `${ENDPOINT}/media/images/${typeOfImage}/${imageUUID}`,
-      //   iconUrl,
-      //   { headers }
-      // );
-
-      // const response3 = await axios.put(
-      //   `${ENDPOINT}/media/images/:type/:UUID`,
-      //   iconUrl,
-      //   { headers }
-      // );
-      // console.log(response2 === null)
-      // console.log(response3 === null)
+      if (bannerUrl && bannerUrl.trim() !== "") {
+        const response = await axios.put(
+          `${ENDPOINT}/media/images/${bannerType}/${id}`,
+          { imageData: bannerUrl },
+          { headers }
+        );
+        console.log(`Banner Submitted (status): ${response.status}`);
+      }
 
       Alert.alert("Success", "Group created successfully!");
+      console.log(`Guild ID: ${id}`);
 
       resetForm();
       return true;
     } catch (error) {
       // handle errors
       Alert.alert("Error", "Failed to create group.");
-      console.error("Error submitting form:", error);
+      // Handle the error response here
+      if (error.response) {
+        console.error("Response Error Data:", error.response.data);
+      } else if (error.request) {
+        console.error("Request Error:", error.request);
+      } else {
+        console.error("Error:", error.message);
+      }
       return false;
     }
   };

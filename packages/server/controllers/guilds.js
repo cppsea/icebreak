@@ -3,15 +3,6 @@ const MINIMUM_SIMILARITY = 0.3;
 
 async function insertGuild(guildData) {
   try {
-    const media = [
-      guildData.twitterUrl,
-      guildData.facebookUrl,
-      guildData.instagramUrl,
-      guildData.discordUrl,
-      guildData.linkedinUrl,
-      guildData.githubUrl,
-    ];
-
     const query = await prisma.guilds.create({
       data: {
         guildId: guildData.guildId,
@@ -19,12 +10,10 @@ async function insertGuild(guildData) {
         handler: guildData.handler,
         description: guildData.description,
         category: guildData.category,
-        banner: guildData.bannerUrl || null,
-        icon: guildData.iconUrl || null,
         location: guildData.location || null, // optional field
         website: guildData.websiteUrl || null,
         tags: guildData.tags,
-        media: media || null,
+        media: guildData.media || null,
         isInviteOnly: guildData.isInviteOnly,
       },
     });
