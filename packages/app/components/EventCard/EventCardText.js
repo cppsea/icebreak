@@ -30,7 +30,9 @@ function EventCardText({
   navigation,
 }) {
   const onTitlePress = () => {
-    navigation.navigate("EventOverviewScreen");
+    navigation.navigate("EventOverviewScreen", {
+      eventID: "6e22eb57-fce2-4db7-9279-5ab6c3acfec7",
+    });
   };
 
   return (
