@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */ // TODO: delete later and handle children proptype
+import PropTypes from "prop-types";
 import React, { createContext, useState } from "react";
 import { Alert } from "react-native";
 import axios from "axios";
@@ -12,23 +12,23 @@ export function GroupProvider({ children }) {
   const [title, setTitle] = useState("");
   const [handler, setHandler] = useState("");
   const [description, setDescription] = useState("");
-  const [bannerUrl, setBanner] = useState("");
-  const [iconUrl, setIcon] = useState("");
+  const [banner, setBanner] = useState("");
+  const [icon, setIcon] = useState("");
 
   // 2nd SCREEN INPUTS
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState([]);
-  const [websiteUrl, setWebsite] = useState("");
+  const [website, setWebsite] = useState("");
   const [location, setLocation] = useState("");
   const [isInviteOnly, setIsInviteOnly] = useState(false);
 
   // 3rd SCREEN INPUTS
-  const [twitterUrl, setTwitterLink] = useState("");
-  const [facebookUrl, setFacebookLink] = useState("");
-  const [instagramUrl, setInstagramLink] = useState("");
-  const [discordUrl, setDiscordLink] = useState("");
-  const [linkedinUrl, setLinkedInLink] = useState("");
-  const [githubUrl, setGithubLink] = useState("");
+  const [twitterLink, setTwitterLink] = useState("");
+  const [facebookLink, setFacebookLink] = useState("");
+  const [instagramLink, setInstagramLink] = useState("");
+  const [discordLink, setDiscordLink] = useState("");
+  const [linkedInLink, setLinkedInLink] = useState("");
+  const [githubLink, setGithubLink] = useState("");
 
   const resetForm = () => {
     setTitle("");
@@ -54,13 +54,13 @@ export function GroupProvider({ children }) {
   const submitForm = async () => {
     try {
       const media = [
-        twitterUrl,
-        facebookUrl,
-        instagramUrl,
-        discordUrl,
-        linkedinUrl,
-        githubUrl,
-      ].filter((item) => item);
+        twitterLink,
+        facebookLink,
+        instagramLink,
+        discordLink,
+        linkedInLink,
+        githubLink,
+      ].filter((item) => item); // filters empty strings
 
       const guildData = {
         title,
@@ -68,13 +68,13 @@ export function GroupProvider({ children }) {
         description,
         category,
         location,
-        websiteUrl,
+        websiteUrl: website,
         tags,
         media,
         isInviteOnly,
       };
 
-      // submits the rest of the data
+      // submits the basic data
       const token = await SecureStore.getValueFor("accessToken");
       const headers = { Authorization: token };
 
@@ -89,19 +89,19 @@ export function GroupProvider({ children }) {
       const iconType = "guild_icon";
       const bannerType = "guild_banner";
 
-      if (iconUrl && iconUrl.trim() !== "") {
+      if (icon && icon.trim() !== "") {
         const response = await axios.put(
           `${ENDPOINT}/media/images/${iconType}/${id}`,
-          { imageData: iconUrl },
+          { imageData: icon },
           { headers }
         );
         console.log(`Icon Submitted (status): ${response.status}`);
       }
 
-      if (bannerUrl && bannerUrl.trim() !== "") {
+      if (banner && banner.trim() !== "") {
         const response = await axios.put(
           `${ENDPOINT}/media/images/${bannerType}/${id}`,
-          { imageData: bannerUrl },
+          { imageData: banner },
           { headers }
         );
         console.log(`Banner Submitted (status): ${response.status}`);
@@ -113,9 +113,8 @@ export function GroupProvider({ children }) {
       resetForm();
       return true;
     } catch (error) {
-      // handle errors
       Alert.alert("Error", "Failed to create group.");
-      // Handle the error response here
+
       if (error.response) {
         console.error("Response Error Data:", error.response.data);
       } else if (error.request) {
@@ -136,33 +135,33 @@ export function GroupProvider({ children }) {
         setHandler,
         description,
         setDescription,
-        banner: bannerUrl,
+        banner,
         setBanner,
-        icon: iconUrl,
+        icon,
         setIcon,
 
         category,
         setCategory,
         tags,
         setTags,
-        website: websiteUrl,
+        website: website,
         setWebsite,
         location,
         setLocation,
         isInviteOnly,
         setIsInviteOnly,
 
-        twitterLink: twitterUrl,
+        twitterLink,
         setTwitterLink,
-        facebookLink: facebookUrl,
+        facebookLink,
         setFacebookLink,
-        instagramLink: instagramUrl,
+        instagramLink,
         setInstagramLink,
-        discordLink: discordUrl,
+        discordLink,
         setDiscordLink,
-        linkedInLink: linkedinUrl,
+        linkedInLink,
         setLinkedInLink,
-        githubLink: githubUrl,
+        githubLink,
         setGithubLink,
 
         resetForm,
@@ -172,3 +171,7 @@ export function GroupProvider({ children }) {
     </GroupContext.Provider>
   );
 }
+
+GroupProvider.propTypes = {
+  children: PropTypes.any,
+};
