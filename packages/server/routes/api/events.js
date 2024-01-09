@@ -140,10 +140,21 @@ router.post(
 
 router.get(
   "/:eventId",
+  eventIdValidator,
   AuthController.authenticate,
   async (request, response) => {
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
     try {
-      const { eventId } = request.params;
+      const validatedData = matchedData(request);
+      const eventId = validatedData.eventId;
       const event = await EventController.getEvent(eventId);
       response.status(200).json({
         status: "success",
@@ -198,6 +209,7 @@ router.put(
   //Route handler to update event
   "/:eventId",
   AuthController.authenticate,
+  eventIdValidator,
   updateEventValidator,
   async (request, response) => {
     // access validation results
@@ -213,20 +225,12 @@ router.put(
     }
 
     try {
-      const { eventId } = request.params;
-      //See what data was given in request. Any data not given to be updated will be undefined
-      let givenData = {
-        title: request.body.title || undefined,
-        description: request.body.description || undefined,
-        startDate: request.body.startDate || undefined,
-        endDate: request.body.endDate || undefined,
-        location: request.body.location || undefined,
-        thumbnail: request.body.thumbnail || undefined,
-      };
+      const validatedData = matchedData(request);
+      const eventId = validatedData.eventId;
 
       const updatedEvent = await EventController.updateEvent(
         eventId,
-        givenData
+        validatedData
       );
 
       response.status(200).json({

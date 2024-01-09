@@ -96,22 +96,6 @@ const createEventValidator = [
 ];
 
 const updateEventValidator = [
-  //Event Id checks
-  param("eventId", "Invalid event ID")
-    .trim()
-    .escape()
-    .isUUID()
-    .withMessage("Not a UUID")
-    .exists({ checkFalsy: true })
-    .withMessage("Event Id cannot be null or empty")
-    .custom(async (value) => {
-      try {
-        await EventController.getEvent(value); //Check if event exists by getting it
-      } catch (error) {
-        //If event does not exists, then a NotFoundError is thrown from controller
-        throw new Error(error);
-      }
-    }),
   //Title checks
   body("title", "Invalid title")
     .trim()
@@ -125,7 +109,7 @@ const updateEventValidator = [
     .escape()
     .optional()
     .isLength({ max: 2000 })
-    .withMessage("Description max length is 2,000 characters"),
+    .withMessage("Description max length is 2000 characters"),
   //Location checks
   body("location", "Invalid location")
     .trim()
