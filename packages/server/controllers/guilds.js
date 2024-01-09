@@ -14,25 +14,9 @@ async function getGuild(guildId) {
 }
 
 async function createGuild(guildData) {
-  try {
-    return await prisma.guilds.create({
-      data: {
-        name: guildData.name, // required field
-        handler: guildData.handler,
-        description: guildData.description,
-        category: guildData.category,
-        location: guildData.location || null, // optional field
-        website: guildData.websiteUrl || null,
-        tags: guildData.tags,
-        media: guildData.media,
-        isInviteOnly: guildData.isInviteOnly,
-      },
-    });
-  } catch (error) {
-    throw new Error(`Error creating guild: ${error.message}`);
-  } finally {
-    await prisma.$disconnect();
-  }
+  return await prisma.guilds.create({
+    data: guildData,
+  });
 }
 
 async function updateGuild(guildId, guildData) {
