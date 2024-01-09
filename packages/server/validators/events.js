@@ -19,7 +19,7 @@ const createEventValidator = [
         await GuildController.getGuild(value); //Check if guild exists by getting it
       } catch (error) {
         //If event does not exists, then a NotFoundError is thrown from controller
-        throw new Error(error);
+        throw new Error(`No guild exists with an ID of ${value}`);
       }
     }),
   //   add more checks for the create event route below this line as part of this array
@@ -37,17 +37,13 @@ const createEventValidator = [
   body("description", "Invalid description")
     .trim()
     .escape()
-    .isLength({ max: 255 })
-    .withMessage("Description max length is 255 characters")
-    .exists({ checkFalsy: true })
-    .withMessage("Description cannot be null or empty"),
+    .isLength({ max: 2000 })
+    .withMessage("Description max length is 2,000 characters"),
 
   //Location checks
   body("location", "Invalid location")
     .trim()
     .escape()
-    .exists({ checkFalsy: true })
-    .withMessage("location cannot be null or empty")
     .isLength({ max: 255 })
     .withMessage("Location max length is 255 characters"),
 
@@ -55,8 +51,6 @@ const createEventValidator = [
   body("thumbnail", "Invalid thumbnail")
     .trim()
     .escape()
-    .exists({ checkFalsy: true })
-    .withMessage("thumbnail cannot be null or empty")
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
     .custom(async (value) => {
@@ -71,8 +65,6 @@ const createEventValidator = [
   body("startDate", "Invalid dates")
     .trim()
     .escape()
-    .exists({ checkFalsy: true })
-    .withMessage("start date cannot be null or empty")
     .isISO8601()
     .toDate()
     .withMessage("Start date is not in a valid date format")
@@ -91,8 +83,6 @@ const createEventValidator = [
   body("endDate", "Invalid end date")
     .trim()
     .escape()
-    .exists({ checkFalsy: true })
-    .withMessage("end date cannot be null or empty")
     .isISO8601()
     .toDate()
     .withMessage("End date is not in a valid date format")
@@ -134,8 +124,8 @@ const updateEventValidator = [
     .trim()
     .escape()
     .optional()
-    .isLength({ max: 255 })
-    .withMessage("Description max length is 255 characters"),
+    .isLength({ max: 2000 })
+    .withMessage("Description max length is 2,000 characters"),
   //Location checks
   body("location", "Invalid location")
     .trim()
