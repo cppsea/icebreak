@@ -38,14 +38,14 @@ async function deleteGuild(guildId) {
 
 async function searchGuildByName(pattern) {
   return prisma.$queryRaw`
-    SELECT guild_id, name, handler, icon FROM guilds 
+    SELECT guild_id, name, handler, avatar FROM guilds 
     WHERE WORD_SIMILARITY(${pattern}, name) > ${MINIMUM_SIMILARITY}
     ORDER BY WORD_SIMILARITY(${pattern}, name) DESC;`;
 }
 
 async function searchGuildByHandler(pattern) {
   return prisma.$queryRaw`
-    SELECT guild_id, name, handler, icon FROM guilds 
+    SELECT guild_id, name, handler, avatar FROM guilds 
     WHERE SIMILARITY(${pattern}, handler) > ${MINIMUM_SIMILARITY}
     ORDER BY SIMILARITY(${pattern}, handler) DESC;`;
 }

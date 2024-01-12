@@ -81,13 +81,13 @@ async function existsInS3(imageType, imageUUID) {
 
 async function existsInPrisma(imageType, imageUUID) {
   switch (imageType) {
-    case "user_icon":
+    case "user_avatar":
       return !!(await prisma.users.findUnique({
         where: {
           userId: imageUUID,
         },
       }));
-    case "guild_icon":
+    case "guild_avatar":
     case "guild_banner":
       return !!(await prisma.guilds.findUnique({
         where: {
