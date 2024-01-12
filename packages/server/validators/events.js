@@ -130,9 +130,7 @@ const updateEventValidator = [
       }
     }),
   //Start Date checks
-  //Convert end date to a Date object for easier comparison
-  check("endDate").optional().toDate(),
-  body("startDate", "Invalid dates")
+  body("startDate", "Invalid start date")
     .trim()
     .escape()
     .optional()
@@ -140,22 +138,30 @@ const updateEventValidator = [
     .toDate()
     .withMessage("Start date is not in a valid date format")
     .custom(async (startDate, { req }) => {
-      //If new end date is provided, check if start date is before the end date
+      //Check for when new start and end date is given
       if (req.body.endDate) {
-        if (startDate > req.body.endDate) {
-          throw new Error("Start date is after new end date");
+        let endDate = new Date(req.body.endDate);
+
+        //Check if new start date is after new end date
+        if (startDate > endDate) {
+          throw new Error("New start date is after new end date");
         }
-      } else {
-        //Checks if new start date is before kept end date
+      }
+      //Check for when new start date is given but no end date
+      else {
         const currEvent = await EventController.getEvent(req.params.eventId);
-        if (currEvent.endDate != null && startDate > currEvent.endDate) {
-          throw new Error("Start date is after end date");
+
+        //Check if the current end date is null
+        if (currEvent.endDate == null) {
+          throw new Error("Start date updated but end date is null");
+        }
+        //Check if new start date is after current end date
+        else if (startDate > currEvent.endDate) {
+          throw new Error("New start date is after current end date");
         }
       }
     }),
   //End Date checks
-  //Similar checks to start sate but makes sure end date is after the start
-  check("startDate").optional().toDate(),
   body("endDate", "Invalid end date")
     .trim()
     .escape()
@@ -164,16 +170,20 @@ const updateEventValidator = [
     .toDate()
     .withMessage("End date is not in a valid date format")
     .custom(async (endDate, { req }) => {
-      if (req.body.startDate) {
-        if (endDate < req.body.startDate) {
-          throw new Error("End date is before new start date");
-        }
-      } else {
+      //Check for when new end date is given but no start date
+      if (!req.body.startDate) {
         const currEvent = await EventController.getEvent(req.params.eventId);
-        if (currEvent.startDate != null && endDate < currEvent.startDate) {
-          throw new Error("End date is before start date");
+
+        //Check if current start date is null
+        if (currEvent.startDate == null) {
+          throw new Error("End date updated but start date is null");
+        }
+        //Check if new end date is before current start date
+        else if (endDate < currEvent.startDate) {
+          throw new Error("New end date is before current start date");
         }
       }
+      //Refer to start date checks for when new start and end dates are given
     }),
 ];
 
