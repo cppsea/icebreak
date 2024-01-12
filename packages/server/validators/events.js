@@ -201,7 +201,7 @@ const eventIdValidator = [
         await EventController.getEvent(value); //Check if event exists by getting it
       } catch (error) {
         //If event does not exists, then a NotFoundError is thrown from controller
-        throw new Error(error);
+        throw new Error(`No event exists with an ID of ${value}`);
       }
     }),
 ];

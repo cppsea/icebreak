@@ -188,7 +188,8 @@ router.delete(
     }
 
     try {
-      const { eventId } = request.params;
+      const validatedData = matchedData(request);
+      const { eventId } = validatedData.eventId;
       const deletedEvent = await EventController.deleteEvent(eventId);
       if (deletedEvent) {
         response.status(200).json({
