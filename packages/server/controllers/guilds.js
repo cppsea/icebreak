@@ -101,7 +101,7 @@ async function getGuildsForUser(userId) {
       include: {
         guilds: {
           select: {
-            icon: true,
+            avatar: true,
             guildId: true,
             name: true,
             handler: true,
