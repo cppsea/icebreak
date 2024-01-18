@@ -6,8 +6,8 @@ const AuthController = require("../../controllers/auth");
 const ImagesController = require("../../controllers/images");
 
 const VALID_IMAGE_TYPES = [
-  "user_icon",
-  "guild_icon",
+  "user_avatar",
+  "guild_avatar",
   "guild_banner",
   "event_banner",
 ];

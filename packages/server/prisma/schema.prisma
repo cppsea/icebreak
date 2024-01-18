@@ -63,7 +63,7 @@ model guilds {
   website      String?        @db.VarChar(255)
   tags         String[]
   banner       String?        @db.VarChar(255)
-  icon         String?        @db.VarChar(255)
+  avatar       String?        @db.VarChar(255)
   media        String[]
   isInviteOnly Boolean        @map("invite_only")
   events       events[]

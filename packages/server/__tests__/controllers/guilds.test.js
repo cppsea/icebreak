@@ -56,7 +56,7 @@ describe("Guilds Unit Tests", () => {
       location: "San Diego",
       website: "apple.com",
       banner: "apple.jpeg",
-      icon: "appleicon.jpeg",
+      avatar: "appleicon.jpeg",
     };
 
     prismaMock.guilds.create.mockRejectedValue(
@@ -80,7 +80,7 @@ describe("Guilds Unit Tests", () => {
       website: "Optional Website",
       tags: ["Tag1", "Tag2", "apple 15"],
       banner: "URL to Banner Image",
-      icon: "URL to Icon Image",
+      avatar: "URL to Icon Image",
       media: ["Media1", "Media2", "Media3"],
       isInviteOnly: true,
     };
@@ -95,7 +95,7 @@ describe("Guilds Unit Tests", () => {
       website: "Optional Website",
       tags: ["Tag1", "Tag2", "apple 15"],
       banner: "URL to Banner Image",
-      icon: "URL to Icon Image",
+      avatar: "URL to Icon Image",
       media: ["Media1", "Media2", "Media3"],
       isInviteOnly: true,
     };
