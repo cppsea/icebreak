@@ -61,15 +61,15 @@ export function GroupProvider({ children }) {
         discordLink,
         linkedInLink,
         githubLink,
-      ].filter((item) => item); // filters empty strings
+      ].filter((item) => item);
 
       const guildData = {
-        title: name,
+        name,
         handler,
         description,
         category,
         location,
-        websiteUrl: website,
+        website,
         tags,
         media,
         isInviteOnly,
@@ -85,31 +85,36 @@ export function GroupProvider({ children }) {
 
       // image submission
       const id = response.data.data.createdGuild.guildId;
-      const iconType = "guild_icon";
+      const iconType = "guild_avatar";
       const bannerType = "guild_banner";
 
       if (icon && icon.trim() !== "") {
-        const response = await axios.put(
-          `${ENDPOINT}/media/images/${iconType}/${id}`,
-          { imageData: icon },
-          { headers }
-        );
-        console.log(`Icon Submitted (status): ${response.status}`);
+        axios
+          .put(
+            `${ENDPOINT}/media/images/${iconType}/${id}`,
+            { imageData: icon },
+            { headers }
+          )
+          .then((response) => {
+            return response;
+          });
       }
 
       if (banner && banner.trim() !== "") {
-        const response = await axios.put(
-          `${ENDPOINT}/media/images/${bannerType}/${id}`,
-          { imageData: banner },
-          { headers }
-        );
-        console.log(`Banner Submitted (status): ${response.status}`);
+        axios
+          .put(
+            `${ENDPOINT}/media/images/${bannerType}/${id}`,
+            { imageData: banner },
+            { headers }
+          )
+          .then((response) => {
+            return response;
+          });
       }
 
       Alert.alert("Success", "Group created successfully!");
-      console.log(`Guild ID: ${id}`);
-
       resetForm();
+
       return true;
     } catch (error) {
       Alert.alert("Error", "Failed to create group.");

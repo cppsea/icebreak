@@ -1,63 +1,69 @@
 import { StyleSheet } from "react-native";
 
+export const colors = {
+  red: "red",
+  white: "white",
+  black: "black",
+};
+
 export const styles = StyleSheet.create({
-    input: {
-        height: 40,
-        margin: 6,
-        borderWidth: 1,
-        padding: 10,
-    },
-    container: {
-        flex: 1,
-    },
-    scrollview_extra_margin:{
-        margin: 100,
-    },
-    inner: {
-        padding: 36,
-        flex: 1,
-        justifyContent: "space-around",
-    },
-    header: {
-        padding: 10,
-        fontSize: 20,
-    },
-    important: {
-        color: "red",
-        fontSize: 15,
-    },
-    btnContainer: {
-        backgroundColor: "white",
-        textAlign: "center",
-        justifyContent: "center",
-        marginTop: 6,
-        borderWidth: 2,
-        borderColor: "black",
-    },
-    imageSelectorBtnContainer: {
-        backgroundColor: 'white',
-        textAlign: "center",
-        justifyContent: "center",
-        marginTop: 6,
-        borderWidth: 1,
-        borderColor: "black",
-        height: 50,
-    },
-    bannerDisplay: {
-        width: 200,
-        height: 100,
-        borderWidth: 1,
-        borderColor: "black",
-    },
-    iconDisplay: {
-        width: 100,
-        height: 100,
-        borderRadius: 100,
-        borderWidth: 1,
-        borderColor: "black",
-    },
-    imageSelectorContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-    },
+  bannerDisplay: {
+    borderColor: colors.black,
+    borderWidth: 1,
+    height: 100,
+    width: 200,
+  },
+  btnContainer: {
+    backgroundColor: colors.white,
+    borderColor: colors.black,
+    borderWidth: 2,
+    justifyContent: "center",
+    marginTop: 6,
+    textAlign: "center",
+  },
+  container: {
+    flex: 1,
+  },
+  header: {
+    fontSize: 20,
+    padding: 10,
+  },
+  iconDisplay: {
+    borderColor: colors.black,
+    borderRadius: 100,
+    borderWidth: 1,
+    height: 100,
+    width: 100,
+  },
+  imageSelectorBtnContainer: {
+    backgroundColor: colors.white,
+    borderColor: colors.black,
+    borderWidth: 1,
+    height: 50,
+    justifyContent: "center",
+    marginTop: 6,
+    textAlign: "center",
+  },
+  imageSelectorContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  important: {
+    color: colors.red,
+    fontSize: 15,
+  },
+  inner: {
+    flex: 1,
+    justifyContent: "space-around",
+    padding: 36,
+  },
+  input: {
+    borderWidth: 1,
+    height: 40,
+    margin: 6,
+    padding: 10,
+  },
+  scrollview_extra_margin: {
+    margin: 100,
+  },
 });

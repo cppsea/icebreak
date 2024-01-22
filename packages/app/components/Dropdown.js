@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { TouchableOpacity, Text, View, StyleSheet } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import PropTypes from "prop-types";
+import React, { useState } from "react";
+import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
+import { ScrollView } from "react-native-gesture-handler";
 
-const Dropdown = ({options, value, setValue, setDropdownError}) => {
+const Dropdown = ({ options, value, setValue, setDropdownError }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -12,33 +13,28 @@ const Dropdown = ({options, value, setValue, setDropdownError}) => {
   const selectOption = (option) => {
     setValue(option);
     setIsOpen(false);
-    if(setDropdownError != null)
-    {
-      setDropdownError('');
+    if (setDropdownError != null) {
+      setDropdownError("");
     }
   };
 
   return (
     <View style={styles.dropdownContainer}>
-      <TouchableOpacity
-        style={styles.dropdownButton}
-        onPress={toggleDropdown}
-      >
+      <TouchableOpacity style={styles.dropdownButton} onPress={toggleDropdown}>
         <Text style={styles.dropdownButtonText}>
-          {value || 'Select an option'}
+          {value || "Select an option"}
         </Text>
       </TouchableOpacity>
 
       {isOpen && (
         <ScrollView style={styles.optionsContainer}>
           {options.map((option) => (
-              <TouchableOpacity
-                key={option}
-                style={styles.optionButton}
-                onPress={() => selectOption(option)}
-              >
-                <Text style={styles.optionText}>{option}</Text>
-              </TouchableOpacity>
+            <TouchableOpacity
+              key={option}
+              style={styles.optionButton}
+              onPress={() => selectOption(option)}>
+              <Text style={styles.optionText}>{option}</Text>
+            </TouchableOpacity>
           ))}
         </ScrollView>
       )}
@@ -46,33 +42,47 @@ const Dropdown = ({options, value, setValue, setDropdownError}) => {
   );
 };
 
+const colors = {
+  white: "#fff",
+  grey: "#ccc",
+  black: "#333",
+};
+
 const styles = StyleSheet.create({
-  dropdownContainer: {
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    padding: 10,
-  },
   dropdownButton: {
-    padding: 10,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.grey,
     borderRadius: 4,
+    borderWidth: 1,
+    padding: 10,
   },
   dropdownButtonText: {
+    color: colors.blue,
     fontSize: 16,
-    color: '#333',
   },
-  optionsContainer: {
-    marginTop: 10,
-    maxHeight: 200,
+  dropdownContainer: {
+    backgroundColor: colors.white,
+    borderRadius: 4,
+    padding: 10,
   },
   optionButton: {
     padding: 10,
   },
   optionText: {
+    color: colors.blue,
     fontSize: 16,
-    color: '#333',
+  },
+  optionsContainer: {
+    marginTop: 10,
+    maxHeight: 200,
   },
 });
+
+Dropdown.propTypes = {
+  options: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string]))
+    .isRequired,
+  value: PropTypes.string.isRequired,
+  setValue: PropTypes.func.isRequired,
+  setDropdownError: PropTypes.func.isRequired,
+};
 
 export default Dropdown;

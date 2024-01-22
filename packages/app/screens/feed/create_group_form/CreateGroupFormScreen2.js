@@ -34,9 +34,7 @@ function CreateGroupFormScreen2({ navigation }) {
   } = useContext(GroupContext);
 
   const [categoryError, setCategoryError] = useState("");
-  const [tagsError, setTagsError] = useState("");
   const [websiteError, setWebsiteError] = useState("");
-  // const [locationError, setLocationError] = useState("");
 
   function handleInputValidationScreen2() {
     let isValid = true;
@@ -48,13 +46,6 @@ function CreateGroupFormScreen2({ navigation }) {
       isValid = false;
     } else {
       setCategoryError(``);
-    }
-
-    if (tags.length < 3) {
-      setTagsError(`Please select at least 3 tags`);
-      isValid = false;
-    } else {
-      setTagsError(``);
     }
 
     if (website.trim() === ``) {
@@ -70,7 +61,7 @@ function CreateGroupFormScreen2({ navigation }) {
   }
 
   const handleWebsiteBlur = (website, setLink) => {
-    // Add 'https://' if it's not already present and not typed by the user
+    // Add 'https://' immediately after the user types / is missing
     if (!website.startsWith("https://") && website !== "") {
       setLink("https://" + website);
     }
@@ -78,7 +69,6 @@ function CreateGroupFormScreen2({ navigation }) {
 
   return (
     <ScrollView
-      // behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
@@ -105,7 +95,6 @@ function CreateGroupFormScreen2({ navigation }) {
           <View>
             <Text style={styles.header}>
               <Text>Tags</Text>
-              <Text style={styles.important}>* {tagsError} </Text>
             </Text>
             <TagInput
               value={inputValue}
@@ -113,7 +102,6 @@ function CreateGroupFormScreen2({ navigation }) {
               tags={tags}
               setTags={setTags}
               maxTags={10}
-              setTagsError={setTagsError}
             />
           </View>
 

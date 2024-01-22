@@ -37,17 +37,19 @@ function CreateGroupFormScreen1({ navigation }) {
   const [bannerError, setBannerError] = useState("");
   const [iconError, setIconError] = useState("");
 
+  const [inputHeight, setInputHeight] = useState(10); // description box height
+
   function handleInputValidationScreen1() {
     let isValid = true;
 
-    const titleRegex = /^(?![a-zA-Z0-9]+$).*$/;
-    const handlerRegex = /^(?!(\w{1,15})$).*$/;
+    const titleRegex = /^(?![\w\s]+$).*$/;
+    const handlerRegex = /^(?!\w+$).*$/;
 
     if (name.trim() === ``) {
       setNameError(`Please enter a title`);
       isValid = false;
     } else if (titleRegex.test(name)) {
-      setNameError(`Can only contain letters, numbers, and underscores.`);
+      setNameError(`Can only contain letters and numbers.`);
       isValid = false;
     } else {
       setNameError(``);
@@ -64,7 +66,6 @@ function CreateGroupFormScreen1({ navigation }) {
     }
 
     if (description.trim() === ``) {
-      console.log(0);
       setDescriptionError(`Please enter a description`);
       isValid = false;
     } else {
@@ -85,7 +86,6 @@ function CreateGroupFormScreen1({ navigation }) {
       setIconError(``);
     }
 
-    // isValid = true; //for testing
     return isValid;
   }
 
@@ -155,7 +155,7 @@ function CreateGroupFormScreen1({ navigation }) {
                 handleOnChangeInput(newText, setName, setNameError)
               }
               style={styles.input}
-              maxLength={20}
+              maxLength={100}
             />
           </View>
 
@@ -171,7 +171,7 @@ function CreateGroupFormScreen1({ navigation }) {
                 handleOnChangeInput(newText, setHandler, setHandlerError)
               }
               style={styles.input}
-              maxLength={15}
+              maxLength={50}
             />
           </View>
 
@@ -182,7 +182,12 @@ function CreateGroupFormScreen1({ navigation }) {
             </Text>
             <TextInput
               value={description}
+              multiline
+              numberOfLines={4}
               placeholder="This is the description."
+              onContentSizeChange={(e) =>
+                setInputHeight(e.nativeEvent.contentSize.height)
+              }
               onChangeText={(newText) =>
                 handleOnChangeInput(
                   newText,
@@ -190,8 +195,8 @@ function CreateGroupFormScreen1({ navigation }) {
                   setDescriptionError
                 )
               }
-              style={styles.input}
-              maxLength={150}
+              style={{ ...styles.input, height: inputHeight }}
+              maxLength={1000}
             />
           </View>
 

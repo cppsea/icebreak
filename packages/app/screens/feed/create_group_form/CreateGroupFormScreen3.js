@@ -44,17 +44,12 @@ function CreateGroupFormScreen3({ navigation }) {
   function handleInputValidationScreen3() {
     let isValid = true;
 
-    const twitterRegex =
-      /^(?!https?:\/\/(www\.)?(x|twitter)\.com\/[a-zA-Z0-9_]+\/?$)/;
-    const facebookRegex =
-      /^(?!https?:\/\/(www\.)?facebook\.com\/[a-zA-Z0-9_]+\/?$)/;
-    const discordRegex = /^(?!https?:\/\/(www\.)?discord\.gg\/[a-zA-Z0-9]+).*$/;
-    const instagramRegex =
-      /^(?!https?:\/\/(www\.)?(instagram\.com|instagr\.am)\/[a-zA-Z0-9_]+\/?$)/;
-    const linkedinRegex =
-      /^(?!https?:\/\/(www\.)?linkedin\.com\/in\/[a-zA-Z0-9_-]+\/?$)/;
-    const githubRegex =
-      /^(?!https?:\/\/(www\.)?github\.com\/[a-zA-Z0-9_-]+\/?$)/;
+    const twitterRegex = /^(?!https?:\/\/(www\.)?(x|twitter)\.com(.*)$)/;
+    const facebookRegex = /^(?!https?:\/\/(www\.)?facebook\.com(.*)$)/;
+    const instagramRegex = /^(?!https?:\/\/(www\.)?instagram\.com(.*)$)/;
+    const discordRegex = /^(?!https?:\/\/(www\.)?discord\.com(.*)$)/;
+    const linkedinRegex = /^(?!https?:\/\/(www\.)?linkedin\.com(.*)$)/;
+    const githubRegex = /^(?!https?:\/\/(www\.)?github\.com(.*)$)/;
 
     if (twitterLink.trim() === ``) {
       setTwitterLinkError(``);
@@ -126,7 +121,6 @@ function CreateGroupFormScreen3({ navigation }) {
 
   return (
     <ScrollView
-      // behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={styles.container}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled">
@@ -147,7 +141,7 @@ function CreateGroupFormScreen3({ navigation }) {
               onChangeText={(newText) =>
                 handleOnChangeInput(
                   newText,
-                  setTwitterLink,
+                  (newLink) => setTwitterLink(newLink),
                   setTwitterLinkError
                 )
               }
@@ -166,7 +160,7 @@ function CreateGroupFormScreen3({ navigation }) {
               onChangeText={(newText) =>
                 handleOnChangeInput(
                   newText,
-                  setFacebookLink,
+                  (newLink) => setFacebookLink(newLink),
                   setFacebookLinkError
                 )
               }
@@ -185,7 +179,7 @@ function CreateGroupFormScreen3({ navigation }) {
               onChangeText={(newText) =>
                 handleOnChangeInput(
                   newText,
-                  setInstagramLink,
+                  (newLink) => setInstagramLink(newLink),
                   setInstagramLinkError
                 )
               }
@@ -200,11 +194,11 @@ function CreateGroupFormScreen3({ navigation }) {
             </Text>
             <TextInput
               value={discordLink}
-              placeholder="https://discord.gg/abc123"
+              placeholder="https://discord.com/abc123"
               onChangeText={(newText) =>
                 handleOnChangeInput(
                   newText,
-                  setDiscordLink,
+                  (newLink) => setDiscordLink(newLink),
                   setDiscordLinkError
                 )
               }
@@ -221,7 +215,11 @@ function CreateGroupFormScreen3({ navigation }) {
               value={linkedInLink}
               placeholder="https://linkedin.com/abc123"
               onChangeText={(newText) =>
-                handleOnChangeInput(newText, setLinkedInLink, setLinkedInLink)
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setLinkedInLink(newLink),
+                  setLinkedInLinkError
+                )
               }
               onBlur={handleSocialMediaBlur(linkedInLink, setLinkedInLink)}
               style={styles.input}
@@ -236,7 +234,11 @@ function CreateGroupFormScreen3({ navigation }) {
               value={githubLink}
               placeholder="https://github.com/abc123e"
               onChangeText={(newText) =>
-                handleOnChangeInput(newText, setGithubLink, setGithubLinkError)
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setGithubLink(newLink),
+                  setGithubLinkError
+                )
               }
               onBlur={handleSocialMediaBlur(githubLink, setGithubLink)}
               style={styles.input}
@@ -252,7 +254,6 @@ function CreateGroupFormScreen3({ navigation }) {
                 setIsButtonDisabled(true);
                 if (isValid) {
                   try {
-                    // check GroupContext.js for submitForm implementation
                     const isSubmitted = await submitForm();
 
                     if (isSubmitted) {

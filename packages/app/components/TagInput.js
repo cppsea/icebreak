@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
-import { TextInput, Button, View, Text, StyleSheet } from 'react-native';
+import PropTypes from "prop-types";
+import React from "react";
+import { TextInput, Button, View, Text, StyleSheet } from "react-native";
 
-const TagInput = ({ value, setValue, tags, setTags, maxTags, setTagsError }) => {
+const TagInput = ({ value, setValue, tags, setTags, maxTags }) => {
   const addTag = () => {
     if (value && tags.length < maxTags && !tags.includes(value)) {
       setTags([...tags, value]);
-      setValue('');
+      setValue("");
     }
   };
 
@@ -22,15 +23,15 @@ const TagInput = ({ value, setValue, tags, setTags, maxTags, setTagsError }) => 
           value={value}
           onChangeText={(newText) => {
             setValue(newText);
-            if(setTagsError != null)
-            {
-              setTagsError('');
-            }
           }}
           placeholder="Enter a tag"
           style={styles.input}
         />
-        <Button title="Add Tag" onPress={addTag} disabled={tags.length >= maxTags} />
+        <Button
+          title="Add Tag"
+          onPress={addTag}
+          disabled={tags.length >= maxTags}
+        />
       </View>
 
       <View style={styles.tagsContainer}>
@@ -49,46 +50,59 @@ const TagInput = ({ value, setValue, tags, setTags, maxTags, setTagsError }) => 
   );
 };
 
+const colors = {
+  blue: "#ff0000",
+  red: "#e0e0e0",
+};
+
 const styles = StyleSheet.create({
   container: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    justifyContent: 'flex-start',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    alignItems: "flex-start",
+    flexDirection: "column",
+    justifyContent: "flex-start",
   },
   input: {
+    borderWidth: 1,
     flex: 1,
     height: 40,
     margin: 6,
-    borderWidth: 1,
     padding: 10,
   },
-  tagsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+  inputContainer: {
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  removeButton: {
+    backgroundColor: colors.blue,
+    borderRadius: 4,
+    paddingHorizontal: 4,
+    paddingVertical: 2,
   },
   tag: {
-    backgroundColor: '#e0e0e0',
+    alignItems: "center",
+    backgroundColor: colors.red,
     borderRadius: 8,
-    paddingVertical: 1,
-    paddingHorizontal: 4,
+    flexDirection: "row",
     margin: 4,
-    flexDirection: 'row',
-    alignItems: 'center',
+    paddingHorizontal: 4,
+    paddingVertical: 1,
   },
   tagText: {
     marginRight: 2,
   },
-  removeButton: {
-    backgroundColor: '#ff0000',
-    paddingVertical: 2,
-    paddingHorizontal: 4,
-    borderRadius: 4,
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
 });
+
+TagInput.propTypes = {
+  value: PropTypes.string.isRequired,
+  setValue: PropTypes.func.isRequired,
+  tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+  setTags: PropTypes.func.isRequired,
+  maxTags: PropTypes.number.isRequired,
+};
 
 export default TagInput;
