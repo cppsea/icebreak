@@ -37,6 +37,7 @@ const createEventValidator = [
   body("description", "Invalid description")
     .trim()
     .escape()
+    .optional()
     .isLength({ max: 2000 })
     .withMessage("Description max length is 2,000 characters"),
 
@@ -44,6 +45,7 @@ const createEventValidator = [
   body("location", "Invalid location")
     .trim()
     .escape()
+    .optional()
     .isLength({ max: 255 })
     .withMessage("Location max length is 255 characters"),
 
@@ -51,6 +53,7 @@ const createEventValidator = [
   body("thumbnail", "Invalid thumbnail")
     .trim()
     .escape()
+    .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
     .custom(async (value) => {
@@ -61,13 +64,14 @@ const createEventValidator = [
 
   //Start Date checks
   //Convert end date to a Date object for easier comparison
-  check("endDate").toDate(),
   body("startDate", "Invalid dates")
     .trim()
     .escape()
+    .optional()
     .isISO8601()
     .toDate()
     .withMessage("Start date is not in a valid date format")
+    .if((value, { req }) => req.body.endDate)
     .custom(async (startDate, { req }) => {
       //If new end date is provided, check if start date is before the end date
       if (req.body.endDate) {
