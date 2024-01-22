@@ -3,20 +3,6 @@ import { View, StyleSheet, Image } from "react-native";
 
 import PropTypes from "prop-types";
 
-const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconStyle: {
-    borderRadius: 5,
-    left: 0,
-    position: "absolute",
-    resizeMode: "cover",
-    top: 0,
-  },
-});
-
 /**
  * A component for GroupHeader that displays an icon for an organization.
  *
@@ -31,7 +17,7 @@ function GroupIcon(props) {
       style={[styles.iconContainer, { marginTop: -props.size / 2 }]}
       testID={props.testID}>
       <Image
-        source={props.icon}
+        source={{ uri: props.icon }}
         style={[
           styles.iconStyle,
           {
@@ -45,9 +31,23 @@ function GroupIcon(props) {
   );
 }
 
+const styles = StyleSheet.create({
+  iconContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  iconStyle: {
+    borderRadius: 5,
+    left: 0,
+    position: "absolute",
+    resizeMode: "cover",
+    top: 0,
+  },
+});
+
 GroupIcon.propTypes = {
   backgroundColor: PropTypes.string,
-  icon: PropTypes.number,
+  icon: PropTypes.string,
   size: PropTypes.number,
   testID: PropTypes.string,
 };
