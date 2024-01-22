@@ -3,20 +3,21 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 
-const GroupCard = ({ group }) => {
+const GroupCard = (props) => {
   return (
     <View style={styles.card}>
       <RoundedIcon></RoundedIcon>
       <View style={styles.text}>
-        <Text style={styles.name}>{group.name}</Text>
-        <Text style={styles.handle}>{group.handle}</Text>
+        <Text style={styles.name}>{props.name}</Text>
+        <Text style={styles.handle}>{props.handle}</Text>
       </View>
     </View>
   );
 };
 
 GroupCard.propTypes = {
-  group: PropTypes.object.isRequired,
+  name: PropTypes.string,
+  handle: PropTypes.string,
 };
 
 const black = "#000000";
