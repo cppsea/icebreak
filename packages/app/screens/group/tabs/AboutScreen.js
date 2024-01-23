@@ -3,51 +3,70 @@ import { StyleSheet, Text, View, Linking } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Screen from "@app/components/Screen";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useGuildContext } from "@app/utils/GuildContext";
+import { URL } from "url";
 
 const BLUE = "#3498DB";
 const GRAY = "#2C2C2C";
+const { guild, guildMembers } = useGuildContext();
 
+function getIcon(url) {
+  const name = new URL(url).hostname.split(".")[0];
+  switch (name) {
+    case "discord":
+      return (
+        <FontAwesome5 name="discord" style={styles.mediaIconStyle} size={20} />
+      );
+    case "instagram":
+      return (
+        <FontAwesome5
+          name="instagram"
+          style={styles.mediaIconStyle}
+          size={20}
+        />
+      );
+    case "facebook":
+      return (
+        <FontAwesome5 name="facebook" style={styles.mediaIconStyle} size={20} />
+      );
+    case "twitter":
+      return (
+        <FontAwesome5 name="twitter" style={styles.mediaIconStyle} size={20} />
+      );
+    case "youtube":
+      return (
+        <FontAwesome5 name="youtube" style={styles.mediaIconStyle} size={20} />
+      );
+    case "linkedin":
+      return (
+        <FontAwesome5 name="linkedin" style={styles.mediaIconStyle} size={20} />
+      );
+    default:
+      return null;
+  }
+}
 function AboutScreen() {
   return (
     <Screen style={styles.container}>
       <View style={styles.subContainer}>
         <Text style={styles.title}>Description</Text>
-        <Text style={styles.description}>
-          Hey everyone, this is so fun! HOORAY!!! Hey everyone, this is so fun!
-          HOORAY!!! Hey everyone, this is so fun! HOORAY!!!
-        </Text>
+        <Text style={styles.description}>{guild.description}</Text>
       </View>
 
       <View style={styles.subContainer}>
         <Text style={styles.title}>Links</Text>
-        <View style={styles.mediaContainer}>
-          <FontAwesome5
-            name="discord"
-            style={styles.mediaIconStyle}
-            size={20}
-          />
-          <Text
-            style={styles.url}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            onPress={() => Linking.openURL("https://discord.com")}>
-            https://discord.com
-          </Text>
-        </View>
-        <View style={styles.mediaContainer}>
-          <FontAwesome5
-            name="instagram"
-            style={styles.mediaIconStyle}
-            size={20}
-          />
-          <Text
-            style={styles.url}
-            numberOfLines={1}
-            ellipsizeMode="tail"
-            onPress={() => Linking.openURL("https://instagram.com")}>
-            https://instagram.com
-          </Text>
-        </View>
+        {guild.media.map((media) => (
+          <View style={styles.mediaContainer} key={media}>
+            {getIcon(media)}
+            <Text
+              style={styles.url}
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              onPress={() => Linking.openURL(media)}>
+              {media}
+            </Text>
+          </View>
+        ))}
       </View>
 
       <View style={styles.subContainer}>
@@ -57,16 +76,16 @@ function AboutScreen() {
             name="location-sharp"
             style={styles.mediaIconStyle}
             size={20}
-            color="#2C2C2C"
+            color={GRAY}
           />
-          <Text>Pomona, CA</Text>
+          <Text>{guild.location}</Text>
         </View>
         <View style={styles.mediaContainer}>
           <Ionicons
             name="information-circle-sharp"
             style={styles.mediaIconStyle}
             size={20}
-            color="#2C2C2C"
+            color={GRAY}
           />
           <Text>Joined January 3, 2024</Text>
         </View>
@@ -75,9 +94,9 @@ function AboutScreen() {
             name="person"
             style={styles.mediaIconStyle}
             size={20}
-            color="#2C2C2C"
+            color={GRAY}
           />
-          <Text>1,000 Members</Text>
+          <Text>{guildMembers ? guildMembers.length : 0} Members</Text>
         </View>
       </View>
     </Screen>
@@ -93,30 +112,30 @@ const styles = StyleSheet.create({
   description: {
     fontSize: 15,
   },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
+  mediaContainer: {
+    alignItems: "center",
+    flexDirection: "row",
     marginBottom: 10,
+    paddingLeft: 15,
+  },
+  mediaIconStyle: {
+    color: GRAY,
+    display: "flex",
+    paddingRight: 10,
   },
   subContainer: {
     marginBottom: 20,
     paddingLeft: 15,
     paddingRight: 15,
   },
-  mediaContainer: {
-    flexDirection: "row",
-    allignItems: "center",
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
     marginBottom: 10,
-    paddingLeft: 15,
   },
   url: {
     color: BLUE,
     flexShrink: 1,
-  },
-  mediaIconStyle: {
-    color: GRAY,
-    display: "flex",
-    paddingRight: 10,
   },
 });
 
