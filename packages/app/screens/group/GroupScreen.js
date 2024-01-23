@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader.js";
 import GroupTabs from "../../components/GroupScreen/GroupTabs.js";
+import { GuildProvider } from "@app/utils/GuildContext.js";
 import Screen from "@app/components/Screen";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -42,21 +43,23 @@ function GroupScreen() {
 
   return (
     <Screen style={styles.container}>
-      <ScrollView scrollEventThrottle={16} stickyHeaderIndices={[1]}>
-        <GroupHeader testID="groupHeader" />
-        <View ref={tabRef}>
-          <GroupTabs
-            testID="groupTabs"
-            style={styles.groupTabs}
-            tabs={tabs}
-            activeTab={activeTab}
-            selectTab={(tab) => setActiveTab(tab)}
-          />
-        </View>
-        {activeTab.screen && (
-          <activeTab.screen testID="tab" style={styles.screen} />
-        )}
-      </ScrollView>
+      <GuildProvider>
+        <ScrollView scrollEventThrottle={16} stickyHeaderIndices={[1]}>
+          <GroupHeader testID="groupHeader" />
+          <View ref={tabRef}>
+            <GroupTabs
+              testID="groupTabs"
+              style={styles.groupTabs}
+              tabs={tabs}
+              activeTab={activeTab}
+              selectTab={(tab) => setActiveTab(tab)}
+            />
+          </View>
+          {activeTab.screen && (
+            <activeTab.screen testID="tab" style={styles.screen} />
+          )}
+        </ScrollView>
+      </GuildProvider>
     </Screen>
   );
 }
