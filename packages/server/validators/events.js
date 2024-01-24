@@ -1,4 +1,4 @@
-const { param, body, check } = require("express-validator");
+const { param, body } = require("express-validator");
 
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
@@ -22,8 +22,6 @@ const createEventValidator = [
         throw new Error(`No guild exists with an ID of ${value}`);
       }
     }),
-  //   add more checks for the create event route below this line as part of this array
-
   //Title checks
   body("title", "Invalid title")
     .trim()
@@ -61,40 +59,38 @@ const createEventValidator = [
         throw new Error("Thumbnail is not a valid image file");
       }
     }),
-
   //Start Date checks
-  //Convert end date to a Date object for easier comparison
-  body("startDate", "Invalid dates")
+  body("startDate", "Invalid start date")
     .trim()
     .escape()
     .optional()
     .isISO8601()
     .toDate()
     .withMessage("Start date is not in a valid date format")
-    .if((value, { req }) => req.body.endDate)
     .custom(async (startDate, { req }) => {
-      //If new end date is provided, check if start date is before the end date
-      if (req.body.endDate) {
-        if (startDate > req.body.endDate) {
-          throw new Error("Start date is after new end date");
-        }
+      //Start date given but not end date
+      if (!req.body.endDate) {
+        throw new Error("Cannot have start date without end date");
       }
     }),
-
   //End Date checks
-  //Similar checks to start sate but makes sure end date is after the start
-  check("startDate").toDate(),
   body("endDate", "Invalid end date")
     .trim()
     .escape()
+    .optional()
     .isISO8601()
     .toDate()
     .withMessage("End date is not in a valid date format")
     .custom(async (endDate, { req }) => {
-      if (req.body.startDate) {
-        if (endDate < req.body.startDate) {
-          throw new Error("End date is before new start date");
-        }
+      //End date given but no start date
+      if (!req.body.startDate) {
+        throw new Error("Cannot have end date without start date");
+      }
+
+      //Checks if both start and end date are given
+      let startDate = new Date(req.body.startDate);
+      if (endDate < startDate) {
+        throw new Error("End date cannot be before start date");
       }
     }),
 ];
@@ -148,7 +144,7 @@ const updateEventValidator = [
 
         //Check if new start date is after new end date
         if (startDate > endDate) {
-          throw new Error("New start date is after new end date");
+          throw new Error("New start date cannot be after new end date");
         }
       }
       //Check for when new start date is given but no end date
@@ -161,7 +157,7 @@ const updateEventValidator = [
         }
         //Check if new start date is after current end date
         else if (startDate > currEvent.endDate) {
-          throw new Error("New start date is after current end date");
+          throw new Error("New start date cannot be after current end date");
         }
       }
     }),
@@ -184,7 +180,7 @@ const updateEventValidator = [
         }
         //Check if new end date is before current start date
         else if (endDate < currEvent.startDate) {
-          throw new Error("New end date is before current start date");
+          throw new Error("New end date cannot be before current start date");
         }
       }
       //Refer to start date checks for when new start and end dates are given
