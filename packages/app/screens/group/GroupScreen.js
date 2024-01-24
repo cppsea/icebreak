@@ -6,6 +6,7 @@ import { GuildProvider } from "@app/utils/GuildContext.js";
 import Screen from "@app/components/Screen";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
+import PropTypes from "prop-types";
 
 import EventsScreen from "../../screens/group/tabs/EventsScreen";
 import MembersScreen from "../../screens/group/tabs/MembersScreen";
@@ -23,7 +24,7 @@ const tabs = [
   { name: "Newsletter", screen: NewsletterScreen },
 ];
 
-function GroupScreen() {
+function GroupScreen({ route }) {
   const tabRef = useRef(null);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -43,7 +44,8 @@ function GroupScreen() {
 
   return (
     <Screen style={styles.container}>
-      <GuildProvider>
+      {/* use guildId from props and default to SEA guild for now */}
+      <GuildProvider guildId={route.params?.guildId}>
         <ScrollView scrollEventThrottle={16} stickyHeaderIndices={[1]}>
           <GroupHeader testID="groupHeader" />
           <View ref={tabRef}>
@@ -63,5 +65,9 @@ function GroupScreen() {
     </Screen>
   );
 }
+
+GroupScreen.propTypes = {
+  route: PropTypes.any,
+};
 
 export default GroupScreen;

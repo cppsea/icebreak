@@ -135,11 +135,13 @@ function GroupHeaderInfo(props) {
         </View>
       </View>
 
-      <View style={styles.tagContainer}>
-        {props.tags.map((tag, index) => (
-          <GroupTag key={index} text={tag} />
-        ))}
-      </View>
+      {props.tags && (
+        <View style={styles.tagContainer}>
+          {props.tags.map((tag, index) => (
+            <GroupTag key={index} text={tag} />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
