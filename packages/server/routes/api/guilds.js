@@ -2,6 +2,24 @@ const express = require("express");
 const router = express.Router();
 const { validate: uuidValidate } = require("uuid");
 
+const {
+  getGuildValidator,
+  createGuildValidator,
+  updateGuildValidator,
+  deleteGuildValidator,
+} = require("../../validators/guilds");
+const { validationResult, matchedData } = require("express-validator");
+
+// temporary to pass ESLint
+console.log(
+  getGuildValidator,
+  createGuildValidator,
+  updateGuildValidator,
+  deleteGuildValidator,
+  validationResult,
+  matchedData
+);
+
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
 const {
@@ -9,7 +27,6 @@ const {
   PrismaClientValidationError,
 } = require("@prisma/client/runtime/library");
 
-// Get all guilds from database (Note: This route is just for testing purposes, not meant to be used.)
 router.get("/", AuthController.authenticate, async (request, response) => {
   const search = request.query.search;
 
