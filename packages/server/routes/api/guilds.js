@@ -72,11 +72,22 @@ router.get("/", AuthController.authenticate, async (request, response) => {
 router.get(
   "/:guildId",
   AuthController.authenticate,
+  guildIdValidator,
   async (request, response) => {
-    try {
-      const guildId = request.params.guildId;
-      const guild = await GuildController.getGuild(guildId);
+    const result = validationResult(request);
 
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array({ onlyFirstError: true }),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+
+    try {
+      const guild = await GuildController.getGuild(guildId);
       return response.status(200).json({
         status: "success",
         data: {
@@ -84,25 +95,6 @@ router.get(
         },
       });
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case "P2023":
-            return response.status(400).json({
-              status: "fail",
-              data: {
-                guildId: "Provided guild ID is not a valid UUID.",
-              },
-            });
-
-          case "P2025":
-            return response.status(404).json({
-              status: "fail",
-              data: {
-                guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
-              },
-            });
-        }
-      }
       return response.status(500).json({
         status: "error",
         message: error.message,
@@ -192,9 +184,21 @@ router.put(
 router.delete(
   "/:guildId",
   AuthController.authenticate,
+  guildIdValidator,
   async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array({ onlyFirstError: true }),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+
     try {
-      const { guildId } = request.params;
       return response.status(200).json({
         status: "success",
         data: {
@@ -202,25 +206,6 @@ router.delete(
         },
       });
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case "P2023":
-            return response.status(400).json({
-              status: "fail",
-              data: {
-                guildId: "Provided guild ID is not a valid UUID.",
-              },
-            });
-
-          case "P2025":
-            return response.status(404).json({
-              status: "fail",
-              data: {
-                guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
-              },
-            });
-        }
-      }
       return response.status(500).json({
         status: "error",
         message: error.message,
