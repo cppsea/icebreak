@@ -3,19 +3,17 @@ const router = express.Router();
 const { validate: uuidValidate } = require("uuid");
 
 const {
-  getGuildValidator,
+  guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
-  deleteGuildValidator,
 } = require("../../validators/guilds");
 const { validationResult, matchedData } = require("express-validator");
 
 // temporary to pass ESLint
 console.log(
-  getGuildValidator,
   createGuildValidator,
   updateGuildValidator,
-  deleteGuildValidator,
+  guildIdValidator,
   validationResult,
   matchedData
 );

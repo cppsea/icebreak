@@ -2,7 +2,7 @@ const { param, body } = require("express-validator");
 
 const GuildController = require("../controllers/guilds");
 
-const getGuildValidator = [
+const guildIdValidator = [
   // Guild ID & Existing Guild Checks
   param("guildId", "Invalid Guild ID.")
     .trim()
@@ -217,27 +217,9 @@ const updateGuildValidator = [
     .isBoolean()
     .withMessage("Invite mode must be set to true or false."),
 ];
-const deleteGuildValidator = [
-  // Guild ID & Existing Guild Checks
-  param("guildId", "Invalid Guild ID.")
-    .trim()
-    .escape()
-    .exists({ checkFalsy: true })
-    .withMessage("Guild ID can't be null or empty.")
-    .isUUID()
-    .withMessage("Guild ID not a valid UUID.")
-    .custom(async (value) => {
-      try {
-        await GuildController.getGuild(value);
-      } catch (error) {
-        throw new Error(`No guild exists with an ID of ${value}`);
-      }
-    }),
-];
 
 module.exports = {
-  getGuildValidator,
+  guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
-  deleteGuildValidator,
 };
