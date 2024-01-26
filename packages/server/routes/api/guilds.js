@@ -9,21 +9,8 @@ const {
 } = require("../../validators/guilds");
 const { validationResult, matchedData } = require("express-validator");
 
-// temporary to pass ESLint
-console.log(
-  createGuildValidator,
-  updateGuildValidator,
-  guildIdValidator,
-  validationResult,
-  matchedData
-);
-
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
-const {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-} = require("@prisma/client/runtime/library");
 
 router.get("/", AuthController.authenticate, async (request, response) => {
   const search = request.query.search;
@@ -104,41 +91,58 @@ router.get(
 );
 
 // Create Guild
-router.post("/", AuthController.authenticate, async (request, response) => {
-  try {
-    return response.status(200).json({
-      status: "success",
-      data: {
-        createdGuild: await GuildController.createGuild(request.body),
-      },
-    });
-  } catch (error) {
-    if (error instanceof PrismaClientValidationError) {
+router.post(
+  "/",
+  AuthController.authenticate,
+  createGuildValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: {
-          guildId:
-            "Guild could not be created because of missing or invalid arguments.",
-        },
+        data: result.array({ onlyFirstError: true }),
       });
     }
 
-    return response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
+    const guildData = request.body;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          createdGuild: await GuildController.createGuild(guildData),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
   }
-});
+);
 
 // Update guild by ID
 router.put(
   "/:guildId",
   AuthController.authenticate,
+  updateGuildValidator,
   async (request, response) => {
-    try {
-      const { guildId } = request.params;
-      const guildData = request.body;
+    const result = validationResult(request);
 
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array({ onlyFirstError: true }),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const guildData = request.body;
+
+    try {
       return response.status(200).json({
         status: "success",
         data: {
@@ -146,32 +150,6 @@ router.put(
         },
       });
     } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        switch (error.code) {
-          case "P2023":
-            return response.status(400).json({
-              status: "fail",
-              data: {
-                guildId: "Provided guild ID is not a valid UUID.",
-              },
-            });
-
-          case "P2025":
-            return response.status(404).json({
-              status: "fail",
-              data: {
-                guildId: `No guild with an ID of ${request.params.guildId} could be found.`,
-              },
-            });
-        }
-      } else if (error instanceof PrismaClientValidationError) {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            guildId: "Guild could not be updated because of invalid arguments.",
-          },
-        });
-      }
       return response.status(500).json({
         status: "error",
         message: error.message,
