@@ -66,7 +66,7 @@ const createGuildValidator = [
     .trim()
     .isLength({ max: 2048 })
     .withMessage("Guild thumbnail max length is 2048 characters.")
-    .matches(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/)
+    .isURL()
     .withMessage("Provided website url is invalid."),
 
   // Tags Check
@@ -156,7 +156,7 @@ const updateGuildValidator = [
     .trim()
     .isLength({ max: 2048 })
     .withMessage("Guild thumbnail max length is 2048 characters.")
-    .matches(/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*$/)
+    .isURL()
     .withMessage("Provided website url is invalid."),
 
   // Tags Check: OPTIONAl UPDATE
