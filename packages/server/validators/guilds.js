@@ -7,6 +7,7 @@ const guildIdValidator = [
   param("guildId", "Invalid Guild ID.")
     .exists({ checkFalsy: true })
     .withMessage("Guild ID can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .escape()
     .isUUID()
@@ -25,6 +26,7 @@ const createGuildValidator = [
   body("name", "Invalid guild name.")
     .exists({ checkFalsy: true })
     .withMessage("Name can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ min: 1, max: 100 })
     .withMessage("Name length must be between 1 to 100 characters."),
@@ -33,6 +35,7 @@ const createGuildValidator = [
   body("handler", "Invalid guild handler name.")
     .exists({ checkFalsy: true })
     .withMessage("Guild handler's name can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ min: 1, max: 50 })
     .withMessage("Guild handler's name must be between 1 to 50 characters."),
@@ -41,6 +44,7 @@ const createGuildValidator = [
   body("description", "Invalid guild description.")
     .exists({ checkFalsy: true })
     .withMessage("Guild description can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 2000 })
     .withMessage("Guild description max length is 2,000 characters."),
@@ -49,6 +53,7 @@ const createGuildValidator = [
   body("category", "Invalid guild category.")
     .exists({ checkFalsy: true })
     .withMessage("Guild category can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Category name max length is 255 characters."),
@@ -56,6 +61,7 @@ const createGuildValidator = [
   // Location Check: OPTIONAl FOR GUILD CREATION
   body("location", "Invalid guild location.")
     .optional()
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Location name max length is 255 characters."),
@@ -63,6 +69,7 @@ const createGuildValidator = [
   // Website Check: OPTIONAL FOR GUILD CREATION
   body("website", "Invalid guild website.")
     .optional()
+    .blacklist("<>")
     .trim()
     .isLength({ max: 2048 })
     .withMessage("Guild website max length is 2048 characters.")
@@ -72,6 +79,7 @@ const createGuildValidator = [
   // Tags Check
   body("tags", "Invalid tags.")
     .optional()
+    .blacklist("<>")
     .isArray()
     .withMessage("Tags must be an array."),
 
@@ -79,6 +87,7 @@ const createGuildValidator = [
   body("banner", "Invalid guild banner.")
     .exists({ checkFalsy: true })
     .withMessage("Guild banner can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
@@ -89,6 +98,7 @@ const createGuildValidator = [
   body("avatar", "Invalid guild avatar.")
     .exists({ checkFalsy: true })
     .withMessage("Guild avatar can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
@@ -97,6 +107,7 @@ const createGuildValidator = [
 
   // Media Check
   body("media", "Invalid guild media.")
+    .blacklist("<>")
     .isArray()
     .withMessage("Media must be an array."),
 
@@ -112,6 +123,7 @@ const updateGuildValidator = [
     .optional()
     .exists({ checkFalsy: true })
     .withMessage("Name can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ min: 1, max: 100 })
     .withMessage("Name length must be between 1 to 100 characters."),
@@ -121,6 +133,7 @@ const updateGuildValidator = [
     .optional()
     .exists({ checkFalsy: true })
     .withMessage("Guild handler's name can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ min: 1, max: 50 })
     .withMessage("Guild handler's name must be between 1 to 50 characters."),
@@ -130,6 +143,7 @@ const updateGuildValidator = [
     .optional()
     .exists({ checkFalsy: true })
     .withMessage("Guild description can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 2000 })
     .withMessage("Guild description max length is 2,000 characters."),
@@ -139,6 +153,7 @@ const updateGuildValidator = [
     .optional()
     .exists({ checkFalsy: true })
     .withMessage("Guild category can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Category name max length is 255 characters."),
@@ -146,6 +161,7 @@ const updateGuildValidator = [
   // Location Check: OPTIONAl UPDATE
   body("location", "Invalid guild location.")
     .optional()
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Location name max length is 255 characters."),
@@ -153,6 +169,7 @@ const updateGuildValidator = [
   // Website Check: OPTIONAl UPDATE
   body("website", "Invalid guild website.")
     .optional()
+    .blacklist("<>")
     .trim()
     .isLength({ max: 2048 })
     .withMessage("Guild website max length is 2048 characters.")
@@ -162,6 +179,7 @@ const updateGuildValidator = [
   // Tags Check: OPTIONAl UPDATE
   body("tags", "Invalid tags.")
     .optional()
+    .blacklist("<>")
     .isArray()
     .withMessage("Tags must be an array."),
 
@@ -170,6 +188,7 @@ const updateGuildValidator = [
     .optional()
     .exists({ checkFalsy: true })
     .withMessage("Guild banner can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
@@ -181,6 +200,7 @@ const updateGuildValidator = [
     .optional()
     .exists({ checkFalsy: true })
     .withMessage("Guild avatar can't be null or empty.")
+    .blacklist("<>")
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
@@ -190,6 +210,7 @@ const updateGuildValidator = [
   // Media Check: OPTIONAl UPDATE
   body("media", "Invalid guild media.")
     .optional()
+    .blacklist("<>")
     .isArray()
     .withMessage("Media must be an array."),
 
