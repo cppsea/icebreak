@@ -65,7 +65,7 @@ const createGuildValidator = [
     .optional()
     .trim()
     .isLength({ max: 2048 })
-    .withMessage("Guild thumbnail max length is 2048 characters.")
+    .withMessage("Guild website max length is 2048 characters.")
     .isURL()
     .withMessage("Provided website url is invalid."),
 
@@ -155,7 +155,7 @@ const updateGuildValidator = [
     .optional()
     .trim()
     .isLength({ max: 2048 })
-    .withMessage("Guild thumbnail max length is 2048 characters.")
+    .withMessage("Guild website max length is 2048 characters.")
     .isURL()
     .withMessage("Provided website url is invalid."),
 
