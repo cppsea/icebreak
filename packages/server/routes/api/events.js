@@ -120,25 +120,20 @@ router.get(
   [
     param("eventId")
       .trim()
-      .escape()
+      .blacklist("<>")
       .isUUID()
-      .withMessage("Given eventId is invalid."),
+      .withMessage((eventId) => `Given eventId ${eventId} is invalid.`)
+      .bail()
+      .custom(async (eventId) => {
+        if (!(await EventController.existsInPrisma(eventId))) {
+          throw new Error(`No event exists with an ID of ${eventId}`);
+        }
+      }),
   ],
   async (request, response) => {
-    const eventId = request.params.eventId;
     const errors = validationResult(request);
-
     if (!errors.isEmpty()) {
       return response.status(400).json({ errors: errors.array() });
-    }
-    if (!(await EventController.existsInPrisma(eventId))) {
-      response.status(404).json({
-        status: "fail",
-        data: {
-          eventId: `No event exists with an ID of ${eventId}`,
-        },
-      });
-      return;
     }
     try {
       const { eventId } = request.params;
