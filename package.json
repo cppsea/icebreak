@@ -37,7 +37,6 @@
   },
   "repository": "https://github.com/cppsea/icebreak.git",
   "dependencies": {
-    "express-validator": "^7.0.1",
     "yarn": "^1.22.19"
   }
 }

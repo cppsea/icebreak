@@ -66,7 +66,7 @@ router.get(
     if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: result.array({ onlyFirstError: true }),
+        data: result.array(),
       });
     }
 
@@ -101,7 +101,7 @@ router.post(
     if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: result.array({ onlyFirstError: true }),
+        data: result.array(),
       });
     }
 
@@ -127,6 +127,7 @@ router.post(
 router.put(
   "/:guildId",
   AuthController.authenticate,
+  guildIdValidator,
   updateGuildValidator,
   async (request, response) => {
     const result = validationResult(request);
@@ -134,7 +135,7 @@ router.put(
     if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: result.array({ onlyFirstError: true }),
+        data: result.array(),
       });
     }
 
@@ -169,7 +170,7 @@ router.delete(
     if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: result.array({ onlyFirstError: true }),
+        data: result.array(),
       });
     }
 
