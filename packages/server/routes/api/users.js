@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
+const { validationResult, matchedData, param } = require("express-validator");
 
 const UserController = require("../../controllers/users");
 const AuthController = require("../../controllers/auth");
-const GuildController = require("../../controllers/guilds");
 
 router.get("/", async (request, response) => {
   try {
@@ -58,24 +58,36 @@ router.get(
 router.get(
   "/:userId/guilds",
   AuthController.authenticate,
+  [
+    param("userId")
+      .notEmpty()
+      .withMessage("User ID cannot be empty")
+      .isUUID()
+      .withMessage("Invalid user ID provided")
+      .custom(async (value) => {
+        const user = await UserController.getUser(value);
+        if (!user) {
+          throw new Error("User with ID ${value} not found");
+        }
+        return true;
+      }),
+  ],
   async (request, response) => {
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          errors: result.array(),
+        },
+      });
+    }
+
     try {
-      const { userId } = request.params;
-
-      // Check if the user exists
-      const user = await UserController.getUser(userId);
-
-      if (!user) {
-        return response.status(404).json({
-          status: "fail",
-          data: {
-            userId: `User not found with ID ${userId}`,
-          },
-        });
-      }
+      const { userId } = matchedData(request);
 
       // Fetch all guilds for the user
-      const userGuilds = await GuildController.getGuildsForUser(userId);
+      const userGuilds = await UserController.getGuildsForUser(userId);
 
       response.status(200).json({
         status: "success",

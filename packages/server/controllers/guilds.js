@@ -82,41 +82,6 @@ async function getGuildMembers(guildId) {
   return members;
 }
 
-async function getGuildsForUser(userId) {
-  try {
-    const user = await prisma.users.findFirst({
-      where: {
-        userId: userId,
-      },
-    });
-
-    if (!user) {
-      throw new Error(`User with ID ${userId} not found`);
-    }
-
-    const userGuilds = await prisma.guildMembers.findMany({
-      where: {
-        userId: userId,
-      },
-      include: {
-        guilds: {
-          select: {
-            avatar: true,
-            guildId: true,
-            name: true,
-            handler: true,
-          },
-        },
-      },
-    });
-
-    const guilds = userGuilds.map((userGuild) => userGuild.guilds);
-    return guilds;
-  } catch (error) {
-    throw new Error(`Error fetching guilds for user: ${error.message}`);
-  }
-}
-
 module.exports = {
   getGuild,
   searchGuildByName,
@@ -127,5 +92,4 @@ module.exports = {
   deleteGuild,
   getGuildMembers,
   guildExists,
-  getGuildsForUser,
 };
