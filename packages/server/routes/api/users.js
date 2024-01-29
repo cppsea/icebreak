@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { validationResult, matchedData, param } = require("express-validator");
+const { validationResult, matchedData } = require("express-validator");
+const { userIdValidator } = require("../../validators/users");
 
 const UserController = require("../../controllers/users");
 const AuthController = require("../../controllers/auth");
@@ -58,34 +59,21 @@ router.get(
 router.get(
   "/:userId/guilds",
   AuthController.authenticate,
-  [
-    param("userId")
-      .notEmpty()
-      .withMessage("User ID cannot be empty")
-      .isUUID()
-      .withMessage("Invalid user ID provided")
-      .custom(async (value) => {
-        const user = await UserController.getUser(value);
-        if (!user) {
-          throw new Error("User with ID ${value} not found");
-        }
-        return true;
-      }),
-  ],
+  userIdValidator,
   async (request, response) => {
     const result = validationResult(request);
+
     if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: {
-          errors: result.array(),
-        },
+        data: result.array(),
       });
     }
 
-    try {
-      const { userId } = matchedData(request);
+    const data = matchedData(request);
+    const userId = data.userId;
 
+    try {
       // Fetch all guilds for the user
       const userGuilds = await UserController.getGuildsForUser(userId);
 
