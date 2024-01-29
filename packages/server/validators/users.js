@@ -10,11 +10,11 @@ const userIdValidator = [
     .isUUID()
     .withMessage("Invalid user ID provided")
     .custom(async (value) => {
-      const user = await UserController.getUser(value);
-      if (!user) {
+      try {
+        await UserController.getUser(value);
+      } catch (error) {
         throw new Error("User with ID ${value} not found");
       }
-      return true;
     }),
 ];
 
