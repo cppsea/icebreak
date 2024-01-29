@@ -38,6 +38,7 @@ function EventsScreen(props) {
               location="test"
               description="test"
               navigation={props.navigation}
+              previousScreen={props.previousScreen}
             />
           ))}
         </View>
@@ -50,6 +51,7 @@ EventsScreen.propTypes = {
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   testID: PropTypes.string,
   navigation: PropTypes.object,
+  previousScreen: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

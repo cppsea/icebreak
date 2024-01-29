@@ -48,9 +48,10 @@ export default function EventOverview({
   location,
   description,
   navigation,
+  previousScreen,
 }) {
   const onBackPress = () => {
-    navigation.navigate("GroupScreen");
+    navigation.navigate(previousScreen);
   };
 
   const BackArrow = () => {
@@ -94,4 +95,5 @@ EventOverview.propTypes = {
   timeEnd: PropTypes.string,
   title: PropTypes.string,
   navigation: PropTypes.object,
+  previousScreen: PropTypes.string,
 };

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Text, Image, StyleSheet, FlatList } from "react-native";
 import axios from "axios";
+import PropTypes from "prop-types";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
@@ -12,7 +13,7 @@ import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-function FeedScreen() {
+function FeedScreen({ navigation }) {
   const { user, setUser } = useUserContext();
   const [events, setEvents] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -77,6 +78,8 @@ function FeedScreen() {
         location={item.location}
         timeBegin={item.start_date}
         timeEnd={item.end_date}
+        navigation={navigation}
+        previousScreen="FeedDrawer"
       />
     );
   }, []);
@@ -107,5 +110,9 @@ const styles = StyleSheet.create({
     width: 80,
   },
 });
+
+FeedScreen.propTypes = {
+  navigation: PropTypes.object,
+};
 
 export default FeedScreen;

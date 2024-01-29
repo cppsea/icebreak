@@ -25,7 +25,7 @@ const styles = StyleSheet.create({
 });
 
 export default function EventOverviewScreen({ navigation, route }) {
-  const { eventID } = route.params;
+  const { eventID, previousScreen } = route.params;
   const [event, setEvent] = useState([]);
 
   const getEvents = async () => {
@@ -57,6 +57,7 @@ export default function EventOverviewScreen({ navigation, route }) {
           location={event.location}
           description={event.description}
           navigation={navigation}
+          previousScreen={previousScreen}
         />
       </View>
       <View style={styles.register}>

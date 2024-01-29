@@ -28,10 +28,12 @@ function EventCardText({
   location,
   description,
   navigation,
+  previousScreen,
 }) {
   const onTitlePress = () => {
     navigation.navigate("EventOverviewScreen", {
       eventID: "6e22eb57-fce2-4db7-9279-5ab6c3acfec7",
+      previousScreen: previousScreen,
     });
   };
 
@@ -58,6 +60,7 @@ EventCardText.propTypes = {
   timeEnd: PropTypes.string,
   title: PropTypes.string,
   navigation: PropTypes.object,
+  previousScreen: PropTypes.string,
 };
 
 export default EventCardText;

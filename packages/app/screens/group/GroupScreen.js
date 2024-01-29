@@ -59,6 +59,7 @@ function GroupScreen({ navigation }) {
             testID="tab"
             style={styles.screen}
             navigation={navigation}
+            previousScreen="GroupScreen"
           />
         )}
       </ScrollView>

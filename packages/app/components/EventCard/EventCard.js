@@ -35,6 +35,7 @@ const EventCard = ({
   location,
   description,
   navigation,
+  previousScreen,
 }) => {
   return (
     <View style={[styles.card, style]}>
@@ -47,6 +48,7 @@ const EventCard = ({
           location={location}
           description={description}
           navigation={navigation}
+          previousScreen={previousScreen}
         />
         <EventCardRegistration registerState={false} />
       </View>
@@ -63,6 +65,7 @@ EventCard.propTypes = {
   timeEnd: PropTypes.string,
   title: PropTypes.string,
   navigation: PropTypes.object,
+  previousScreen: PropTypes.string,
 };
 
 export default EventCard;
