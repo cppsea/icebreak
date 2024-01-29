@@ -4,7 +4,7 @@ const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
 const DEFAULT_EVENT_LIMIT = 10;
 const { matchedData, validationResult } = require("express-validator");
-const { eventAttendeesValidator } = require("../../Validators/events");
+const { eventAttendeesValidator } = require("../../validators/events");
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
