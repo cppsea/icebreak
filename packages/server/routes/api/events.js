@@ -111,7 +111,7 @@ router.post(
     if (!result.isEmpty()) {
       response.status(400).json({
         status: "fail",
-        data: result.array({ onlyFirstError: true }),
+        data: result.array(),
       });
       return;
     }
@@ -119,7 +119,7 @@ router.post(
     const data = matchedData(request);
 
     const guildId = data.guildId;
-    const eventData = request.body;
+    const eventData = data;
 
     try {
       const newEvent = await EventController.createEvent(eventData, guildId);

@@ -4,7 +4,7 @@ const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
 
 const thumbnail_regex =
-  /^https:\/\/icebreak-assets.s3.us-west-1.amazonaws.com\/.+\.(jpg|png|JPG|PNG|JPEG|jpeg)$/;
+  /^https:\/\/icebreak-assets.s3.us-west-1.amazonaws.com\/.+\.(jpg|jpeg)$/;
 
 const createEventValidator = [
   param("guildId", "Invalid guild ID")
@@ -14,6 +14,7 @@ const createEventValidator = [
     .withMessage("guildId cannot be null or empty")
     .isUUID()
     .withMessage("Not a UUID")
+    .bail()
     .custom(async (value) => {
       try {
         await GuildController.getGuild(value); //Check if guild exists by getting it
@@ -63,7 +64,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("Start date is not in a valid date format")
+    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
     .custom(async (startDate, { req }) => {
       //Start date given but not end date
       if (!req.body.endDate) {
@@ -77,7 +78,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("End date is not in a valid date format")
+    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
     .custom(async (endDate, { req }) => {
       //End date given but no start date
       if (!req.body.startDate) {
@@ -129,7 +130,8 @@ const updateEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("Start date is not in a valid date format")
+    .bail()
+    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
     .custom(async (startDate, { req }) => {
       //Check for when new start and end date is given
       if (req.body.endDate) {
@@ -157,7 +159,8 @@ const updateEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("End date is not in a valid date format")
+    .bail()
+    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
     .custom(async (endDate, { req }) => {
       //Check for when new end date is given but no start date
       if (!req.body.startDate) {
@@ -178,6 +181,7 @@ const eventIdValidator = [
     .trim()
     .blacklist("<>")
     .isUUID()
+    .bail()
     .withMessage("Not a UUID")
     .exists({ checkFalsy: true })
     .withMessage("Event Id cannot be null or empty")
