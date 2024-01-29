@@ -3,8 +3,8 @@ const router = express.Router();
 const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
 const DEFAULT_EVENT_LIMIT = 10;
-const { param, validationResult } = require("express-validator");
-
+const { matchedData, validationResult } = require("express-validator");
+const { eventAttendeesValidator } = require("../../Validators/events");
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
@@ -117,26 +117,17 @@ router.get(
 router.get(
   "/:eventId/attendees",
   AuthController.authenticate,
-  [
-    param("eventId")
-      .trim()
-      .blacklist("<>")
-      .isUUID()
-      .withMessage((eventId) => `Given eventId ${eventId} is invalid.`)
-      .bail()
-      .custom(async (eventId) => {
-        if (!(await EventController.existsInPrisma(eventId))) {
-          throw new Error(`No event exists with an ID of ${eventId}`);
-        }
-      }),
-  ],
+  eventAttendeesValidator,
   async (request, response) => {
     const errors = validationResult(request);
     if (!errors.isEmpty()) {
-      return response.status(400).json({ errors: errors.array() });
+      return response.status(400).json({
+        status: "fail",
+        data: errors.array(),
+      });
     }
     try {
-      const { eventId } = request.params;
+      const { eventId } = matchedData(request);
       const eventAttendeesData = await EventController.getEventAttendees(
         eventId
       );
