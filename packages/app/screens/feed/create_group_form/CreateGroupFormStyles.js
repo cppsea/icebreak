@@ -18,7 +18,8 @@ export const styles = StyleSheet.create({
     borderColor: colors.black,
     borderWidth: 2,
     justifyContent: "center",
-    marginTop: 6,
+    margin: 20,
+    padding: 4,
     textAlign: "center",
   },
   container: {
@@ -67,6 +68,17 @@ export const styles = StyleSheet.create({
     height: 40,
     margin: 6,
     padding: 10,
+  },
+  inputDescription: {
+    borderWidth: 1,
+    height: 100,
+    margin: 6,
+    padding: 10,
+  },
+  keyboard: {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
   },
   scrollview_extra_margin: {
     margin: 100,
