@@ -6,10 +6,7 @@ const GuildController = require("../controllers/guilds");
 const thumbnail_regex =
   /^https:\/\/icebreak-assets.s3.us-west-1.amazonaws.com\/.+\.(jpg|png|JPG|PNG|JPEG|jpeg)$/;
 
-// validators are defined as an array of checks to perform with express-validator
 const createEventValidator = [
-  // example check for making sure guildId route parameter is a UUID
-  // modify this param("guildId") check for the other checks I listed in the PR review for "guildId"
   param("guildId", "Invalid guild ID")
     .trim()
     .blacklist("<>")
@@ -21,7 +18,6 @@ const createEventValidator = [
       try {
         await GuildController.getGuild(value); //Check if guild exists by getting it
       } catch (error) {
-        //If event does not exists, then a NotFoundError is thrown from controller
         throw new Error(`No guild exists with an ID of ${value}`);
       }
     }),
@@ -139,7 +135,6 @@ const updateEventValidator = [
       if (req.body.endDate) {
         let endDate = new Date(req.body.endDate);
 
-        //Check if new start date is after new end date
         if (startDate > endDate) {
           throw new Error("New start date cannot be after new end date");
         }
@@ -148,12 +143,9 @@ const updateEventValidator = [
       else {
         const currEvent = await EventController.getEvent(req.params.eventId);
 
-        //Check if the current end date is null
         if (currEvent.endDate == null) {
           throw new Error("Cannot update start date if end date is null");
-        }
-        //Check if new start date is after current end date
-        else if (startDate > currEvent.endDate) {
+        } else if (startDate > currEvent.endDate) {
           throw new Error("New start date cannot be after current end date");
         }
       }
@@ -171,16 +163,12 @@ const updateEventValidator = [
       if (!req.body.startDate) {
         const currEvent = await EventController.getEvent(req.params.eventId);
 
-        //Check if current start date is null
         if (currEvent.startDate == null) {
           throw new Error("Cannot update end date if start date is null");
-        }
-        //Check if new end date is before current start date
-        else if (endDate < currEvent.startDate) {
+        } else if (endDate < currEvent.startDate) {
           throw new Error("New end date cannot be before current start date");
         }
       }
-      //Refer to start date checks for when new start and end dates are given
     }),
 ];
 

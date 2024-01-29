@@ -102,7 +102,6 @@ router.post(
   //Router to create events
   "/:guildId",
   AuthController.authenticate,
-  // put validator here right before route handler function is run
   createEventValidator,
   async (request, response) => {
     // access validation results
@@ -117,7 +116,6 @@ router.post(
       return;
     }
 
-    // matchedData lets us use data.guildId, instead of having to specify req.body.guildId every time we reference it
     const data = matchedData(request);
 
     const guildId = data.guildId;
