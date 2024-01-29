@@ -3,13 +3,16 @@ const { param, body } = require("express-validator");
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
 
+const thumbnail_regex =
+  /^https:\/\/icebreak-assets.s3.us-west-1.amazonaws.com\/.+\.(jpg|png|JPG|PNG|JPEG|jpeg)$/;
+
 // validators are defined as an array of checks to perform with express-validator
 const createEventValidator = [
   // example check for making sure guildId route parameter is a UUID
   // modify this param("guildId") check for the other checks I listed in the PR review for "guildId"
   param("guildId", "Invalid guild ID")
     .trim()
-    .escape()
+    .blacklist("<>")
     .exists({ checkFalsy: true })
     .withMessage("guildId cannot be null or empty")
     .isUUID()
@@ -25,7 +28,7 @@ const createEventValidator = [
   //Title checks
   body("title", "Invalid title")
     .trim()
-    .escape()
+    .blacklist("<>")
     .exists({ checkFalsy: true })
     .withMessage("Title cannot be null or empty")
     .isLength({ min: 1, max: 255 })
@@ -34,7 +37,7 @@ const createEventValidator = [
   //Description checks
   body("description", "Invalid description")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ max: 2000 })
     .withMessage("Description max length is 2,000 characters"),
@@ -42,7 +45,7 @@ const createEventValidator = [
   //Location checks
   body("location", "Invalid location")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ max: 255 })
     .withMessage("Location max length is 255 characters"),
@@ -50,19 +53,17 @@ const createEventValidator = [
   //Thumbnail checks
   body("thumbnail", "Invalid thumbnail")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
-    .custom(async (value) => {
-      if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(value)) {
-        throw new Error("Thumbnail is not a valid image file");
-      }
-    }),
+    .matches(thumbnail_regex)
+    .withMessage("Thumbnail is not a valid image file"),
+
   //Start Date checks
   body("startDate", "Invalid start date")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isISO8601()
     .toDate()
@@ -76,7 +77,7 @@ const createEventValidator = [
   //End Date checks
   body("endDate", "Invalid end date")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isISO8601()
     .toDate()
@@ -88,8 +89,7 @@ const createEventValidator = [
       }
 
       //Checks if both start and end date are given
-      let startDate = new Date(req.body.startDate);
-      if (endDate < startDate) {
+      if (endDate < req.body.startDate) {
         throw new Error("End date cannot be before start date");
       }
     }),
@@ -99,40 +99,37 @@ const updateEventValidator = [
   //Title checks
   body("title", "Invalid title")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ min: 1, max: 255 })
     .withMessage("Title length must be between 1 to 255 characters"),
   //Description checks
   body("description", "Invalid description")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ max: 2000 })
     .withMessage("Description max length is 2000 characters"),
   //Location checks
   body("location", "Invalid location")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ max: 255 })
     .withMessage("Location max length is 255 characters"),
   //Thumbnail checks
   body("thumbnail", "Invalid thumbnail")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
-    .custom(async (value) => {
-      if (!/\.(jpg|png|JPG|PNG|JPEG|jpeg)$/.test(value)) {
-        throw new Error("Thumbnail is not a valid image file");
-      }
-    }),
+    .matches(thumbnail_regex)
+    .withMessage("Thumbnail is not a valid image file"),
   //Start Date checks
   body("startDate", "Invalid start date")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isISO8601()
     .toDate()
@@ -153,7 +150,7 @@ const updateEventValidator = [
 
         //Check if the current end date is null
         if (currEvent.endDate == null) {
-          throw new Error("Start date updated but end date is null");
+          throw new Error("Cannot update start date if end date is null");
         }
         //Check if new start date is after current end date
         else if (startDate > currEvent.endDate) {
@@ -164,7 +161,7 @@ const updateEventValidator = [
   //End Date checks
   body("endDate", "Invalid end date")
     .trim()
-    .escape()
+    .blacklist("<>")
     .optional()
     .isISO8601()
     .toDate()
@@ -176,7 +173,7 @@ const updateEventValidator = [
 
         //Check if current start date is null
         if (currEvent.startDate == null) {
-          throw new Error("End date updated but start date is null");
+          throw new Error("Cannot update end date if start date is null");
         }
         //Check if new end date is before current start date
         else if (endDate < currEvent.startDate) {
@@ -191,7 +188,7 @@ const eventIdValidator = [
   // eventId checks
   param("eventId", "Invalid event ID")
     .trim()
-    .escape()
+    .blacklist("<>")
     .isUUID()
     .withMessage("Not a UUID")
     .exists({ checkFalsy: true })
