@@ -7,15 +7,18 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Image,
+  Switch,
+  Alert,
 } from "react-native";
 import Button from "@app/components/Button";
 import * as ImagePicker from "expo-image-picker";
 import { GroupContext } from "@app/utils/GroupContext";
 import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
+import Dropdown from "@app/components/Dropdown";
+import TagInput from "@app/components/TagInput";
 
-function CreateGroupFormScreen1({ navigation }) {
-  // 1st SCREEN INPUTS
+function CreateGroupFormScreen({ navigation }) {
   const {
     name,
     setName,
@@ -27,7 +30,33 @@ function CreateGroupFormScreen1({ navigation }) {
     setBanner,
     icon,
     setIcon,
+
+    category,
+    setCategory,
+    tags,
+    setTags,
+    location,
+    setLocation,
+    website,
+    setWebsite,
+    isInviteOnly,
+    setIsInviteOnly,
+
+    twitterLink,
+    setTwitterLink,
+    facebookLink,
+    setFacebookLink,
+    instagramLink,
+    setInstagramLink,
+    discordLink,
+    setDiscordLink,
+    linkedInLink,
+    setLinkedInLink,
+    githubLink,
+    setGithubLink,
+
     resetForm,
+    submitForm,
   } = useContext(GroupContext);
 
   // Input Validation
@@ -37,9 +66,23 @@ function CreateGroupFormScreen1({ navigation }) {
   const [bannerError, setBannerError] = useState("");
   const [iconError, setIconError] = useState("");
 
-  const [inputHeight, setInputHeight] = useState(10); // description box height
+  const [categoryError, setCategoryError] = useState("");
+  const [websiteError, setWebsiteError] = useState("");
 
-  function handleInputValidationScreen1() {
+  const [twitterLinkError, setTwitterLinkError] = useState("");
+  const [facebookLinkError, setFacebookLinkError] = useState("");
+  const [instagramLinkError, setInstagramLinkError] = useState("");
+  const [discordLinkError, setDiscordLinkError] = useState("");
+  const [linkedInLinkError, setLinkedInLinkError] = useState("");
+  const [githubLinkError, setGithubLinkError] = useState("");
+
+  const [inputHeight, setInputHeight] = useState(10); // description box height
+  const categoryOptions = ["Sports", "Education", "Business", "Gaming"];
+  const [inputValue, setInputValue] = useState("");
+  const toggleSwitch = () => setIsInviteOnly((previousState) => !previousState);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+  function handleInputValidation() {
     let isValid = true;
 
     const titleRegex = /^(?![\w\s]+$).*$/;
@@ -86,6 +129,86 @@ function CreateGroupFormScreen1({ navigation }) {
       setIconError(``);
     }
 
+    const websiteRegex =
+      /^(?!(https?:\/\/)([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$).+$/i;
+
+    if (category.trim() === ``) {
+      setCategoryError(`Please select a category`);
+      isValid = false;
+    } else {
+      setCategoryError(``);
+    }
+
+    if (website.trim() === ``) {
+      setWebsiteError(``);
+    } else if (websiteRegex.test(website)) {
+      setWebsiteError(`Invalid Website Link`);
+      isValid = false;
+    } else {
+      setWebsiteError(``);
+    }
+
+    const twitterRegex = /^(?!https?:\/\/(www\.)?(x|twitter)\.com(.*)$)/;
+    const facebookRegex = /^(?!https?:\/\/(www\.)?facebook\.com(.*)$)/;
+    const instagramRegex = /^(?!https?:\/\/(www\.)?instagram\.com(.*)$)/;
+    const discordRegex = /^(?!https?:\/\/(www\.)?discord\.com(.*)$)/;
+    const linkedinRegex = /^(?!https?:\/\/(www\.)?linkedin\.com(.*)$)/;
+    const githubRegex = /^(?!https?:\/\/(www\.)?github\.com(.*)$)/;
+
+    if (twitterLink.trim() === ``) {
+      setTwitterLinkError(``);
+    } else if (twitterRegex.test(twitterLink)) {
+      setTwitterLinkError(`Invalid Twitter Link`);
+      isValid = false;
+    } else {
+      setTwitterLinkError(``);
+    }
+
+    if (facebookLink.trim() === ``) {
+      setFacebookLinkError(``);
+    } else if (facebookRegex.test(facebookLink)) {
+      setFacebookLinkError(`Invalid Facebook Link`);
+      isValid = false;
+    } else {
+      setFacebookLinkError(``);
+    }
+
+    if (instagramLink.trim() === ``) {
+      setInstagramLinkError(``);
+    } else if (instagramRegex.test(instagramLink)) {
+      setInstagramLinkError(`Invalid Instagram Link`);
+      isValid = false;
+    } else {
+      setInstagramLinkError(``);
+    }
+
+    if (discordLink.trim() === ``) {
+      setDiscordLinkError(``);
+    } else if (discordRegex.test(discordLink)) {
+      setDiscordLinkError(`Invalid Discord Link`);
+      isValid = false;
+    } else {
+      setDiscordLinkError(``);
+    }
+
+    if (linkedInLink.trim() === ``) {
+      setLinkedInLink(``);
+    } else if (linkedinRegex.test(linkedInLink)) {
+      setLinkedInLinkError(`Invalid LinkedIn Link`);
+      isValid = false;
+    } else {
+      setLinkedInLinkError(``);
+    }
+
+    if (githubLink.trim() === ``) {
+      setGithubLinkError(``);
+    } else if (githubRegex.test(githubLink)) {
+      setGithubLinkError(`Invalid Github Link`);
+      isValid = false;
+    } else {
+      setGithubLinkError(``);
+    }
+
     return isValid;
   }
 
@@ -126,6 +249,19 @@ function CreateGroupFormScreen1({ navigation }) {
   const handleOnChangeInput = (text, setText, setError) => {
     setText(text);
     setError("");
+  };
+
+  const handleWebsiteBlur = (website, setLink) => {
+    // Add 'https://' immediately after the user types / is missing
+    if (!website.startsWith("https://") && website !== "") {
+      setLink("https://" + website);
+    }
+  };
+
+  const handleSocialMediaBlur = (social, setLink) => {
+    if ((social !== "") == !social.startsWith("https://")) {
+      setLink("https://" + social);
+    }
   };
 
   return (
@@ -232,14 +368,203 @@ function CreateGroupFormScreen1({ navigation }) {
             </View>
           </View>
 
+          <View>
+            <Text style={styles.header}>
+              <Text>Category</Text>
+              <Text style={styles.important}>* {categoryError} </Text>
+            </Text>
+            <Dropdown
+              options={categoryOptions}
+              value={category}
+              setValue={setCategory}
+              setDropdownError={setCategoryError}
+            />
+          </View>
+
+          <View>
+            <Text style={styles.header}>
+              <Text>Tags</Text>
+            </Text>
+            <TagInput
+              value={inputValue}
+              setValue={setInputValue}
+              tags={tags}
+              setTags={setTags}
+              maxTags={10}
+            />
+          </View>
+
+          <View>
+            <Text style={styles.header}>Location</Text>
+            <TextInput
+              value={location}
+              onChangeText={(newText) => setLocation(newText)}
+              placeholder="location"
+              style={styles.input}></TextInput>
+          </View>
+
+          <View>
+            <Text style={styles.header}>
+              <Text>Website</Text>
+              <Text style={styles.important}> {websiteError} </Text>
+            </Text>
+            <TextInput
+              value={website}
+              placeholder="example.com"
+              onChangeText={(newText) => setWebsite(newText)}
+              onBlur={handleWebsiteBlur(website, setWebsite)}
+              style={styles.input}
+            />
+          </View>
+
+          <View>
+            <Text style={styles.header}>Invite Only</Text>
+            <Switch
+              trackColor={{ false: "#767577", true: "#81b0ff" }}
+              thumbColor={isInviteOnly ? "#ffffff" : "#f4f3f4"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isInviteOnly}
+            />
+          </View>
+
+          <View>
+            <Text style={styles.header}>
+              <Text>Twitter</Text>
+              <Text style={styles.important}> {twitterLinkError} </Text>
+            </Text>
+            <TextInput
+              value={twitterLink}
+              placeholder="https://twitter.com/abc123"
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setTwitterLink(newLink),
+                  setTwitterLinkError
+                )
+              }
+              onBlur={handleSocialMediaBlur(twitterLink, setTwitterLink)}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <Text style={styles.header}>
+              <Text>Facebook</Text>
+              <Text style={styles.important}> {facebookLinkError} </Text>
+            </Text>
+            <TextInput
+              value={facebookLink}
+              placeholder="https://facebook.com/abc123"
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setFacebookLink(newLink),
+                  setFacebookLinkError
+                )
+              }
+              onBlur={handleSocialMediaBlur(facebookLink, setFacebookLink)}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <Text style={styles.header}>
+              <Text>Instagram</Text>
+              <Text style={styles.important}> {instagramLinkError} </Text>
+            </Text>
+            <TextInput
+              value={instagramLink}
+              placeholder="https://instagram.com/abc123"
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setInstagramLink(newLink),
+                  setInstagramLinkError
+                )
+              }
+              onBlur={handleSocialMediaBlur(instagramLink, setInstagramLink)}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <Text style={styles.header}>
+              <Text>Discord</Text>
+              <Text style={styles.important}> {discordLinkError} </Text>
+            </Text>
+            <TextInput
+              value={discordLink}
+              placeholder="https://discord.com/abc123"
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setDiscordLink(newLink),
+                  setDiscordLinkError
+                )
+              }
+              onBlur={handleSocialMediaBlur(discordLink, setDiscordLink)}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <Text style={styles.header}>
+              <Text>LinkedIn</Text>
+              <Text style={styles.important}> {linkedInLinkError} </Text>
+            </Text>
+            <TextInput
+              value={linkedInLink}
+              placeholder="https://linkedin.com/abc123"
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setLinkedInLink(newLink),
+                  setLinkedInLinkError
+                )
+              }
+              onBlur={handleSocialMediaBlur(linkedInLink, setLinkedInLink)}
+              style={styles.input}
+            />
+          </View>
+          <View>
+            <Text style={styles.header}>
+              <Text>Github</Text>
+              <Text style={styles.important}> {githubLinkError} </Text>
+            </Text>
+            <TextInput
+              value={githubLink}
+              placeholder="https://github.com/abc123e"
+              onChangeText={(newText) =>
+                handleOnChangeInput(
+                  newText,
+                  (newLink) => setGithubLink(newLink),
+                  setGithubLinkError
+                )
+              }
+              onBlur={handleSocialMediaBlur(githubLink, setGithubLink)}
+              style={styles.input}
+            />
+          </View>
           <View style={styles.btnContainer}>
             <Button
-              title="NEXT"
-              onPress={() => {
-                const isValid = handleInputValidationScreen1();
+              title="SUBMIT"
+              disabled={isButtonDisabled}
+              onPress={async () => {
+                const isValid = handleInputValidation();
 
+                setIsButtonDisabled(true);
                 if (isValid) {
-                  navigation.navigate("Create Group Form 2");
+                  try {
+                    const isSubmitted = await submitForm();
+
+                    if (isSubmitted) {
+                      navigation.navigate("Initial Create Group");
+                    }
+                  } catch (error) {
+                    Alert.alert("Error", "Failed to submit form.");
+                    console.error("Error submitting form:", error);
+                  } finally {
+                    setIsButtonDisabled(false);
+                  }
+                } else {
+                  setIsButtonDisabled(false);
                 }
               }}
             />
@@ -250,10 +575,10 @@ function CreateGroupFormScreen1({ navigation }) {
   );
 }
 
-CreateGroupFormScreen1.propTypes = {
+export default CreateGroupFormScreen;
+
+CreateGroupFormScreen.propTypes = {
   navigation: PropTypes.shape({
     navigate: PropTypes.func.isRequired,
   }).isRequired,
 };
-
-export default CreateGroupFormScreen1;

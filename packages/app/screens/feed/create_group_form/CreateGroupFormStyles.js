@@ -52,6 +52,11 @@ export const styles = StyleSheet.create({
     color: colors.red,
     fontSize: 15,
   },
+  initialgroup: {
+    alignItems: "center",
+    flex: 1,
+    justifyContent: "center",
+  },
   inner: {
     flex: 1,
     justifyContent: "space-around",

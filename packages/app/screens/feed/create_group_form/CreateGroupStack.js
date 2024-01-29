@@ -2,9 +2,7 @@ import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GroupProvider } from "@app/utils/GroupContext";
 import InitialCreateGroupScreen from "./InitialCreateGroupScreen";
-import CreateGroupFormScreen1 from "./CreateGroupFormScreen1";
-import CreateGroupFormScreen2 from "./CreateGroupFormScreen2";
-import CreateGroupFormScreen3 from "./CreateGroupFormScreen3";
+import CreateGroupFormScreen from "./CreateGroupFormScreen1";
 
 const Stack = createNativeStackNavigator();
 
@@ -19,16 +17,8 @@ function CreateGroupStack() {
           component={InitialCreateGroupScreen}
         />
         <Stack.Screen
-          name="Create Group Form 1"
-          component={CreateGroupFormScreen1}
-        />
-        <Stack.Screen
-          name="Create Group Form 2"
-          component={CreateGroupFormScreen2}
-        />
-        <Stack.Screen
-          name="Create Group Form 3"
-          component={CreateGroupFormScreen3}
+          name="Create Group Form"
+          component={CreateGroupFormScreen}
         />
       </Stack.Navigator>
     </GroupProvider>
