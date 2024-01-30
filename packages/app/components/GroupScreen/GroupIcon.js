@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
 
 GroupIcon.propTypes = {
   backgroundColor: PropTypes.string,
-  icon: PropTypes.string,
+  icon: PropTypes.number,
   size: PropTypes.number,
 };
 
