@@ -103,6 +103,25 @@ async function updateEvent(eventId, eventData) {
   return updateEvent;
 }
 
+async function getEventAttendees(eventId) {
+  const query = await prisma.users.findMany({
+    where: {
+      eventAttendees: {
+        some: {
+          eventId: eventId,
+        },
+      },
+    },
+    select: {
+      userId: true,
+      firstName: true,
+      lastName: true,
+      avatar: true,
+    },
+  });
+  return query;
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -111,4 +130,5 @@ module.exports = {
   deleteEvent,
   updateEvent,
   createEvent,
+  getEventAttendees,
 };

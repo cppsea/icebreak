@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
 const {
@@ -10,7 +9,6 @@ const {
 } = require("../../validators/events");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
-
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
@@ -246,6 +244,38 @@ router.put(
         message: error.message,
       });
       return;
+    }
+  }
+);
+
+router.get(
+  "/:eventId/attendees",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: errors.array(),
+      });
+    }
+    try {
+      const { eventId } = matchedData(request);
+      const eventAttendeesData = await EventController.getEventAttendees(
+        eventId
+      );
+      response.status(200).json({
+        status: "success",
+        data: {
+          eventAttendees: eventAttendeesData,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
 );
