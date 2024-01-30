@@ -4,47 +4,34 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Screen from "@app/components/Screen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useGuildContext } from "@app/utils/GuildContext";
-import { URL } from "url";
 
 const BLUE = "#3498DB";
 const GRAY = "#2C2C2C";
 const { guild, guildMembers } = useGuildContext();
 
 function getIcon(url) {
-  const name = new URL(url).hostname.split(".")[0];
-  switch (name) {
-    case "discord":
-      return (
-        <FontAwesome5 name="discord" style={styles.mediaIconStyle} size={20} />
-      );
-    case "instagram":
-      return (
-        <FontAwesome5
-          name="instagram"
-          style={styles.mediaIconStyle}
-          size={20}
-        />
-      );
-    case "facebook":
-      return (
-        <FontAwesome5 name="facebook" style={styles.mediaIconStyle} size={20} />
-      );
-    case "twitter":
-      return (
-        <FontAwesome5 name="twitter" style={styles.mediaIconStyle} size={20} />
-      );
-    case "youtube":
-      return (
-        <FontAwesome5 name="youtube" style={styles.mediaIconStyle} size={20} />
-      );
-    case "linkedin":
-      return (
-        <FontAwesome5 name="linkedin" style={styles.mediaIconStyle} size={20} />
-      );
-    default:
-      return null;
+  let icon = "";
+  if (url.startsWith("https://discord.gg/")) {
+    icon = "discord";
   }
+  if (url.startsWith("https://www.facebook.com/")) {
+    icon = "facebook";
+  }
+  if (url.startsWith("https://www.instagram.com/")) {
+    icon = "instagram";
+  }
+  if (url.startsWith("https://www.linkedin.com/")) {
+    icon = "linkedin";
+  }
+  if (url.startsWith("https://www.twitter.com/")) {
+    icon = "twitter";
+  } else {
+    return null;
+  }
+
+  return <FontAwesome5 name={icon} style={styles.mediaIconStyle} size={20} />;
 }
+
 function AboutScreen() {
   return (
     <Screen style={styles.container}>
