@@ -52,8 +52,23 @@ async function getPages(limit) {
   return totalPages;
 }
 
+async function createEvent(eventData, guildId) {
+  const newEvent = await prisma.events.create({
+    data: {
+      guildId: guildId,
+      title: eventData.title,
+      description: eventData.description,
+      startDate: eventData.startDate,
+      endDate: eventData.endDate,
+      location: eventData.location,
+      thumbnail: eventData.thumbnail,
+    },
+  });
+  return newEvent;
+}
+
 async function getEvent(eventId) {
-  const event = await prisma.events.findUnique({
+  const event = await prisma.events.findUniqueOrThrow({
     where: {
       eventId: eventId,
     },
@@ -61,9 +76,59 @@ async function getEvent(eventId) {
   return event;
 }
 
+async function deleteEvent(eventId) {
+  const deletedEvent = await prisma.events.delete({
+    where: {
+      eventId: eventId,
+    },
+  });
+  return deletedEvent;
+}
+
+async function updateEvent(eventId, eventData) {
+  const updateEvent = await prisma.events.update({
+    where: {
+      eventId: eventId,
+    },
+    //If a given data was not updated, it will be undefined and prisma will ignore the update of that field
+    data: {
+      title: eventData.title,
+      description: eventData.description,
+      startDate: eventData.startDate,
+      endDate: eventData.endDate,
+      location: eventData.location,
+      thumbnail: eventData.thumbnail,
+    },
+  });
+  return updateEvent;
+}
+
+async function getEventAttendees(eventId) {
+  const query = await prisma.users.findMany({
+    where: {
+      eventAttendees: {
+        some: {
+          eventId: eventId,
+        },
+      },
+    },
+    select: {
+      userId: true,
+      firstName: true,
+      lastName: true,
+      avatar: true,
+    },
+  });
+  return query;
+}
+
 module.exports = {
   getEvent,
   getEvents,
   getPages,
   getAllEvents,
+  deleteEvent,
+  updateEvent,
+  createEvent,
+  getEventAttendees,
 };

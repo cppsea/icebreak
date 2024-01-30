@@ -1,5 +1,13 @@
 const express = require("express");
 const router = express.Router();
+const { validate: uuidValidate } = require("uuid");
+
+const {
+  guildIdValidator,
+  createGuildValidator,
+  updateGuildValidator,
+} = require("../../validators/guilds");
+const { validationResult, matchedData } = require("express-validator");
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
@@ -47,13 +55,150 @@ router.get("/", AuthController.authenticate, async (request, response) => {
   }
 });
 
+// Get guild by ID
 router.get(
   "/:guildId",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+
+    try {
+      const guild = await GuildController.getGuild(guildId);
+      return response.status(200).json({
+        status: "success",
+        data: {
+          guild,
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+// Create Guild
+router.post(
+  "/",
+  AuthController.authenticate,
+  createGuildValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const guildData = request.body;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          createdGuild: await GuildController.createGuild(guildData),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+// Update guild by ID
+router.put(
+  "/:guildId",
+  AuthController.authenticate,
+  guildIdValidator,
+  updateGuildValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const guildData = request.body;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          updatedGuild: await GuildController.updateGuild(guildId, guildData),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+// Delete guild by ID
+router.delete(
+  "/:guildId",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          deletedGuild: await GuildController.deleteGuild(guildId),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.get(
+  "/:guildId/members",
   AuthController.authenticate,
   async (request, response) => {
     try {
       const { guildId } = request.params;
-
       if (guildId === undefined) {
         return response.status(400).json({
           status: "fail",
@@ -63,11 +208,29 @@ router.get(
         });
       }
 
-      const guild = await GuildController.getGuild(guildId);
+      if (!uuidValidate(guildId)) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            guildId: "Invalid Guild ID format",
+          },
+        });
+      }
+
+      if (!(await GuildController.guildExists(guildId))) {
+        return response.status(404).json({
+          status: "fail",
+          data: {
+            guildId: `Guild not found with an ID of ${guildId}`,
+          },
+        });
+      }
+
+      const guildMembers = await GuildController.getGuildMembers(guildId);
       response.status(200).json({
         status: "success",
         data: {
-          guild,
+          guildMembers,
         },
       });
     } catch (error) {

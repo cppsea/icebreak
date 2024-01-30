@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader.js";
 import GroupTabs from "../../components/GroupScreen/GroupTabs.js";
+import { GuildProvider } from "@app/utils/GuildContext.js";
 import Screen from "@app/components/Screen";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
@@ -23,7 +24,7 @@ const tabs = [
   { name: "Newsletter", screen: NewsletterScreen },
 ];
 
-function GroupScreen({ navigation }) {
+function GroupScreen({ navigation, route }) {
   const tabRef = useRef(null);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -43,30 +44,33 @@ function GroupScreen({ navigation }) {
 
   return (
     <Screen style={styles.container}>
-      <ScrollView scrollEventThrottle={16} stickyHeaderIndices={[1]}>
-        <GroupHeader testID="groupHeader" />
-        <View ref={tabRef}>
-          <GroupTabs
-            testID="groupTabs"
-            style={styles.groupTabs}
-            tabs={tabs}
-            activeTab={activeTab}
-            selectTab={(tab) => setActiveTab(tab)}
-          />
-        </View>
-        {activeTab.screen && (
-          <activeTab.screen
-            testID="tab"
-            style={styles.screen}
-            navigation={navigation}
-            previousScreen="GroupScreen"
-          />
-        )}
-      </ScrollView>
+      <GuildProvider guildId={route.params?.guildId}>
+        <ScrollView scrollEventThrottle={16} stickyHeaderIndices={[1]}>
+          <GroupHeader testID="groupHeader" />
+          <View ref={tabRef}>
+            <GroupTabs
+              testID="groupTabs"
+              style={styles.groupTabs}
+              tabs={tabs}
+              activeTab={activeTab}
+              selectTab={(tab) => setActiveTab(tab)}
+            />
+          </View>
+          {activeTab.screen && (
+            <activeTab.screen
+              testID="tab"
+              style={styles.screen}
+              navigation={navigation}
+              previousScreen="GroupScreen"
+            />
+          )}
+        </ScrollView>
+      </GuildProvider>
     </Screen>
   );
 }
 GroupScreen.propTypes = {
   navigation: PropTypes.object,
+  route: PropTypes.object,
 };
 export default GroupScreen;

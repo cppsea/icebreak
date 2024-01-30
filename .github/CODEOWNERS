@@ -1,2 +1,6 @@
 packages/app @MinT-Napkin
 packages/server @lxkedinh
+
+# exclude "packages/app/utils/constants.js" from having a code owner
+# because it's constantly overwritten automatically by Ngrok
+packages/app/utils/constants.js
