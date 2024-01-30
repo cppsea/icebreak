@@ -45,6 +45,26 @@ export default function EventOverviewScreen({ navigation, route }) {
     getEvents();
   }, []);
 
+  function formatDate(rawDate) {
+    const date = new Date(rawDate);
+    let hours = date.getUTCHours();
+    let minutes = date.getMinutes();
+    let dayPeriod = "AM";
+
+    if (hours > 12) {
+      hours -= 12;
+      dayPeriod = "PM";
+    }
+
+    if (minutes < 10) {
+      minutes = "0" + minutes;
+    }
+
+    return `${
+      date.getMonth() + 1
+    }/${date.getDate()}/${date.getFullYear()} at ${hours}:${minutes} ${dayPeriod}`;
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.overview}>
@@ -52,8 +72,8 @@ export default function EventOverviewScreen({ navigation, route }) {
           banner={require("@app/assets/test_card_banner.png")}
           groupName="Software Engineering Association"
           title={event.title}
-          timeBegin={event.endDate}
-          timeEnd={event.startDate}
+          timeBegin={formatDate(event.startDate)}
+          timeEnd={formatDate(event.endDate)}
           location={event.location}
           description={event.description}
           navigation={navigation}
