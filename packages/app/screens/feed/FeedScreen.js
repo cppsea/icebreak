@@ -1,17 +1,20 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Text, Image, StyleSheet, FlatList } from "react-native";
+import { Text, Image, StyleSheet, FlatList, View } from "react-native";
 import axios from "axios";
 import PropTypes from "prop-types";
 
 import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
-import EventCard from "@app/components/EventCard/EventCard";
+import EventCardText from "@app/components/EventCard/EventCardText";
+import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
 
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
 import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
+
+const WHITE = "#F5F5F5";
 
 function FeedScreen({ navigation }) {
   const { user, setUser } = useUserContext();
@@ -72,15 +75,20 @@ function FeedScreen({ navigation }) {
 
   const handleRenderItem = useCallback(({ item }) => {
     return (
-      <EventCard
-        title={item.title}
-        description={item.description}
-        location={item.location}
-        timeBegin={item.start_date}
-        timeEnd={item.end_date}
-        navigation={navigation}
-        previousScreen="FeedDrawer"
-      />
+      <View style={styles.card}>
+        <View style={styles.container}>
+          <EventCardText
+            title={item.title}
+            description={item.description}
+            location={item.location}
+            timeBegin={item.start_date}
+            timeEnd={item.end_date}
+            navigation={navigation}
+            previousScreen="FeedDrawer"
+          />
+          <EventCardRegistration registerState={false} />
+        </View>
+      </View>
     );
   }, []);
 
@@ -108,6 +116,14 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     height: 80,
     width: 80,
+  },
+  card: {
+    backgroundColor: WHITE,
+    marginBottom: 10,
+    marginTop: 10,
+  },
+  container: {
+    margin: 10,
   },
 });
 
