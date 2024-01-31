@@ -9,7 +9,7 @@ import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
 
 const DARK_GRAY = "#2C2C2C";
-const WHITE = "#F5F5F5";
+const WHITE = "#FFFFFF";
 const EVENTID = "6e22eb57-fce2-4db7-9279-5ab6c3acfec7";
 
 const mockData = [
