@@ -1,11 +1,7 @@
 const redis = require("ioredis");
 
 // Create a Redis client instance
-const redisClient = new redis({
-  host: process.env.REDIS_HOST,
-  password: process.env.REDIS_PASSWORD,
-  port: process.env.REDIS_PORT,
-});
+const redisClient = new redis(process.env.REDIS_URL);
 
 // Function to check if a token is valid by verifying its absence in the Redis set
 async function checkInvalidToken(token) {
