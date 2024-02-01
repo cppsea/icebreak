@@ -35,12 +35,14 @@ function GroupHeader(props) {
       />
 
       <View style={styles.textContainer}>
-        <GroupIcon
-          testID="groupIcon"
-          icon={guild.avatar}
-          size={iconSize}
-          backgroundColor={"#0E131F"}
-        />
+        <View style={{ marginTop: -iconSize / 2 }}>
+          <GroupIcon
+            testID="groupIcon"
+            icon={require("@app/assets/test-club-icon.png")}
+            size={iconSize}
+            backgroundColor={"#0E131F"}
+          />
+        </View>
         <GroupHeaderInfo
           testID="groupHeaderInfo"
           name={guild.name}

@@ -23,8 +23,30 @@ async function getUserByEmail(email) {
   return query;
 }
 
+async function getGuildsForUser(userId) {
+  const userGuilds = await prisma.guildMembers.findMany({
+    where: {
+      userId: userId,
+    },
+    include: {
+      guilds: {
+        select: {
+          avatar: true,
+          guildId: true,
+          name: true,
+          handler: true,
+        },
+      },
+    },
+  });
+
+  const guilds = userGuilds.map((userGuild) => userGuild.guilds);
+  return guilds;
+}
+
 module.exports = {
   getUser,
   getAllUsers,
   getUserByEmail,
+  getGuildsForUser,
 };
