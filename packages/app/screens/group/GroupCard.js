@@ -4,10 +4,10 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 
-import { useGuildContext } from "@app/utils/GuildContext";
+// import { useGuildContext } from "@app/utils/GuildContext";
 
 const GroupCard = (props) => {
-  const { guild } = useGuildContext();
+  // const { guild } = useGuildContext();
   const iconSize = 50;
 
   return (
@@ -16,7 +16,8 @@ const GroupCard = (props) => {
       <View style={styles.avatar}>
         <GroupIcon
           testID="groupIcon"
-          icon={guild.avatar}
+          // icon={guild.avatar}
+          icon={require("@app/assets/test-club-icon.png")}
           size={iconSize}
           backgroundColor={"#0E131F"}
         />
@@ -57,7 +58,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   card: {
-    alignItems: "center",
+    // alignItems: "center",
     backgroundColor: white,
     borderRadius: 10,
     flexDirection: "row",
