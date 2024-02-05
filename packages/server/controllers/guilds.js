@@ -82,6 +82,39 @@ async function getGuildMembers(guildId) {
   return members;
 }
 
+async function getGuildMembersPoints(guildId) {
+  const getMembers = await prisma.guildMembers.findMany({
+    where: {
+      guildId: guildId,
+    },
+
+    orderBy: [
+      {
+        members: {
+          points: "asc",
+        },
+      },
+    ],
+    include: {
+      select: {
+        members: {
+          select: {
+            firstName: true,
+            lastName: true,
+            handler: true,
+            avatar: true,
+            points: true,
+          },
+        },
+      },
+    },
+  });
+
+  const members = getMembers.flatMap((member) => member.members);
+
+  return members;
+}
+
 module.exports = {
   getGuild,
   searchGuildByName,
@@ -92,4 +125,5 @@ module.exports = {
   deleteGuild,
   getGuildMembers,
   guildExists,
+  getGuildMembersPoints,
 };
