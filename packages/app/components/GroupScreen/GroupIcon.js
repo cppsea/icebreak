@@ -22,6 +22,7 @@ function GroupIcon(props) {
           height: props.size,
           backgroundColor: props.backgroundColor,
         },
+        props.altImgStyle,
       ]}
     />
   );
@@ -30,14 +31,15 @@ function GroupIcon(props) {
 const styles = StyleSheet.create({
   iconStyle: {
     borderRadius: 5,
-    left: 0,
+    // left: 0,
     position: "absolute",
     resizeMode: "cover",
-    top: 0,
+    // top: 0,
   },
 });
 
 GroupIcon.propTypes = {
+  altImgStyle: PropTypes.object,
   backgroundColor: PropTypes.string,
   icon: PropTypes.number,
   size: PropTypes.number,

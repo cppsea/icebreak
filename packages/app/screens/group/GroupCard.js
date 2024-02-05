@@ -1,4 +1,3 @@
-// import RoundedIcon from "@app/components/MemberCard/RoundedIcon";
 import GroupIcon from "@app/components/GroupScreen/GroupIcon";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -13,22 +12,22 @@ const GroupCard = (props) => {
 
   return (
     <TouchableOpacity style={styles.card} onPress={props.onCardClick}>
-      {/* <View style={styles.card}> */}
       {/* <RoundedIcon></RoundedIcon> */}
-      <View style={styles.avatar}>
-        <GroupIcon
-          testID="groupIcon"
-          // icon={guild.avatar}
-          icon={require("@app/assets/test-club-icon.png")}
-          size={iconSize}
-          backgroundColor={"#0E131F"}
-        />
-      </View>
+      {/* <View style={styles.avatar}> */}
+      <GroupIcon
+        style={styles.avatar}
+        testID="groupIcon"
+        // icon={guild.avatar}
+        icon={require("@app/assets/test-club-icon.png")}
+        size={iconSize}
+        backgroundColor={"#0E131F"}
+        altImgStyle={styles.avatarImage}
+      />
+      {/* </View> */}
       <View style={styles.text}>
         <Text style={styles.name}>{props.name}</Text>
         <Text style={styles.handle}>{props.handle}</Text>
       </View>
-      {/* </View> */}
     </TouchableOpacity>
   );
 };
@@ -44,24 +43,14 @@ const grey = "#808080";
 const white = "#fff";
 
 const styles = StyleSheet.create({
-  // card: {
-  //   alignItems: "center",
-  //   backgroundColor: white,
-  //   borderRadius: 10,
-  //   elevation: 3,
-  //   flexDirection: "row",
-  //   margin: 10,
-  //   overflow: "hidden",
-  //   padding: 10,
-  // shadowColor: black,
-  // shadowOffset: { width: 0, height: 2 },
-  // shadowOpacity: 0.2,
-  // shadowRadius: 5,
-  // },
   avatar: {
     width: 60,
   },
+  avatarImage: {
+    position: "static",
+  },
   card: {
+    alignItems: "center",
     backgroundColor: white,
     borderRadius: 10,
     flexDirection: "row",
