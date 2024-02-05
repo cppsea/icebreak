@@ -44,6 +44,11 @@ const groups = [
 ];
 
 function GroupList({ route }) {
+  const openGuild = () => {
+    console.log("guild card clicked");
+    // figure out how to make this the specific guild (prob need to use guild context)
+  };
+
   return (
     <View style={styles.container}>
       <GuildProvider guildId={route.params?.guildId}>
@@ -59,6 +64,7 @@ function GroupList({ route }) {
                   : item.name.substring(0, 25) + "..."
               }
               handle={item.handle}
+              onCardClick={openGuild}
             />
           )}
           keyExtractor={(item) => item.id}

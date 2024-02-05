@@ -3,6 +3,7 @@ import GroupIcon from "@app/components/GroupScreen/GroupIcon";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 // import { useGuildContext } from "@app/utils/GuildContext";
 
@@ -11,7 +12,8 @@ const GroupCard = (props) => {
   const iconSize = 50;
 
   return (
-    <View style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={props.onCardClick}>
+      {/* <View style={styles.card}> */}
       {/* <RoundedIcon></RoundedIcon> */}
       <View style={styles.avatar}>
         <GroupIcon
@@ -26,13 +28,15 @@ const GroupCard = (props) => {
         <Text style={styles.name}>{props.name}</Text>
         <Text style={styles.handle}>{props.handle}</Text>
       </View>
-    </View>
+      {/* </View> */}
+    </TouchableOpacity>
   );
 };
 
 GroupCard.propTypes = {
   name: PropTypes.string,
   handle: PropTypes.string,
+  onCardClick: PropTypes.func,
 };
 
 const black = "#000000";
@@ -58,7 +62,7 @@ const styles = StyleSheet.create({
     width: 60,
   },
   card: {
-    // alignItems: "center",
+    alignItems: "center",
     backgroundColor: white,
     borderRadius: 10,
     flexDirection: "row",
