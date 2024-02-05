@@ -43,10 +43,10 @@ const groups = [
   { id: "2", name: "Developers Guild", handle: "@devguild" },
 ];
 
-function GroupList({ route }) {
-  const openGuild = () => {
-    console.log("guild card clicked");
-    // figure out how to make this the specific guild (prob need to use guild context)
+function GroupList({ navigation, route }) {
+  const openGuild = (groupId) => {
+    console.log("Opening group " + groupId + "...");
+    navigation.navigate("GroupScreen", { groupId: groupId });
   };
 
   return (
@@ -75,6 +75,7 @@ function GroupList({ route }) {
 }
 
 GroupList.propTypes = {
+  navigation: PropTypes.any,
   route: PropTypes.any,
 };
 
