@@ -7,32 +7,29 @@ import { useGuildContext } from "@app/utils/GuildContext";
 
 const BLUE = "#3498DB";
 const GRAY = "#2C2C2C";
-const { guild, guildMembers } = useGuildContext();
 
 function getIcon(url) {
-  let icon = "";
+  let icon = "fas fa-link";
+
   if (url.startsWith("https://discord.gg/")) {
     icon = "discord";
-  }
-  if (url.startsWith("https://www.facebook.com/")) {
+  } else if (url.startsWith("https://www.facebook.com/")) {
     icon = "facebook";
-  }
-  if (url.startsWith("https://www.instagram.com/")) {
+  } else if (url.startsWith("https://www.instagram.com/")) {
     icon = "instagram";
-  }
-  if (url.startsWith("https://www.linkedin.com/")) {
+  } else if (url.startsWith("https://www.linkedin.com/")) {
     icon = "linkedin";
-  }
-  if (url.startsWith("https://www.twitter.com/")) {
+  } else if (url.startsWith("https://www.twitter.com/")) {
     icon = "twitter";
-  } else {
-    return null;
+  } else if (url.startsWith("https://www.github.com/")) {
+    icon = "github";
   }
 
   return <FontAwesome5 name={icon} style={styles.mediaIconStyle} size={20} />;
 }
 
 function AboutScreen() {
+  const { guild, guildMembers } = useGuildContext();
   return (
     <Screen style={styles.container}>
       <View style={styles.subContainer}>
@@ -66,15 +63,6 @@ function AboutScreen() {
             color={GRAY}
           />
           <Text>{guild.location}</Text>
-        </View>
-        <View style={styles.mediaContainer}>
-          <Ionicons
-            name="information-circle-sharp"
-            style={styles.mediaIconStyle}
-            size={20}
-            color={GRAY}
-          />
-          <Text>Joined January 3, 2024</Text>
         </View>
         <View style={styles.mediaContainer}>
           <Ionicons
