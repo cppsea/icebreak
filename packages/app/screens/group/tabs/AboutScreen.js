@@ -9,7 +9,7 @@ const BLUE = "#3498DB";
 const GRAY = "#2C2C2C";
 
 function getIcon(url) {
-  let icon = "fas fa-link";
+  let icon = "link";
 
   if (url.startsWith("https://discord.gg/")) {
     icon = "discord";
@@ -19,9 +19,9 @@ function getIcon(url) {
     icon = "instagram";
   } else if (url.startsWith("https://www.linkedin.com/")) {
     icon = "linkedin";
-  } else if (url.startsWith("https://www.twitter.com/")) {
+  } else if (url.startsWith("https://twitter.com/")) {
     icon = "twitter";
-  } else if (url.startsWith("https://www.github.com/")) {
+  } else if (url.startsWith("https://github.com/")) {
     icon = "github";
   }
 
