@@ -4,10 +4,7 @@ import { View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-// import { useGuildContext } from "@app/utils/GuildContext";
-
 const GroupCard = (props) => {
-  // const { guild } = useGuildContext();
   const iconSize = 50;
 
   return (
@@ -17,7 +14,7 @@ const GroupCard = (props) => {
       <GroupIcon
         style={styles.avatar}
         testID="groupIcon"
-        // icon={guild.avatar}
+        // icon={props.avatar}
         icon={require("@app/assets/test-club-icon.png")}
         size={iconSize}
         backgroundColor={"#0E131F"}
@@ -33,6 +30,7 @@ const GroupCard = (props) => {
 };
 
 GroupCard.propTypes = {
+  avatar: PropTypes.string,
   name: PropTypes.string,
   handle: PropTypes.string,
   onCardClick: PropTypes.func,
