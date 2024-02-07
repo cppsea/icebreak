@@ -1,17 +1,11 @@
-const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
-const { s3Client } = require("../utils/s3");
-const {
-  PutObjectCommand,
-  GetObjectCommand,
-  DeleteObjectCommand,
-  HeadObjectCommand,
-} = require("@aws-sdk/client-s3");
 const prisma = require("../prisma/prisma");
+const { s3Client } = require("../utils/s3");
+const { PutObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
 
-const EXPIRATION_IN_SECONDS = 3600;
+const AWS_URL = "https://icebreak-assets.s3.us-west-1.amazonaws.com";
 
-async function upload(imageType, imageUUID, imageData) {
-  const key = imageType + "." + imageUUID + ".jpg";
+async function uploadImageInAWS(imageType, entityUUID, imageData) {
+  const key = imageType + "." + entityUUID + ".jpg";
   const body = Buffer.from(imageData, "base64");
 
   const putObjectCommand = new PutObjectCommand({
@@ -19,95 +13,126 @@ async function upload(imageType, imageUUID, imageData) {
     Key: key,
     Body: body,
   });
-  const getObjectCommand = new GetObjectCommand({
-    Bucket: "icebreak-assets",
-    Key: key,
-  });
 
   await s3Client.send(putObjectCommand);
-  return await getSignedUrl(s3Client, getObjectCommand, {
-    expiresIn: EXPIRATION_IN_SECONDS,
-  });
+  const imageUrl = `${AWS_URL}/${key}`;
+  return imageUrl;
 }
 
-async function retrieve(imageType, imageUUID) {
-  const key = imageType + "." + imageUUID + ".jpg";
-  const command = new GetObjectCommand({
-    Bucket: "icebreak-assets",
-    Key: key,
-  });
-
-  return await getSignedUrl(s3Client, command, {
-    expiresIn: EXPIRATION_IN_SECONDS,
-  });
+async function getImageInDb(imageType, entityUUID) {
+  switch (imageType) {
+    case "user_avatar":
+      return prisma.users.findUniqueOrThrow({
+        where: {
+          userId: entityUUID,
+        },
+        select: {
+          avatar: true,
+        },
+      });
+    case "guild_avatar":
+      return prisma.guilds.findUniqueOrThrow({
+        where: {
+          userId: entityUUID,
+        },
+        select: {
+          avatar: true,
+        },
+      });
+    case "guild_banner":
+      return prisma.guilds.findUniqueOrThrow({
+        where: {
+          userId: entityUUID,
+        },
+        select: {
+          banner: true,
+        },
+      });
+    case "event_thumbnail":
+      return prisma.events.findUniqueOrThrow({
+        where: {
+          userId: entityUUID,
+        },
+        select: {
+          thumbnail: true,
+        },
+      });
+  }
 }
 
-async function remove(imageType, imageUUID) {
-  const key = imageType + "." + imageUUID + ".jpg";
+async function deleteImageInAWS(imageType, entityUUID) {
+  const key = imageType + "." + entityUUID + ".jpg";
   const command = new DeleteObjectCommand({
     Bucket: "icebreak-assets",
     Key: key,
   });
-  const response = await s3Client.send(command);
-  return response;
+
+  await s3Client.send(command);
 }
 
-async function update(imageType, imageData, imageUUID) {
-  const key = imageType + "." + imageUUID + ".jpg";
+async function updateImageInAWS(imageType, entityUUID, imageData) {
+  const key = imageType + "." + entityUUID + ".jpg";
   const body = Buffer.from(imageData, "base64");
-  const patchObjectCommand = new PutObjectCommand({
+  const putObjectCommand = new PutObjectCommand({
     Bucket: "icebreak-assets",
     Key: key,
     Body: body,
   });
-  const getObjectCommand = new GetObjectCommand({
-    Bucket: "icebreak-assets",
-    Key: key,
-  });
-  await s3Client.send(patchObjectCommand);
-  return await getSignedUrl(s3Client, getObjectCommand, {
-    expiresIn: EXPIRATION_IN_SECONDS,
-  });
+
+  await s3Client.send(putObjectCommand);
+  const imageUrl = `${AWS_URL}/${key}`;
+  return imageUrl;
 }
 
-async function existsInS3(imageType, imageUUID) {
-  const key = imageType + "." + imageUUID + ".jpg";
-  const command = new HeadObjectCommand({
-    Bucket: "icebreak-assets",
-    Key: key,
-  });
-  await s3Client.send(command);
-}
-
-async function existsInPrisma(imageType, imageUUID) {
+async function updateImageInDb(imageType, entityUUID, imageUrl) {
   switch (imageType) {
     case "user_avatar":
-      return !!(await prisma.users.findUnique({
+      await prisma.users.update({
         where: {
-          userId: imageUUID,
+          userId: entityUUID,
         },
-      }));
+        data: {
+          avatar: imageUrl,
+        },
+      });
+      break;
     case "guild_avatar":
+      await prisma.guilds.update({
+        where: {
+          guildId: entityUUID,
+        },
+        data: {
+          avatar: imageUrl,
+        },
+      });
+      break;
     case "guild_banner":
-      return !!(await prisma.guilds.findUnique({
+      await prisma.guilds.update({
         where: {
-          guildId: imageUUID,
+          guildId: entityUUID,
         },
-      }));
-    case "event_banner":
-      return !!(await prisma.events.findUnique({
+        data: {
+          banner: imageUrl,
+        },
+      });
+      break;
+    case "event_thumbnail":
+      await prisma.events.update({
         where: {
-          eventId: imageUUID,
+          guildId: entityUUID,
         },
-      }));
+        data: {
+          thumbnail: imageUrl,
+        },
+      });
+      break;
   }
 }
 
 module.exports = {
-  upload,
-  retrieve,
-  remove,
-  update,
-  existsInS3,
-  existsInPrisma,
+  uploadImageInAWS,
+  getImageInDb,
+  deleteImageInAWS,
+  updateImageInAWS,
+  updateImageInDb,
 };

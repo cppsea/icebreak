@@ -1,77 +1,39 @@
 const express = require("express");
 const router = express.Router();
-const { validate } = require("uuid");
+const { matchedData, validationResult } = require("express-validator");
 
 const AuthController = require("../../controllers/auth");
 const ImagesController = require("../../controllers/images");
+const {
+  jpegBase64Validator,
+  entityValidator,
+} = require("../../validators/images");
 
-const VALID_IMAGE_TYPES = [
-  "user_avatar",
-  "guild_avatar",
-  "guild_banner",
-  "event_banner",
-];
-
-router.put(
-  "/:type/:UUID",
+router.post(
+  "/:imageType/:entityUUID",
+  entityValidator,
+  jpegBase64Validator,
   AuthController.authenticate,
   async (request, response) => {
-    const imageType = request.params.type;
-    const imageUUID = request.params.UUID;
-    const imageData = request.body.imageData;
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
 
-    if (!VALID_IMAGE_TYPES.includes(imageType)) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageType: `Image type '${imageType}' is invalid.`,
-        },
-      });
-      return;
-    }
-    if (!validate(imageUUID)) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageUUID: `Image UUID '${imageUUID}' is invalid.`,
-        },
-      });
-      return;
-    }
-    if (!imageData) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageData: "Request body missing value 'imageData'.",
-        },
-      });
-      return;
-    }
-    if (!imageData.startsWith("/9j/")) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageData: "Invalid Base64-encoded JPEG.",
-        },
-      });
-      return;
-    }
-    if (!(await ImagesController.existsInPrisma(imageType, imageUUID))) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
-        },
-      });
-      return;
-    }
+    const { imageType, entityUUID, jpegBase64 } = matchedData(request);
 
     try {
-      const url = await ImagesController.upload(
+      const url = await ImagesController.uploadImageInAWS(
         imageType,
-        imageUUID,
-        imageData
+        entityUUID,
+        jpegBase64
       );
+
+      await ImagesController.updateImageInDb(imageType, entityUUID, url);
+
       response.status(200).json({
         status: "success",
         data: {
@@ -88,34 +50,22 @@ router.put(
 );
 
 router.get(
-  "/:type/:UUID",
+  "/:imageType/:entityUUID",
   AuthController.authenticate,
+  entityValidator,
   async (request, response) => {
-    const imageType = request.params.type;
-    const imageUUID = request.params.UUID;
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
 
-    if (!VALID_IMAGE_TYPES.includes(imageType)) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageType: `Image type '${imageType}' is invalid.`,
-        },
-      });
-      return;
-    }
-    if (!validate(imageUUID)) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageUUID: `Image UUID '${imageUUID}' is invalid.`,
-        },
-      });
-      return;
-    }
+    const { imageType, entityUUID } = matchedData(request);
 
     try {
-      await ImagesController.existsInS3(imageType, imageUUID);
-      const url = await ImagesController.retrieve(imageType, imageUUID);
+      const url = await ImagesController.getImageInDb(imageType, entityUUID);
       response.status(200).json({
         status: "success",
         data: {
@@ -123,15 +73,6 @@ router.get(
         },
       });
     } catch (err) {
-      if (err.name === "NotFound") {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
-          },
-        });
-        return;
-      }
       response.status(500).json({
         status: "error",
         message: err.message,
@@ -141,46 +82,29 @@ router.get(
 );
 
 router.delete(
-  "/:type/:UUID",
+  "/:imageType/:entityUUID",
   AuthController.authenticate,
+  entityValidator,
   async (request, response) => {
-    const imageType = request.params.type;
-    const imageUUID = request.params.UUID;
-    if (!VALID_IMAGE_TYPES.includes(imageType)) {
-      response.status(400).json({
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      return response.status(400).json({
         status: "fail",
-        data: {
-          imageType: `Image type ${imageType} is invalid.`,
-        },
+        data: result.array(),
       });
-      return;
     }
-    if (!validate(imageUUID)) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageUUID: `Image UUID '${imageUUID}' is invalid.`,
-        },
-      });
-      return;
-    }
+
+    const { imageType, entityUUID } = matchedData(request);
     try {
-      await ImagesController.existsInS3(imageType, imageUUID);
-      await ImagesController.remove(imageType, imageUUID);
+      await ImagesController.deleteImageInAWS(imageType, entityUUID);
+      // set image column for entity in db to null = deleting image
+      await ImagesController.updateImageInDb(imageType, entityUUID, null);
+
       response.status(200).json({
         status: "success",
         data: null,
       });
     } catch (err) {
-      if (err.name === "NotFound") {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
-          },
-        });
-        return;
-      }
       response.status(500).json({
         status: "error",
         message: err.message,
@@ -189,63 +113,28 @@ router.delete(
   }
 );
 
-router.patch(
-  "/:type/:UUID",
+router.put(
+  "/:imageType/:entityUUID",
   AuthController.authenticate,
+  entityValidator,
+  jpegBase64Validator,
   async (request, response) => {
-    const imageType = request.params.type;
-    const imageUUID = request.params.UUID;
-    const imageData = request.body.imageData;
-    if (!VALID_IMAGE_TYPES.includes(imageType)) {
-      response.status(400).json({
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      return response.status(400).json({
         status: "fail",
-        message: `Image type ${imageType} is invalid.`,
+        data: result.array(),
       });
-      return;
     }
-    if (!imageData) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageData: "Request body missing value 'imageData'.",
-        },
-      });
-      return;
-    }
-    if (!validate(imageUUID)) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageUUID: `Image UUID '${imageUUID}' is invalid.`,
-        },
-      });
-      return;
-    }
-    if (!imageData.startsWith("/9j/")) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageData: "Invalid Base64-encoded JPEG.",
-        },
-      });
-      return;
-    }
-    if (!(await ImagesController.existsInPrisma(imageType, imageUUID))) {
-      response.status(400).json({
-        status: "fail",
-        data: {
-          imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
-        },
-      });
-      return;
-    }
+
+    const { imageType, entityUUID, jpegBase64 } = matchedData(request);
     try {
-      await ImagesController.existsInS3(imageType, imageUUID);
-      const url = await ImagesController.update(
+      const url = await ImagesController.updateImageInAWS(
         imageType,
-        imageData,
-        imageUUID
+        entityUUID,
+        jpegBase64
       );
+
       response.status(200).json({
         status: "success",
         data: {
@@ -253,15 +142,6 @@ router.patch(
         },
       });
     } catch (err) {
-      if (err.name === "NotFound") {
-        response.status(400).json({
-          status: "fail",
-          data: {
-            imageUUID: `A ${imageType} with UUID ${imageUUID} does not exist.`,
-          },
-        });
-        return;
-      }
       response.status(500).json({
         status: "error",
         message: err.message,
