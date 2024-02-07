@@ -4,11 +4,15 @@ import { View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const GroupCard = (props) => {
+const GuildCard = (props) => {
   const iconSize = 50;
+  const openGuild = (groupId) => {
+    alert("Opening group " + groupId + "...");
+    props.navigation.navigate("GroupScreen", { groupId: groupId });
+  };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={props.onCardClick}>
+    <TouchableOpacity style={styles.card} onPress={openGuild(props.id)}>
       {/* <RoundedIcon></RoundedIcon> */}
       {/* <View style={styles.avatar}> */}
       <GroupIcon
@@ -29,7 +33,9 @@ const GroupCard = (props) => {
   );
 };
 
-GroupCard.propTypes = {
+GuildCard.propTypes = {
+  navigation: PropTypes.object,
+  id: PropTypes.string,
   avatar: PropTypes.string,
   name: PropTypes.string,
   handle: PropTypes.string,
@@ -74,4 +80,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GroupCard;
+export default GuildCard;

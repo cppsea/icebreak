@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 // import React from "react";
 import { View, FlatList, Text, StyleSheet, Platform } from "react-native";
-import GroupCard from "./GroupCard";
+import GuildCard from "./GuildCard";
 import { GuildProvider } from "@app/utils/GuildContext.js";
 import PropTypes from "prop-types";
 
@@ -11,6 +11,7 @@ import * as SecureStore from "@app/utils/SecureStore";
 
 const shadow = "rgba(0, 0, 0, 0.25)";
 const titleColor = "rgb(51,51,51)";
+const white = "#fff";
 
 const styles = StyleSheet.create({
   card: {
@@ -19,6 +20,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   container: {
+    backgroundColor: white,
     flex: 1,
     paddingHorizontal: 5,
     paddingTop: 50,
@@ -30,7 +32,8 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
       },
       android: {
-        elevation: 4,
+        shadowColor: shadow,
+        elevation: 20,
       },
     }),
   },
@@ -77,13 +80,8 @@ const useUserGuilds = () => {
   return guilds;
 };
 
-function GroupList({ navigation, route }) {
+function GuildList({ navigation, route }) {
   const userGuilds = useUserGuilds(); // get data
-
-  const openGuild = (groupId) => {
-    console.log("Opening group " + groupId + "...");
-    navigation.navigate("GroupScreen", { groupId: groupId });
-  };
 
   return (
     <View style={styles.container}>
@@ -92,7 +90,7 @@ function GroupList({ navigation, route }) {
         <FlatList
           data={userGuilds} // switch userGuilds to groups for using mock data
           renderItem={({ item }) => (
-            <GroupCard
+            <GuildCard
               key={item.guildId}
               style={styles.card}
               name={
@@ -101,19 +99,20 @@ function GroupList({ navigation, route }) {
                   : item.name.substring(0, 25) + "..."
               }
               handle={item.handler}
-              onCardClick={openGuild}
+              navigation={navigation}
+              id={item.guildId}
             />
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => item.guildId.toString()}
         />
       </GuildProvider>
     </View>
   );
 }
 
-GroupList.propTypes = {
+GuildList.propTypes = {
   navigation: PropTypes.any,
   route: PropTypes.any,
 };
 
-export default GroupList;
+export default GuildList;
