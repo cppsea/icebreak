@@ -46,6 +46,7 @@ model events {
 model guildMembers {
   userId  String @map("user_id") @db.Uuid
   guildId String @map("guild_id") @db.Uuid
+  points  Int    @db.SmallInt
   guilds  guilds @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
   members users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
