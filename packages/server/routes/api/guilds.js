@@ -260,14 +260,12 @@ router.get(
     const guildId = data.guildId;
 
     try {
-      const guildsMembersPoints = await GuildController.getGuildMembersPoints(
-        guildId
-      );
+      const guildLeaderboard = await GuildController.guildLeaderboard(guildId);
 
       response.status(200).json({
         status: "success",
         data: {
-          guildsMembersPoints,
+          guildLeaderboard,
         },
       });
     } catch (error) {

@@ -16,6 +16,7 @@ model users {
   email          String           @unique @db.VarChar(255)
   avatar         String?          @db.VarChar(255)
   password       String?          @db.VarChar(255)
+  handler        String?          @db.VarChar(50)
   eventAttendees eventAttendees[]
   guildMembers   guildMembers[]
 }
