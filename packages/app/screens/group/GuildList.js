@@ -46,11 +46,6 @@ const styles = StyleSheet.create({
   },
 });
 
-// const groups = [
-//   { id: "1", name: "Software Engineering Association", handle: "@cppsea" },
-//   { id: "2", name: "Developers Guild", handle: "@devguild" },
-// ];
-
 const userId = "80eb49ef-ce2a-46e2-b440-911192976ac1"; // temporary userId
 
 const useUserGuilds = () => {
@@ -86,21 +81,22 @@ function GuildList({ navigation, route }) {
   return (
     <View style={styles.container}>
       <GuildProvider guildId={route.params?.guildId}>
-        <Text style={styles.title}>Your Groups</Text>
+        <Text style={styles.title}>Your Guilds</Text>
         <FlatList
-          data={userGuilds} // switch userGuilds to groups for using mock data
+          data={userGuilds}
           renderItem={({ item }) => (
             <GuildCard
               key={item.guildId}
               style={styles.card}
+              id={item.guildId}
+              navigation={navigation}
+              avatar={item.avatar}
               name={
                 item.name.length <= 28
                   ? item.name
                   : item.name.substring(0, 25) + "..."
               }
               handle={item.handler}
-              navigation={navigation}
-              id={item.guildId}
             />
           )}
           keyExtractor={(item) => item.guildId.toString()}

@@ -8,24 +8,24 @@ const GuildCard = (props) => {
   const iconSize = 50;
 
   const openGuild = (groupId) => {
-    alert("Opening group " + groupId + "...");
+    // alert("Opening group " + groupId + "...");
     props.navigation.navigate("GroupScreen", { groupId: groupId });
   };
 
   return (
     <TouchableOpacity style={styles.card} onPress={() => openGuild(props.id)}>
-      {/* <RoundedIcon></RoundedIcon> */}
-      {/* <View style={styles.avatar}> */}
       <GroupIcon
         style={styles.avatar}
         testID="groupIcon"
-        // icon={props.avatar}
-        icon={require("@app/assets/test-club-icon.png")}
+        icon={
+          props.avatar
+            ? props.avatar
+            : require("@app/assets/test-club-icon.png")
+        } // TEMPORARY USING test-club-icon ... switch out with something else later for n/a icon
         size={iconSize}
         backgroundColor={"#0E131F"}
         altImgStyle={styles.avatarImage}
       />
-      {/* </View> */}
       <View style={styles.text}>
         <Text style={styles.name}>{props.name}</Text>
         <Text style={styles.handle}>{props.handle}</Text>
