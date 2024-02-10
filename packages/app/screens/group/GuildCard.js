@@ -6,13 +6,14 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 const GuildCard = (props) => {
   const iconSize = 50;
+
   const openGuild = (groupId) => {
     alert("Opening group " + groupId + "...");
     props.navigation.navigate("GroupScreen", { groupId: groupId });
   };
 
   return (
-    <TouchableOpacity style={styles.card} onPress={openGuild(props.id)}>
+    <TouchableOpacity style={styles.card} onPress={() => openGuild(props.id)}>
       {/* <RoundedIcon></RoundedIcon> */}
       {/* <View style={styles.avatar}> */}
       <GroupIcon
