@@ -101,7 +101,7 @@ async function guildLeaderboard(guildId) {
 
     orderBy: [
       {
-        points: "asc",
+        points: "desc",
       },
     ],
   });
