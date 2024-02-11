@@ -11,17 +11,17 @@ const GRAY = "#2C2C2C";
 function getIcon(url) {
   let icon = "link";
 
-  if (url.startsWith("https://discord.gg/")) {
+  if (url.includes("discord")) {
     icon = "discord";
-  } else if (url.startsWith("https://www.facebook.com/")) {
+  } else if (url.includes("facebook")) {
     icon = "facebook";
-  } else if (url.startsWith("https://www.instagram.com/")) {
+  } else if (url.includes("instagram")) {
     icon = "instagram";
-  } else if (url.startsWith("https://www.linkedin.com/")) {
+  } else if (url.includes("linkedin")) {
     icon = "linkedin";
-  } else if (url.startsWith("https://twitter.com/")) {
+  } else if (url.includes("twitter") || url.includes("x.com")) {
     icon = "twitter";
-  } else if (url.startsWith("https://github.com/")) {
+  } else if (url.includes("github")) {
     icon = "github";
   }
 
