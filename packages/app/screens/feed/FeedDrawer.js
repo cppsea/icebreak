@@ -64,10 +64,10 @@ function FeedDrawer() {
           headerShown: false,
         }}
       />
-      <Feed.Screen 
-        name="Create Group" 
-        component={CreateGroupStack} 
-        options={{ 
+      <Feed.Screen
+        name="Create Group"
+        component={CreateGroupStack}
+        options={{
           headerShown: false,
         }}
       />
@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   drawerButton: {
-    marginLeft: 18
+    marginLeft: 18,
   },
   drawerDisplayName: {
     color: DARK_BLUE,

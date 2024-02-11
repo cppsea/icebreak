@@ -1,10 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const { validate } = require("uuid");
 const EventController = require("../../controllers/events");
 const AuthController = require("../../controllers/auth");
+const {
+  createEventValidator,
+  updateEventValidator,
+  eventIdValidator,
+} = require("../../validators/events");
+const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
-
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
@@ -92,12 +96,61 @@ router.get(
   }
 );
 
+router.post(
+  //Router to create events
+  "/:guildId",
+  AuthController.authenticate,
+  createEventValidator,
+  async (request, response) => {
+    // access validation results
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+
+    const guildId = data.guildId;
+    const eventData = data;
+
+    try {
+      const newEvent = await EventController.createEvent(eventData, guildId);
+      response.status(200).json({
+        status: "success",
+        event: newEvent,
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 router.get(
   "/:eventId",
+  eventIdValidator,
   AuthController.authenticate,
   async (request, response) => {
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
     try {
-      const { eventId } = request.params;
+      const validatedData = matchedData(request);
+      const eventId = validatedData.eventId;
       const event = await EventController.getEvent(eventId);
       response.status(200).json({
         status: "success",
@@ -114,32 +167,101 @@ router.get(
   }
 );
 
+router.delete(
+  "/:eventId",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const validatedData = matchedData(request);
+      const eventId = validatedData.eventId;
+      const deletedEvent = await EventController.deleteEvent(eventId);
+      if (deletedEvent) {
+        response.status(200).json({
+          status: "success",
+          data: null,
+        });
+      }
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.put(
+  //Route handler to update event
+  "/:eventId",
+  AuthController.authenticate,
+  eventIdValidator,
+  updateEventValidator,
+  async (request, response) => {
+    // access validation results
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const validatedData = matchedData(request);
+      const eventId = validatedData.eventId;
+
+      const updatedEvent = await EventController.updateEvent(
+        eventId,
+        validatedData
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          event: updatedEvent,
+        },
+      });
+    } catch (error) {
+      //Any error that happens in the update controller will be caught and handled here
+      //For now just respond with the error message
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+      return;
+    }
+  }
+);
+
 router.get(
   "/:eventId/attendees",
   AuthController.authenticate,
+  eventIdValidator,
   async (request, response) => {
-    const eventId = request.params.eventId;
-
-    if (!validate(eventId)) {
-      response.status(400).json({
+    const errors = validationResult(request);
+    if (!errors.isEmpty()) {
+      return response.status(400).json({
         status: "fail",
-        data: {
-          eventId: `Given eventId ${eventId} is invalid.`,
-        },
+        data: errors.array(),
       });
-      return;
-    }
-    if (!(await EventController.existsInPrisma(eventId))) {
-      response.status(404).json({
-        status: "fail",
-        data: {
-          eventId: `No event exists with an ID of ${eventId}`,
-        },
-      });
-      return;
     }
     try {
-      const { eventId } = request.params;
+      const { eventId } = matchedData(request);
       const eventAttendeesData = await EventController.getEventAttendees(
         eventId
       );

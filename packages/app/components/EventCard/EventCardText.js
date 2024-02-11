@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import PropTypes from "prop-types";
 
 const GRAY = "grey";
+const titleColor = "#002366";
 
 const styles = StyleSheet.create({
   description: {
@@ -10,8 +11,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   eventTitle: {
+    color: titleColor,
     fontSize: 20,
     fontWeight: "bold",
+  },
+  eventTitlePressed: {
+    color: GRAY,
+    fontSize: 20,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
   smallText: {
     color: GRAY,
@@ -19,16 +27,39 @@ const styles = StyleSheet.create({
   },
 });
 
-function EventCardText({ timeBegin, timeEnd, title, location, description }) {
+function EventCardText(props) {
+  const [isTitlePressed, setPressState] = useState(false);
+  const onTitlePress = () => {
+    setPressState(true);
+    props.navigation.navigate("EventOverviewScreen", {
+      previousScreen: props.previousScreen,
+      title: props.title,
+      timeBegin: props.timeBegin,
+      timeEnd: props.timeEnd,
+      location: props.location,
+      description: props.description,
+    });
+
+    setTimeout(() => {
+      setPressState(false);
+    }, 500);
+  };
+
   return (
     <View>
       <Text style={styles.smallText}>
-        {timeBegin} - {timeEnd}
+        {props.timeBegin} - {props.timeEnd}
       </Text>
-      <Text style={styles.eventTitle}>{title}</Text>
-      <Text style={styles.smallText}>📌 {location}</Text>
+      <Text
+        {...(isTitlePressed
+          ? { style: styles.eventTitlePressed }
+          : { style: styles.eventTitle })}
+        onPress={onTitlePress}>
+        {props.title}
+      </Text>
+      <Text style={styles.smallText}>📌 {props.location}</Text>
       <Text style={styles.description} numberOfLines={3}>
-        {description}
+        {props.description}
       </Text>
     </View>
   );
@@ -40,6 +71,8 @@ EventCardText.propTypes = {
   timeBegin: PropTypes.string,
   timeEnd: PropTypes.string,
   title: PropTypes.string,
+  navigation: PropTypes.object,
+  previousScreen: PropTypes.string,
 };
 
 export default EventCardText;
