@@ -2,13 +2,13 @@ import GroupIcon from "@app/components/GroupScreen/GroupIcon";
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { TouchableOpacity } from "react-native";
 
 const GuildCard = (props) => {
   const iconSize = 50;
 
   const openGuild = (groupId) => {
-    // alert("Opening group " + groupId + "...");
+    alert("Opening group " + groupId + "...");
     props.navigation.navigate("GroupScreen", { groupId: groupId });
   };
 
@@ -58,6 +58,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: white,
     borderRadius: 10,
+    elevation: 15,
     flexDirection: "row",
     justifyItems: "center",
     margin: 10,
@@ -67,6 +68,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 5,
+    zIndex: 99,
   },
   handle: {
     color: grey,
