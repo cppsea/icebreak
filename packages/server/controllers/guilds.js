@@ -82,7 +82,7 @@ async function getGuildMembers(guildId) {
   return members;
 }
 
-async function guildLeaderboard(guildId) {
+async function getLeaderboard(guildId) {
   const guildLeaderboard = await prisma.guildMembers.findMany({
     where: {
       guildId: guildId,
@@ -124,5 +124,5 @@ module.exports = {
   deleteGuild,
   getGuildMembers,
   guildExists,
-  guildLeaderboard,
+  getLeaderboard,
 };

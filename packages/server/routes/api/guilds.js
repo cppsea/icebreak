@@ -260,7 +260,7 @@ router.get(
     const guildId = data.guildId;
 
     try {
-      const guildLeaderboard = await GuildController.guildLeaderboard(guildId);
+      const guildLeaderboard = await GuildController.getLeaderboard(guildId);
 
       response.status(200).json({
         status: "success",
