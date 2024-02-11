@@ -8,7 +8,6 @@ const GuildCard = (props) => {
   const iconSize = 50;
 
   const openGuild = (groupId) => {
-    alert("Opening group " + groupId + "...");
     props.navigation.navigate("GroupScreen", { groupId: groupId });
   };
 
