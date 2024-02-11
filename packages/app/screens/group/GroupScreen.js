@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import PropTypes from "prop-types";
 
 import GroupHeader from "../../components/GroupScreen/GroupHeader.js";
 import GroupTabs from "../../components/GroupScreen/GroupTabs.js";
@@ -23,7 +24,7 @@ const tabs = [
   { name: "Newsletter", screen: NewsletterScreen },
 ];
 
-function GroupScreen() {
+function GroupScreen({ navigation, route }) {
   const tabRef = useRef(null);
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -43,7 +44,7 @@ function GroupScreen() {
 
   return (
     <Screen style={styles.container}>
-      <GuildProvider>
+      <GuildProvider guildId={route.params?.guildId}>
         <ScrollView scrollEventThrottle={16} stickyHeaderIndices={[1]}>
           <GroupHeader testID="groupHeader" />
           <View ref={tabRef}>
@@ -56,12 +57,20 @@ function GroupScreen() {
             />
           </View>
           {activeTab.screen && (
-            <activeTab.screen testID="tab" style={styles.screen} />
+            <activeTab.screen
+              testID="tab"
+              style={styles.screen}
+              navigation={navigation}
+              previousScreen="GroupScreen"
+            />
           )}
         </ScrollView>
       </GuildProvider>
     </Screen>
   );
 }
-
+GroupScreen.propTypes = {
+  navigation: PropTypes.object,
+  route: PropTypes.object,
+};
 export default GroupScreen;

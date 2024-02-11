@@ -16,6 +16,7 @@ model users {
   email          String           @unique @db.VarChar(255)
   avatar         String?          @db.VarChar(255)
   password       String?          @db.VarChar(255)
+  handler        String?          @db.VarChar(50)
   eventAttendees eventAttendees[]
   guildMembers   guildMembers[]
 }
@@ -31,7 +32,7 @@ model eventAttendees {
 }
 
 model events {
-  eventId        String           @id(map: "pk_event") @map("event_id") @db.Uuid
+  eventId        String           @id(map: "pk_event") @default(dbgenerated("gen_random_uuid()")) @map("event_id") @db.Uuid
   guildId        String           @map("guild_id") @db.Uuid
   title          String           @db.VarChar(255)
   description    String?          @db.VarChar(255)
@@ -40,12 +41,13 @@ model events {
   location       String?          @db.VarChar(255)
   thumbnail      String?          @db.VarChar(255)
   eventAttendees eventAttendees[]
-  guilds         guilds           @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "event_guild_id_fkey")
+  guilds         guilds           @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "fk_guild")
 }
 
 model guildMembers {
   userId  String @map("user_id") @db.Uuid
   guildId String @map("guild_id") @db.Uuid
+  points  Int    @db.SmallInt
   guilds  guilds @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
   members users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 

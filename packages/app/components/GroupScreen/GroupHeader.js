@@ -5,50 +5,24 @@ import GroupIcon from "./GroupIcon";
 import GroupHeaderInfo from "./GroupHeaderInfo";
 import GroupMediaIcon from "./GroupMediaIcon";
 import PropTypes from "prop-types";
+import { useGuildContext } from "@app/utils/GuildContext";
 
 const bannerHeight = 110;
 const iconSize = 62;
-const orgTags = [
-  "cs",
-  "software",
-  "tech",
-  "engineering",
-  "programming",
-  "algorithms",
-  "development",
-  "code",
-]; // string[]
 
-const exampleDescription =
-  "The Software Engineering Association (SEA) teaches and encourages the professional skills needed to be a Software Engineer, including code review, unit testing, communication, and software design. Our online and in-meeting exercises allow anyone, novice or professional, to sharpen and practice these skills.";
-const testURL = "https://cppsea.com";
 const testGithubUrl = "https://github.com";
 const testDiscordUrl = "https://discord.com";
 const testLinkedInUrl = "https://linkedin.com";
 const testInstagramUrl = "https://instagram.com";
 
 function GroupHeader(props) {
-  const styles = StyleSheet.create({
-    bannerStyle: {
-      height: bannerHeight,
-      resizeMode: "cover",
-      width: "100%",
-    },
-    headerContainer: {
-      height: "auto",
-    },
-    textContainer: {
-      flexDirection: "row",
-      marginHorizontal: 12,
-      marginTop: -0.5 * iconSize,
-    },
-  });
+  const { guild, guildMembers } = useGuildContext();
 
   return (
     <View style={styles.headerContainer} testID={props.testID}>
       <Image
         testID="clubBanner"
-        source={require("@app/assets/test-club-banner.png")}
+        source={{ uri: guild.banner }}
         style={styles.bannerStyle}
       />
       <GroupMediaIcon
@@ -61,26 +35,44 @@ function GroupHeader(props) {
       />
 
       <View style={styles.textContainer}>
-        <GroupIcon
-          testID="groupIcon"
-          icon={require("@app/assets/test-club-icon.png")}
-          size={iconSize}
-          backgroundColor={"#0E131F"}
-        />
+        <View style={{ marginTop: -iconSize / 2 }}>
+          <GroupIcon
+            testID="groupIcon"
+            icon={require("@app/assets/test-club-icon.png")}
+            size={iconSize}
+            backgroundColor={"#0E131F"}
+          />
+        </View>
         <GroupHeaderInfo
           testID="groupHeaderInfo"
-          name={"Software Engineering Association"}
-          handler={"cppsea"}
-          description={exampleDescription}
-          location={"Pomona, CA"}
-          members={100}
-          url={testURL}
-          tags={orgTags}
+          name={guild.name}
+          handler={guild.handler}
+          description={guild.description}
+          location={guild.location}
+          members={guildMembers.length}
+          url={guild.website}
+          tags={guild.tags}
         />
       </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  bannerStyle: {
+    height: bannerHeight,
+    resizeMode: "cover",
+    width: "100%",
+  },
+  headerContainer: {
+    height: "auto",
+  },
+  textContainer: {
+    flexDirection: "row",
+    marginHorizontal: 12,
+    marginTop: -0.5 * iconSize,
+  },
+});
 
 GroupHeader.propTypes = {
   testID: PropTypes.string,

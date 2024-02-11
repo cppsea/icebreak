@@ -1,21 +1,7 @@
 import React from "react";
-import { View, StyleSheet, Image } from "react-native";
+import { StyleSheet, Image } from "react-native";
 
 import PropTypes from "prop-types";
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iconStyle: {
-    borderRadius: 5,
-    left: 0,
-    position: "absolute",
-    resizeMode: "cover",
-    top: 0,
-  },
-});
 
 /**
  * A component for GroupHeader that displays an icon for an organization.
@@ -27,29 +13,34 @@ const styles = StyleSheet.create({
  */
 function GroupIcon(props) {
   return (
-    <View
-      style={[styles.iconContainer, { marginTop: -props.size / 2 }]}
-      testID={props.testID}>
-      <Image
-        source={props.icon}
-        style={[
-          styles.iconStyle,
-          {
-            width: props.size,
-            height: props.size,
-            backgroundColor: props.backgroundColor,
-          },
-        ]}
-      />
-    </View>
+    <Image
+      source={props.icon}
+      style={[
+        styles.iconStyle,
+        {
+          width: props.size,
+          height: props.size,
+          backgroundColor: props.backgroundColor,
+        },
+      ]}
+    />
   );
 }
+
+const styles = StyleSheet.create({
+  iconStyle: {
+    borderRadius: 5,
+    left: 0,
+    position: "absolute",
+    resizeMode: "cover",
+    top: 0,
+  },
+});
 
 GroupIcon.propTypes = {
   backgroundColor: PropTypes.string,
   icon: PropTypes.number,
   size: PropTypes.number,
-  testID: PropTypes.string,
 };
 
 export default GroupIcon;
