@@ -5,7 +5,12 @@ const bcrypt = require("bcrypt");
 
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
-const { checkInvalidToken, addToTokenBlacklist } = require("../../utils/redis");
+const {
+  checkInvalidToken,
+  addToTokenBlacklist,
+  checkInvalidPasswordResetToken,
+  addToPasswordResetTokenBlacklist,
+} = require("../../utils/redis");
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   const accessToken = token.generateAccessToken(request.user);
@@ -275,6 +280,47 @@ router.post("/token/revoke", async (request, response) => {
       status: "success",
       data: null,
     });
+  } catch (error) {
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
+  }
+});
+
+// Password Reset Route Skeleton
+router.post("/password/reset", async (request, response) => {
+  try {
+    const { token } = request.query,
+      { password } = request.body;
+
+    // i need to add an express validator middleware to regex the password
+
+    // add the json web token check here once it's implemented, also get the user id from the payload after decoded
+
+    const redisValidate = await checkInvalidPasswordResetToken(token);
+    if (!redisValidate) {
+      return response.status(400).json({
+        status: "fail",
+        message: "This password reset token is expired/invalid!",
+      });
+    }
+
+    // call password reset controller, then blacklist the token
+    try {
+      await AuthController.resetPassword(password);
+      await addToPasswordResetTokenBlacklist(token);
+
+      response.status(200).json({
+        status: "success",
+        data: null,
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
   } catch (error) {
     response.status(500).json({
       status: "error",
