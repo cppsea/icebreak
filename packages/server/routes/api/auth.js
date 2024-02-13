@@ -288,16 +288,15 @@ router.post("/token/revoke", async (request, response) => {
   }
 });
 
-// Password Reset Route Skeleton
 router.post("/password/reset", async (request, response) => {
+  // TODO: add an express validator middleware to regex the password
   try {
-    const { token } = request.query,
-      { password } = request.body;
+    const { token } = request.query;
+    const { password } = request.body;
 
-    // i need to add an express validator middleware to regex the password
+    // TODO: add the json web token check here once it's implemented, also get the user id from the payload after decoded.
 
-    // add the json web token check here once it's implemented, also get the user id from the payload after decoded
-
+    // TODO: Since the token will be encrypted, I might have to use bcrypt.compare here instead.
     const redisValidate = await checkInvalidPasswordResetToken(token);
     if (!redisValidate) {
       return response.status(400).json({
@@ -306,9 +305,11 @@ router.post("/password/reset", async (request, response) => {
       });
     }
 
-    // call password reset controller, then blacklist the token
+    // Call password reset controller, then blacklist the token
     try {
       await AuthController.resetPassword(password);
+
+      // TODO: encrypt the token before adding it to the blacklist
       await addToPasswordResetTokenBlacklist(token);
 
       response.status(200).json({

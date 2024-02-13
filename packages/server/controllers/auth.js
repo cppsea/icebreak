@@ -189,14 +189,13 @@ async function authenticate(request, response, next) {
   }
 }
 
-// skeleton for reset password controller function
 async function resetPassword(userId, password) {
-  // encrypt the password
+  // Encrypt the password with the method used for registering
   const saltRounds = 10;
   const salt = await bcrypt.genSalt(saltRounds);
   const hashedPass = await bcrypt.hash(password, salt);
 
-  // update the db with the new encryped password
+  // Update the db with the new encryped password
   return await prisma.guilds.update({
     where: {
       userId: userId,
