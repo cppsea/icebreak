@@ -17,6 +17,23 @@ async function addToTokenBlacklist(token) {
   await redisClient.sadd("token_blacklist", token);
 }
 
+// Function to check if a password reset token is valid by verifying its absence in the Redis set
+async function checkInvalidPasswordResetToken(token) {
+  const isMember = await redisClient.sismember(
+    "password_reset_token_blacklist",
+    token
+  );
+  if (isMember === 1) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+async function addToPasswordResetTokenBlacklist(token) {
+  await redisClient.sadd("password_reset_token_blacklist", token);
+}
+
 // Log any errors that occur during the Redis connection
 redisClient.on("error", (error) => {
   console.error("Redis connection error:", error);
@@ -27,4 +44,6 @@ module.exports = {
   redisClient,
   checkInvalidToken,
   addToTokenBlacklist,
+  checkInvalidPasswordResetToken,
+  addToPasswordResetTokenBlacklist,
 };
