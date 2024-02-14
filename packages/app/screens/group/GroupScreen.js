@@ -8,7 +8,7 @@ import Screen from "@app/components/Screen";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import EventsScreen from "../../screens/group/tabs/EventsScreen";
+import EventsScreen from "./tabs/events/EventsScreen.js";
 import MembersScreen from "../../screens/group/tabs/MembersScreen";
 import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
 import AboutScreen from "../../screens/group/tabs/AboutScreen";

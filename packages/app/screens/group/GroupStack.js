@@ -3,6 +3,8 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import GroupScreen from "./GroupScreen";
 import EventOverviewScreen from "./event_overview/EventOverviewScreen";
+import EventsCreationScreen from "./tabs/events/EventsCreationScreen";
+
 const Group = createNativeStackNavigator();
 
 function GroupStack() {
@@ -14,6 +16,10 @@ function GroupStack() {
       <Group.Screen
         name="EventOverviewScreen"
         component={EventOverviewScreen}
+      />
+      <Group.Screen
+        name="EventsCreationScreen"
+        component={EventsCreationScreen}
       />
     </Group.Navigator>
   );

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, StyleSheet, Text, Image, Button } from "react-native";
 import PropTypes from "prop-types";
 import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
@@ -68,6 +68,10 @@ function EventsScreen(props) {
     <View style={[props.style, styles.container]} testID={props.testID}>
       {mockData.map((section) => (
         <View key={section.title}>
+          <Button
+            onPress={() => props.navigation.navigate("EventsCreationScreen")}
+            title="Create event"
+          />
           <Text style={styles.header}>{section.title}</Text>
           {section.data.map((item, index) => (
             <View style={styles.card} key={index}>
