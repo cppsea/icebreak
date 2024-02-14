@@ -12,6 +12,7 @@ const guildIdValidator = [
     .escape()
     .isUUID()
     .withMessage("Guild ID not a valid UUID.")
+    .bail()
     .custom(async (value) => {
       try {
         await GuildController.getGuild(value);

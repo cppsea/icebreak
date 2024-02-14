@@ -89,7 +89,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   drawerButton: {
-    marginLeft: 18
+    marginLeft: 18,
   },
   drawerDisplayName: {
     color: DARK_BLUE,
