@@ -24,8 +24,6 @@ function ForgotPasswordScreen({ route }) {
 
   const [errors, setErrors] = useState({});
 
-
-
   const handleOnChange = (inputKey, text) => {
     setInputs((prevState) => ({ ...prevState, [inputKey]: text }));
   };
