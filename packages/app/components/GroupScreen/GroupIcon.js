@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, View, Text } from "react-native";
 
 import PropTypes from "prop-types";
 
@@ -12,7 +12,7 @@ import PropTypes from "prop-types";
  * @param {string} props.icon - Icon image source.
  */
 function GroupIcon(props) {
-  return (
+  return props.icon ? (
     <Image
       source={props.icon}
       style={[
@@ -25,16 +25,41 @@ function GroupIcon(props) {
         props.altImgStyle,
       ]}
     />
+  ) : (
+    <View
+      style={[
+        styles.iconTextStyle,
+        {
+          width: props.size,
+          height: props.size,
+          backgroundColor: props.backgroundColor,
+        },
+        props.altImgStyle,
+      ]}>
+      <Text style={styles.iconText}>{props.guildName.charAt(0)}</Text>
+    </View>
   );
 }
+
+const white = "#FFFFFF";
 
 const styles = StyleSheet.create({
   iconStyle: {
     borderRadius: 5,
-    // left: 0,
     position: "absolute",
     resizeMode: "cover",
-    // top: 0,
+  },
+  iconText: {
+    color: white,
+    fontSize: 30,
+    fontWeight: "bold",
+  },
+  iconTextStyle: {
+    alignItems: "center",
+    borderRadius: 5,
+    justifyContent: "center",
+    position: "absolute",
+    resizeMode: "cover",
   },
 });
 
@@ -43,6 +68,7 @@ GroupIcon.propTypes = {
   backgroundColor: PropTypes.string,
   icon: PropTypes.number,
   size: PropTypes.number,
+  guildName: PropTypes.string,
 };
 
 export default GroupIcon;

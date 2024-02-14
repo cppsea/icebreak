@@ -18,9 +18,10 @@ const GuildCard = (props) => {
         testID="groupIcon"
         icon={
           props.avatar
-            ? props.avatar
-            : require("@app/assets/test-club-icon.png")
+          // ? props.avatar
+          // : require("@app/assets/test-club-icon.png")
         } // TEMPORARY USING test-club-icon ... switch out with something else later for n/a icon
+        guildName={props.name}
         size={iconSize}
         backgroundColor={"#0E131F"}
         altImgStyle={styles.avatarImage}
