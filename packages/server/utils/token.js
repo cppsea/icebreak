@@ -30,6 +30,19 @@ function generateAccessToken(user) {
   );
 }
 
+function generateResetPasswordToken(user) {
+  const { userId } = user;
+  return jwt.sign(
+    {
+      userId,
+    },
+    process.env.TOKEN_SECRET,
+    {
+      expiresIn: "15m",
+    }
+  );
+}
+
 function verifyRefreshToken(refreshToken) {
   return jwt.verify(refreshToken, process.env.TOKEN_SECRET);
 }
@@ -50,9 +63,15 @@ function verifyAccessToken(accessToken) {
   );
 }
 
+function verifyPasswordResetToken(passwordResetToken) {
+  return jwt.verify(passwordResetToken, process.env.TOKEN_SECRET);
+}
+
 module.exports = {
   generateRefreshToken,
   generateAccessToken,
+  generateResetPasswordToken,
   verifyRefreshToken,
   verifyAccessToken,
+  verifyPasswordResetToken,
 };
