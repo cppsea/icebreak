@@ -280,4 +280,43 @@ router.get(
   }
 );
 
+router.post(
+  "/:eventId/check-in",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: errors.array(),
+      });
+    }
+
+    try {
+      const { status, userId } = request.body;
+      const eventId = request.params.eventId;
+
+      const eventAttendeeData = await EventController.updateAttendeeStatus(
+        eventId,
+        userId,
+        status
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          eventRegistration: eventAttendeeData,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 module.exports = router;

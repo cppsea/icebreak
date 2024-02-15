@@ -122,6 +122,22 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
+async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
+  const query = await prisma.eventAttendees.update({
+    where: {
+      userId_eventId: {
+        userId: userId,
+        eventId: eventId,
+      },
+    },
+    data: {
+      status: attendeeStatus,
+    },
+  });
+
+  return query;
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -131,4 +147,5 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
+  updateAttendeeStatus,
 };

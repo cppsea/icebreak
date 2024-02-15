@@ -21,14 +21,23 @@ model users {
   guildMembers   guildMembers[]
 }
 
+enum Status {
+  NotInterested
+  Interested
+  Attending
+  CheckedIn
+
+  @@map("event_attendees")
+}
+
 model eventAttendees {
   userId    String @map("user_id") @db.Uuid
   eventId   String @map("event_id") @db.Uuid
   events    events @relation(fields: [eventId], references: [eventId], onDelete: Cascade, onUpdate: NoAction, map: "fk_event")
   attendees users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+  status    Status @default(NotInterested)
 
   @@id([userId, eventId])
-  @@map("event_attendees")
 }
 
 model events {
