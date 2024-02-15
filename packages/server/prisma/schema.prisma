@@ -22,12 +22,12 @@ model users {
 }
 
 enum Status {
-  NotInterested
-  Interested
-  Attending
-  CheckedIn
+  NotInterested @map("not interested")
+  Interested    @map("interested")
+  Attending     @map("attending")
+  CheckedIn     @map("checked in")
 
-  @@map("event_attendees")
+  @@map("event_attendee_status")
 }
 
 model eventAttendees {
@@ -38,6 +38,7 @@ model eventAttendees {
   status    Status @default(NotInterested)
 
   @@id([userId, eventId])
+  @@map("event_attendees")
 }
 
 model events {

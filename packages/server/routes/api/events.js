@@ -288,10 +288,11 @@ router.post(
     const errors = validationResult(request);
 
     if (!errors.isEmpty()) {
-      return response.status(400).json({
+      response.status(400).json({
         status: "fail",
         data: errors.array(),
       });
+      return;
     }
 
     try {
