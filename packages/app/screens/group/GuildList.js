@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-// import React from "react";
 import { View, FlatList, Text, StyleSheet, Platform } from "react-native";
 import GuildCard from "./GuildCard";
 import { GuildProvider } from "@app/utils/GuildContext.js";

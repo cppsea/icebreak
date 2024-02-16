@@ -7,8 +7,8 @@ import { TouchableOpacity } from "react-native";
 const GuildCard = (props) => {
   const iconSize = 50;
 
-  const openGuild = (groupId) => {
-    props.navigation.navigate("GroupScreen", { groupId: groupId });
+  const openGuild = (guildId) => {
+    props.navigation.navigate("GroupScreen", { guildId: guildId });
   };
 
   return (
@@ -16,11 +16,7 @@ const GuildCard = (props) => {
       <GroupIcon
         style={styles.avatar}
         testID="groupIcon"
-        icon={
-          props.avatar
-          // ? props.avatar
-          // : require("@app/assets/test-club-icon.png")
-        } // TEMPORARY USING test-club-icon ... switch out with something else later for n/a icon
+        icon={props.avatar}
         guildName={props.name}
         size={iconSize}
         backgroundColor={"#0E131F"}
