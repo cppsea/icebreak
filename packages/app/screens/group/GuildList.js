@@ -74,12 +74,12 @@ const useUserGuilds = () => {
   return guilds;
 };
 
-function GuildList({ navigation, route }) {
+function GuildList(props) {
   const userGuilds = useUserGuilds(); // get data
 
   return (
     <View style={styles.container}>
-      <GuildProvider guildId={route.params?.guildId}>
+      <GuildProvider guildId={props.route.params?.guildId}>
         <Text style={styles.title}>Your Guilds</Text>
         <FlatList
           data={userGuilds}
@@ -88,7 +88,7 @@ function GuildList({ navigation, route }) {
               key={item.guildId}
               style={styles.card}
               id={item.guildId}
-              navigation={navigation}
+              navigation={props.navigation}
               avatar={item.avatar}
               name={
                 item.name.length <= 28
