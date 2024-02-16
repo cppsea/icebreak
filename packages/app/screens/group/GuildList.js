@@ -12,6 +12,8 @@ const shadow = "rgba(0, 0, 0, 0.25)";
 const titleColor = "rgb(51,51,51)";
 const white = "#fff";
 
+const USER_ID = "80eb49ef-ce2a-46e2-b440-911192976ac1"; // temporary userId
+
 const styles = StyleSheet.create({
   card: {
     borderRadius: 15,
@@ -45,8 +47,6 @@ const styles = StyleSheet.create({
   },
 });
 
-const userId = "80eb49ef-ce2a-46e2-b440-911192976ac1"; // temporary userId
-
 const useUserGuilds = () => {
   const [guilds, setGuilds] = useState([]);
 
@@ -55,11 +55,14 @@ const useUserGuilds = () => {
       try {
         const accessToken = await SecureStore.getValueFor("accessToken");
 
-        const response = await axios.get(`${ENDPOINT}/users/${userId}/guilds`, {
-          headers: {
-            Authorization: accessToken,
-          },
-        });
+        const response = await axios.get(
+          `${ENDPOINT}/users/${USER_ID}/guilds`,
+          {
+            headers: {
+              Authorization: accessToken,
+            },
+          }
+        );
 
         const userGuildResponse = response.data;
         setGuilds(userGuildResponse.data.userGuilds);
