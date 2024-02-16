@@ -7,6 +7,7 @@ const {
   updateEventValidator,
   eventIdValidator,
 } = require("../../validators/events");
+const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
@@ -284,6 +285,7 @@ router.post(
   "/:eventId/check-in",
   AuthController.authenticate,
   eventIdValidator,
+  userIdBodyValidator,
   async (request, response) => {
     const errors = validationResult(request);
 
