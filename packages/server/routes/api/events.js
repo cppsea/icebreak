@@ -300,19 +300,32 @@ router.post(
     try {
       const { status, userId } = request.body;
       const eventId = request.params.eventId;
+      const event = await EventController.getEvent(eventId);
 
-      const eventAttendeeData = await EventController.updateAttendeeStatus(
-        eventId,
-        userId,
-        status
-      );
+      const currentTime = new Date();
+      const checkInStartTime = new Date(event.startDate.getTime() - 5 * 60000);
+      const checkInEndTime = new Date(event.endDate.getTime() + 15 * 60000);
 
-      response.status(200).json({
-        status: "success",
-        data: {
-          eventRegistration: eventAttendeeData,
-        },
-      });
+      if (currentTime >= checkInStartTime && currentTime <= checkInEndTime) {
+        const eventAttendeeData = await EventController.updateAttendeeStatus(
+          eventId,
+          userId,
+          status
+        );
+
+        response.status(200).json({
+          status: "success",
+          data: {
+            eventRegistration: eventAttendeeData,
+          },
+        });
+      } else {
+        // Return error if check-in window has closed
+        response.status(403).json({
+          status: "fail",
+          message: "Check-in window has closed.",
+        });
+      }
     } catch (error) {
       response.status(500).json({
         status: "error",
