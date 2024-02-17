@@ -11,6 +11,7 @@ import PropTypes from "prop-types";
  * @param {string} props.backgroundColor - Background color of icon.
  * @param {string} props.icon - Icon image source.
  */
+
 function GroupIcon(props) {
   return props.icon ? (
     <Image
@@ -41,7 +42,7 @@ function GroupIcon(props) {
   );
 }
 
-const white = "#FFFFFF";
+const primary = "#33C7FF";
 
 const styles = StyleSheet.create({
   iconStyle: {
@@ -50,14 +51,17 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
   iconText: {
-    color: white,
+    color: primary,
     fontSize: 30,
     fontWeight: "bold",
   },
   iconTextStyle: {
     alignItems: "center",
+    borderColor: primary,
     borderRadius: 5,
+    borderWidth: 1.5,
     justifyContent: "center",
+    overflow: "hidden",
     position: "absolute",
     resizeMode: "cover",
   },
@@ -69,6 +73,7 @@ GroupIcon.propTypes = {
   icon: PropTypes.number,
   size: PropTypes.number,
   guildName: PropTypes.string,
+  iconContainer: PropTypes.object,
 };
 
 export default GroupIcon;
