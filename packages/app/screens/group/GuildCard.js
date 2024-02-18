@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyItems: "center",
     margin: 10,
-    paddingHorizontal: 10,
+    paddingHorizontal: 15,
     paddingVertical: 15,
     shadowColor: black,
     shadowOffset: { width: 0, height: 2 },
@@ -75,7 +75,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   text: {
-    marginLeft: 10,
+    flex: 1,
+    justifyContent: "center",
+    marginLeft: 15,
   },
 });
 
