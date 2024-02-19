@@ -298,19 +298,21 @@ router.post(
     }
 
     try {
-      const { status, userId } = request.body;
-      const eventId = request.params.eventId;
+      const { userId, eventId } = matchedData(request);
       const event = await EventController.getEvent(eventId);
 
       const currentTime = new Date();
-      const checkInStartTime = new Date(event.startDate.getTime() - 5 * 60000);
-      const checkInEndTime = new Date(event.endDate.getTime() + 15 * 60000);
+
+      const EVENT_START_TIME = event.startDate.getTime() - 5 * 60000;
+      const EVENT_END_TIME = event.endDate.getTime() + 15 * 60000;
+
+      const checkInStartTime = new Date(EVENT_START_TIME);
+      const checkInEndTime = new Date(EVENT_END_TIME);
 
       if (currentTime >= checkInStartTime && currentTime <= checkInEndTime) {
         const eventAttendeeData = await EventController.updateAttendeeStatus(
           eventId,
-          userId,
-          status
+          userId
         );
 
         response.status(200).json({
