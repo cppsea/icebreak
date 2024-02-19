@@ -8,21 +8,18 @@ import * as SecureStore from "@app/utils/SecureStore";
 export const GroupContext = createContext();
 
 export function GroupProvider({ children }) {
-  // 1st SCREEN INPUTS
   const [name, setName] = useState("");
   const [handler, setHandler] = useState("");
   const [description, setDescription] = useState("");
   const [banner, setBanner] = useState("");
   const [icon, setIcon] = useState("");
 
-  // 2nd SCREEN INPUTS
   const [category, setCategory] = useState("");
   const [tags, setTags] = useState([]);
   const [website, setWebsite] = useState("");
   const [location, setLocation] = useState("");
   const [isInviteOnly, setIsInviteOnly] = useState(false);
 
-  // 3rd SCREEN INPUTS
   const [twitterLink, setTwitterLink] = useState("");
   const [facebookLink, setFacebookLink] = useState("");
   const [instagramLink, setInstagramLink] = useState("");

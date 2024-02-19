@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-const Dropdown = ({ options, value, setValue, setDropdownError }) => {
+const Dropdown = ({ options, value, setValue }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleDropdown = () => {
@@ -13,9 +13,6 @@ const Dropdown = ({ options, value, setValue, setDropdownError }) => {
   const selectOption = (option) => {
     setValue(option);
     setIsOpen(false);
-    if (setDropdownError != null) {
-      setDropdownError("");
-    }
   };
 
   return (
@@ -82,7 +79,6 @@ Dropdown.propTypes = {
     .isRequired,
   value: PropTypes.string.isRequired,
   setValue: PropTypes.func.isRequired,
-  setDropdownError: PropTypes.func.isRequired,
 };
 
 export default Dropdown;

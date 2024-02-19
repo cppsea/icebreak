@@ -19,6 +19,7 @@ import { ScrollView } from "react-native-gesture-handler";
 import { styles } from "./CreateGroupFormStyles";
 import Dropdown from "@app/components/Dropdown";
 import TagInput from "@app/components/TagInput";
+import { useForm, Controller } from "react-hook-form";
 
 function CreateGroupFormScreen({ navigation }) {
   const {
@@ -61,157 +62,34 @@ function CreateGroupFormScreen({ navigation }) {
     submitForm,
   } = useContext(GroupContext);
 
-  // Input Validation
-  const [nameError, setNameError] = useState("");
-  const [handlerError, setHandlerError] = useState("");
-  const [descriptionError, setDescriptionError] = useState("");
-  const [bannerError, setBannerError] = useState("");
-  const [iconError, setIconError] = useState("");
-
-  const [categoryError, setCategoryError] = useState("");
-  const [websiteError, setWebsiteError] = useState("");
-
-  const [twitterLinkError, setTwitterLinkError] = useState("");
-  const [facebookLinkError, setFacebookLinkError] = useState("");
-  const [instagramLinkError, setInstagramLinkError] = useState("");
-  const [discordLinkError, setDiscordLinkError] = useState("");
-  const [linkedInLinkError, setLinkedInLinkError] = useState("");
-  const [githubLinkError, setGithubLinkError] = useState("");
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      name,
+      handler,
+      description,
+      banner,
+      icon,
+      category,
+      tags_input: "",
+      location,
+      website,
+      isInviteOnly,
+      twitterLink,
+      facebookLink,
+      instagramLink,
+      discordLink,
+      linkedInLink,
+      githubLink,
+    },
+  });
 
   const categoryOptions = ["Sports", "Education", "Business", "Gaming"];
-  const [inputValue, setInputValue] = useState("");
   const toggleSwitch = () => setIsInviteOnly((previousState) => !previousState);
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
-
-  function handleInputValidation() {
-    let isValid = true;
-
-    const titleRegex = /^(?![\w\s]+$).*$/;
-    const handlerRegex = /^(?!\w+$).*$/;
-
-    if (name.trim() === ``) {
-      setNameError(`Please enter a title`);
-      isValid = false;
-    } else if (titleRegex.test(name)) {
-      setNameError(`Can only contain letters and numbers.`);
-      isValid = false;
-    } else {
-      setNameError(``);
-    }
-
-    if (handler.trim() === ``) {
-      setHandlerError(`Please enter a handler`);
-      isValid = false;
-    } else if (handlerRegex.test(handler)) {
-      setHandlerError(`Can only contain letters, numbers, and underscores.`);
-      isValid = false;
-    } else {
-      setHandlerError(``);
-    }
-
-    if (description.trim() === ``) {
-      setDescriptionError(`Please enter a description`);
-      isValid = false;
-    } else {
-      setDescriptionError(``);
-    }
-
-    if (banner.trim() === ``) {
-      setBannerError(`Please pick a banner image`);
-      isValid = false;
-    } else {
-      setBannerError(``);
-    }
-
-    if (icon.trim() === ``) {
-      setIconError(`Please pick a icon image`);
-      isValid = false;
-    } else {
-      setIconError(``);
-    }
-
-    const websiteRegex =
-      /^(?!(https?:\/\/)([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$).+$/i;
-
-    if (category.trim() === ``) {
-      setCategoryError(`Please select a category`);
-      isValid = false;
-    } else {
-      setCategoryError(``);
-    }
-
-    if (website.trim() === ``) {
-      setWebsiteError(``);
-    } else if (websiteRegex.test(website)) {
-      setWebsiteError(`Invalid Website Link`);
-      isValid = false;
-    } else {
-      setWebsiteError(``);
-    }
-
-    const twitterRegex = /^(?!https?:\/\/(www\.)?(x|twitter)\.com(.*)$)/;
-    const facebookRegex = /^(?!https?:\/\/(www\.)?facebook\.com(.*)$)/;
-    const instagramRegex = /^(?!https?:\/\/(www\.)?instagram\.com(.*)$)/;
-    const discordRegex = /^(?!https?:\/\/(www\.)?discord\.com(.*)$)/;
-    const linkedinRegex = /^(?!https?:\/\/(www\.)?linkedin\.com(.*)$)/;
-    const githubRegex = /^(?!https?:\/\/(www\.)?github\.com(.*)$)/;
-
-    if (twitterLink.trim() === ``) {
-      setTwitterLinkError(``);
-    } else if (twitterRegex.test(twitterLink)) {
-      setTwitterLinkError(`Invalid Twitter Link`);
-      isValid = false;
-    } else {
-      setTwitterLinkError(``);
-    }
-
-    if (facebookLink.trim() === ``) {
-      setFacebookLinkError(``);
-    } else if (facebookRegex.test(facebookLink)) {
-      setFacebookLinkError(`Invalid Facebook Link`);
-      isValid = false;
-    } else {
-      setFacebookLinkError(``);
-    }
-
-    if (instagramLink.trim() === ``) {
-      setInstagramLinkError(``);
-    } else if (instagramRegex.test(instagramLink)) {
-      setInstagramLinkError(`Invalid Instagram Link`);
-      isValid = false;
-    } else {
-      setInstagramLinkError(``);
-    }
-
-    if (discordLink.trim() === ``) {
-      setDiscordLinkError(``);
-    } else if (discordRegex.test(discordLink)) {
-      setDiscordLinkError(`Invalid Discord Link`);
-      isValid = false;
-    } else {
-      setDiscordLinkError(``);
-    }
-
-    if (linkedInLink.trim() === ``) {
-      setLinkedInLink(``);
-    } else if (linkedinRegex.test(linkedInLink)) {
-      setLinkedInLinkError(`Invalid LinkedIn Link`);
-      isValid = false;
-    } else {
-      setLinkedInLinkError(``);
-    }
-
-    if (githubLink.trim() === ``) {
-      setGithubLinkError(``);
-    } else if (githubRegex.test(githubLink)) {
-      setGithubLinkError(`Invalid Github Link`);
-      isValid = false;
-    } else {
-      setGithubLinkError(``);
-    }
-
-    return isValid;
-  }
 
   const selectImage = async (imageType) => {
     Keyboard.dismiss();
@@ -238,30 +116,25 @@ function CreateGroupFormScreen({ navigation }) {
 
   // Usage
   const selectBannerImage = () => {
-    setBannerError("");
     selectImage("banner");
   };
 
   const selectIconImage = () => {
-    setIconError("");
     selectImage("icon");
   };
 
-  const handleOnChangeInput = (text, setText, setError) => {
-    setText(text);
-    setError("");
-  };
+  const onSubmit = async () => {
+    try {
+      const isSubmitted = await submitForm();
 
-  const handleWebsiteBlur = (website, setLink) => {
-    // Add 'https://' immediately after the user types / is missing
-    if (!website.startsWith("https://") && website !== "") {
-      setLink("https://" + website);
-    }
-  };
-
-  const handleSocialMediaBlur = (social, setLink) => {
-    if ((social !== "") == !social.startsWith("https://")) {
-      setLink("https://" + social);
+      if (isSubmitted) {
+        navigation.navigate("Initial Create Group");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to submit form.");
+      console.error("Error submitting form:", error);
+    } finally {
+      setIsButtonDisabled(false);
     }
   };
 
@@ -286,64 +159,104 @@ function CreateGroupFormScreen({ navigation }) {
                 title="BACK"
               />
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Organization Name</Text>
-                  <Text style={styles.important}>* {nameError}</Text>
+              <Text style={styles.header}>
+                <Text>Organization Name</Text>
+                <Text style={styles.important}>
+                  *{errors.name && "\n"}
+                  {errors.name && errors.name.message}
                 </Text>
-                <TextInput
-                  value={name}
-                  placeholder="name"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(newText, setName, setNameError)
-                  }
-                  style={styles.input}
-                  maxLength={100}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Organization Name"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setName(text);
+                    }}
+                    value={value}
+                    maxLength={100}
+                  />
+                )}
+                name="name"
+                rules={{
+                  required: "Organization Name is required",
+                  pattern: {
+                    value: /^[\w ]+$/,
+                    message:
+                      "Only alphanumeric characters with spaces are allowed",
+                  },
+                }}
+              />
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Handler</Text>
-                  <Text style={styles.important}>* {handlerError}</Text>
+              <Text style={styles.header}>
+                <Text>Handler</Text>
+                <Text style={styles.important}>
+                  *{errors.handler && "\n"}
+                  {errors.handler && errors.handler.message}
                 </Text>
-                <TextInput
-                  value={handler}
-                  placeholder="@unique_name"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(newText, setHandler, setHandlerError)
-                  }
-                  style={styles.input}
-                  maxLength={50}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="unique_organization_handler"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setHandler(text);
+                    }}
+                    value={value}
+                    maxLength={50}
+                  />
+                )}
+                name="handler"
+                rules={{
+                  required: "Handler is required",
+                  pattern: {
+                    value: /^\b\w+\b$/,
+                    message: `Can only contain letters, numbers, and underscores.`,
+                  },
+                }}
+              />
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Description</Text>
-                  <Text style={styles.important}>* {descriptionError}</Text>
+              <Text style={styles.header}>
+                <Text>Description</Text>
+                <Text style={styles.important}>
+                  *{errors.description && "\n"}
+                  {errors.description && errors.description.message}
                 </Text>
-                <TextInput
-                  value={description}
-                  multiline
-                  numberOfLines={4}
-                  placeholder="This is the description."
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      setDescription,
-                      setDescriptionError
-                    )
-                  }
-                  style={{ ...styles.inputDescription }}
-                  maxLength={1000}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={{ ...styles.inputDescription }}
+                    placeholder="This is the organization's description"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setDescription(text);
+                    }}
+                    value={value}
+                    multiline
+                    numberOfLines={4}
+                    maxLength={1000}
+                  />
+                )}
+                name="description"
+                rules={{
+                  required: "Description is required",
+                }}
+              />
 
               <View>
                 <Text style={styles.header}>
                   <Text>Banner</Text>
-                  <Text style={styles.important}>* {bannerError}</Text>
                 </Text>
                 <View style={styles.imageSelectorContainer}>
                   <Image
@@ -359,7 +272,6 @@ function CreateGroupFormScreen({ navigation }) {
               <View>
                 <Text style={styles.header}>
                   <Text>Icon</Text>
-                  <Text style={styles.important}>* {iconError}</Text>
                 </Text>
                 <View style={styles.imageSelectorContainer}>
                   <Image
@@ -372,208 +284,328 @@ function CreateGroupFormScreen({ navigation }) {
                 </View>
               </View>
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Category</Text>
-                  <Text style={styles.important}>* {categoryError} </Text>
+              <Text style={styles.header}>
+                <Text>Category</Text>
+                <Text style={styles.important}>
+                  *{errors.category && "\n"}
+                  {errors.category && errors.category.message}
                 </Text>
-                <Dropdown
-                  options={categoryOptions}
-                  value={category}
-                  setValue={setCategory}
-                  setDropdownError={setCategoryError}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { value, onChange } }) => (
+                  <Dropdown
+                    options={categoryOptions}
+                    value={value}
+                    setValue={(text) => {
+                      onChange(text);
+                      setCategory(text);
+                    }}
+                  />
+                )}
+                name="category"
+                rules={{
+                  required: "Category is required",
+                }}
+              />
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Tags</Text>
+              <Text style={styles.header}>
+                <Text>Tags</Text>
+                <Text style={styles.important}>
+                  {errors.tags_input && "\n"}
+                  {errors.tags_input && errors.tags_input.message}
                 </Text>
-                <TagInput
-                  value={inputValue}
-                  setValue={setInputValue}
-                  tags={tags}
-                  setTags={setTags}
-                  maxTags={10}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <TagInput
+                    value={value}
+                    setValue={onChange}
+                    tags={tags}
+                    setTags={setTags}
+                    maxTags={10}
+                  />
+                )}
+                name="tags_input"
+                rules={{
+                  pattern: {
+                    value: /^([a-zA-Z]+)( [a-zA-Z]+)?$/,
+                    message: `A tag can only have two words.`,
+                  },
+                }}
+              />
 
-              <View>
-                <Text style={styles.header}>Location</Text>
-                <TextInput
-                  value={location}
-                  onChangeText={(newText) => setLocation(newText)}
-                  placeholder="location"
-                  style={styles.input}></TextInput>
-              </View>
+              <Text style={styles.header}>
+                <Text>Location</Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="Organization's Location"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setLocation(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="location"
+              />
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Website</Text>
-                  <Text style={styles.important}> {websiteError} </Text>
+              <Text style={styles.header}>
+                <Text>Website</Text>
+                <Text style={styles.important}>
+                  {errors.website && "\n"}
+                  {errors.website && errors.website.message}
                 </Text>
-                <TextInput
-                  value={website}
-                  placeholder="example.com"
-                  onChangeText={(newText) => setWebsite(newText)}
-                  onBlur={handleWebsiteBlur(website, setWebsite)}
-                  style={styles.input}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="example.com"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setWebsite(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="website"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/,
+                    message: "Invalid Website Link",
+                  },
+                }}
+              />
 
-              <View>
-                <Text style={styles.header}>Invite Only</Text>
-                <Switch
-                  trackColor={{ false: "#767577", true: "#81b0ff" }}
-                  thumbColor={isInviteOnly ? "#ffffff" : "#f4f3f4"}
-                  ios_backgroundColor="#3e3e3e"
-                  onValueChange={toggleSwitch}
-                  value={isInviteOnly}
-                />
-              </View>
+              <Text style={styles.header}>
+                <Text>Invite Only</Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <Switch
+                    trackColor={{ false: "#767577", true: "#81b0ff" }}
+                    thumbColor={value ? "#ffffff" : "#f4f3f4"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={(value) => {
+                      onChange(value);
+                      toggleSwitch(value);
+                    }}
+                    value={value}
+                  />
+                )}
+                name="isInviteOnly"
+              />
 
-              <View>
-                <Text style={styles.header}>
-                  <Text>Twitter</Text>
-                  <Text style={styles.important}> {twitterLinkError} </Text>
+              <Text style={styles.header}>
+                <Text>Twitter</Text>
+                <Text style={styles.important}>
+                  {errors.twitterLink && "\n"}
+                  {errors.twitterLink && errors.twitterLink.message}
                 </Text>
-                <TextInput
-                  value={twitterLink}
-                  placeholder="https://twitter.com/abc123"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      (newLink) => setTwitterLink(newLink),
-                      setTwitterLinkError
-                    )
-                  }
-                  onBlur={handleSocialMediaBlur(twitterLink, setTwitterLink)}
-                  style={styles.input}
-                />
-              </View>
-              <View>
-                <Text style={styles.header}>
-                  <Text>Facebook</Text>
-                  <Text style={styles.important}> {facebookLinkError} </Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="twitter.com/abc123"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setTwitterLink(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="twitterLink"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(?:www\.)?(x|twitter)\.com\/([a-zA-Z0-9_]+)/,
+                    message: "Invalid Twitter / X Link",
+                  },
+                }}
+              />
+
+              <Text style={styles.header}>
+                <Text>Facebook</Text>
+                <Text style={styles.important}>
+                  {errors.facebookLink && "\n"}
+                  {errors.facebookLink && errors.facebookLink.message}
                 </Text>
-                <TextInput
-                  value={facebookLink}
-                  placeholder="https://facebook.com/abc123"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      (newLink) => setFacebookLink(newLink),
-                      setFacebookLinkError
-                    )
-                  }
-                  onBlur={handleSocialMediaBlur(facebookLink, setFacebookLink)}
-                  style={styles.input}
-                />
-              </View>
-              <View>
-                <Text style={styles.header}>
-                  <Text>Instagram</Text>
-                  <Text style={styles.important}> {instagramLinkError} </Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="facebook.com/abc123"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setFacebookLink(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="facebookLink"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(?:www\.)?facebook\.com\/([a-zA-Z0-9_]+)/,
+                    message: "Invalid Facebook Link",
+                  },
+                }}
+              />
+
+              <Text style={styles.header}>
+                <Text>Instagram</Text>
+                <Text style={styles.important}>
+                  {errors.instagramLink && "\n"}
+                  {errors.instagramLink && errors.instagramLink.message}
                 </Text>
-                <TextInput
-                  value={instagramLink}
-                  placeholder="https://instagram.com/abc123"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      (newLink) => setInstagramLink(newLink),
-                      setInstagramLinkError
-                    )
-                  }
-                  onBlur={handleSocialMediaBlur(
-                    instagramLink,
-                    setInstagramLink
-                  )}
-                  style={styles.input}
-                />
-              </View>
-              <View>
-                <Text style={styles.header}>
-                  <Text>Discord</Text>
-                  <Text style={styles.important}> {discordLinkError} </Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="instagram.com/abc123"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setInstagramLink(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="instagramLink"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(?:www\.)?instagram\.com\/([a-zA-Z0-9_]+)/,
+                    message: "Invalid Instagram Link",
+                  },
+                }}
+              />
+
+              <Text style={styles.header}>
+                <Text>Discord</Text>
+                <Text style={styles.important}>
+                  {errors.discordLink && "\n"}
+                  {errors.discordLink && errors.discordLink.message}
                 </Text>
-                <TextInput
-                  value={discordLink}
-                  placeholder="https://discord.com/abc123"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      (newLink) => setDiscordLink(newLink),
-                      setDiscordLinkError
-                    )
-                  }
-                  onBlur={handleSocialMediaBlur(discordLink, setDiscordLink)}
-                  style={styles.input}
-                />
-              </View>
-              <View>
-                <Text style={styles.header}>
-                  <Text>LinkedIn</Text>
-                  <Text style={styles.important}> {linkedInLinkError} </Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="discord.gg/abc123"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setDiscordLink(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="discordLink"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(?:www\.)?discord\.(com|gg)\/([a-zA-Z0-9_]+)/,
+                    message: "Invalid Discord Invintation Link",
+                  },
+                }}
+              />
+
+              <Text style={styles.header}>
+                <Text>LinkedIn</Text>
+                <Text style={styles.important}>
+                  {errors.linkedInLink && "\n"}
+                  {errors.linkedInLink && errors.linkedInLink.message}
                 </Text>
-                <TextInput
-                  value={linkedInLink}
-                  placeholder="https://linkedin.com/abc123"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      (newLink) => setLinkedInLink(newLink),
-                      setLinkedInLinkError
-                    )
-                  }
-                  onBlur={handleSocialMediaBlur(linkedInLink, setLinkedInLink)}
-                  style={styles.input}
-                />
-              </View>
-              <View>
-                <Text style={styles.header}>
-                  <Text>Github</Text>
-                  <Text style={styles.important}> {githubLinkError} </Text>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="linkedin.com/abc123"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setLinkedInLink(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="linkedInLink"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(?:www\.)?linkedin\.com\/([a-zA-Z0-9_]+)/,
+                    message: "Invalid LinkedIn Link",
+                  },
+                }}
+              />
+
+              <Text style={styles.header}>
+                <Text>Github</Text>
+                <Text style={styles.important}>
+                  {errors.githubLink && "\n"}
+                  {errors.githubLink && errors.githubLink.message}
                 </Text>
-                <TextInput
-                  value={githubLink}
-                  placeholder="https://github.com/abc123e"
-                  onChangeText={(newText) =>
-                    handleOnChangeInput(
-                      newText,
-                      (newLink) => setGithubLink(newLink),
-                      setGithubLinkError
-                    )
-                  }
-                  onBlur={handleSocialMediaBlur(githubLink, setGithubLink)}
-                  style={styles.input}
-                />
-              </View>
+              </Text>
+              <Controller
+                control={control}
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.input}
+                    placeholder="github.com/abc123"
+                    onBlur={onBlur}
+                    onChangeText={(text) => {
+                      onChange(text);
+                      setGithubLink(text);
+                    }}
+                    value={value}
+                    maxLength={255}
+                  />
+                )}
+                name="githubLink"
+                rules={{
+                  pattern: {
+                    value:
+                      /^(https?:\/\/)?(?:www\.)?github\.com\/([a-zA-Z0-9_]+)/,
+                    message: "Invalid Github Link",
+                  },
+                }}
+              />
+
               <View style={styles.btnContainer}>
                 <Button
                   title="SUBMIT"
                   disabled={isButtonDisabled}
-                  onPress={async () => {
-                    const isValid = handleInputValidation();
-
-                    setIsButtonDisabled(true);
-                    if (isValid) {
-                      try {
-                        const isSubmitted = await submitForm();
-
-                        if (isSubmitted) {
-                          navigation.navigate("Initial Create Group");
-                        }
-                      } catch (error) {
-                        Alert.alert("Error", "Failed to submit form.");
-                        console.error("Error submitting form:", error);
-                      } finally {
-                        setIsButtonDisabled(false);
-                      }
-                    } else {
-                      setIsButtonDisabled(false);
-                    }
-                  }}
+                  onPress={handleSubmit(onSubmit)}
                 />
               </View>
             </View>
