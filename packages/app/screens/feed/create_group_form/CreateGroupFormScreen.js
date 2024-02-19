@@ -218,8 +218,8 @@ function CreateGroupFormScreen({ navigation }) {
                 rules={{
                   required: "Handler is required",
                   pattern: {
-                    value: /^\b\w+\b$/,
-                    message: `Can only contain letters, numbers, and underscores.`,
+                    value: /^[\w]+$/,
+                    message: `Only alphanumeric characters are allowed`,
                   },
                 }}
               />
