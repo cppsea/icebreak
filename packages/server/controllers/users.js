@@ -6,12 +6,11 @@ async function getAllUsers() {
 }
 
 async function getUser(userId) {
-  const query = await prisma.users.findUnique({
+  return prisma.users.findUniqueOrThrow({
     where: {
       userId: userId,
     },
   });
-  return query;
 }
 
 async function getUserByEmail(email) {
