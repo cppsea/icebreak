@@ -33,7 +33,7 @@ async function getImageInDb(imageType, entityUUID) {
     case "guild_avatar":
       return prisma.guilds.findUniqueOrThrow({
         where: {
-          userId: entityUUID,
+          guildId: entityUUID,
         },
         select: {
           avatar: true,
@@ -42,7 +42,7 @@ async function getImageInDb(imageType, entityUUID) {
     case "guild_banner":
       return prisma.guilds.findUniqueOrThrow({
         where: {
-          userId: entityUUID,
+          guildId: entityUUID,
         },
         select: {
           banner: true,
@@ -51,7 +51,7 @@ async function getImageInDb(imageType, entityUUID) {
     case "event_thumbnail":
       return prisma.events.findUniqueOrThrow({
         where: {
-          userId: entityUUID,
+          eventId: entityUUID,
         },
         select: {
           thumbnail: true,
@@ -119,7 +119,7 @@ async function updateImageInDb(imageType, entityUUID, imageUrl) {
     case "event_thumbnail":
       await prisma.events.update({
         where: {
-          guildId: entityUUID,
+          eventId: entityUUID,
         },
         data: {
           thumbnail: imageUrl,

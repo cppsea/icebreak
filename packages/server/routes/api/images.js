@@ -6,12 +6,12 @@ const AuthController = require("../../controllers/auth");
 const ImagesController = require("../../controllers/images");
 const {
   jpegBase64Validator,
-  entityValidator,
+  imageEntityValidator,
 } = require("../../validators/images");
 
 router.post(
   "/:imageType/:entityUUID",
-  entityValidator,
+  imageEntityValidator,
   jpegBase64Validator,
   AuthController.authenticate,
   async (request, response) => {
@@ -52,7 +52,7 @@ router.post(
 router.get(
   "/:imageType/:entityUUID",
   AuthController.authenticate,
-  entityValidator,
+  imageEntityValidator,
   async (request, response) => {
     const result = validationResult(request);
     if (!result.isEmpty()) {
@@ -66,6 +66,11 @@ router.get(
 
     try {
       const url = await ImagesController.getImageInDb(imageType, entityUUID);
+
+      if (!url) {
+        throw new Error("NoImageFound");
+      }
+
       response.status(200).json({
         status: "success",
         data: {
@@ -73,6 +78,15 @@ router.get(
         },
       });
     } catch (err) {
+      if (err.message == "NoImageFound") {
+        return response.status(404).json({
+          status: "fail",
+          data: {
+            entityUUID: `No image found for entity with UUID ${entityUUID}`,
+          },
+        });
+      }
+
       response.status(500).json({
         status: "error",
         message: err.message,
@@ -84,7 +98,7 @@ router.get(
 router.delete(
   "/:imageType/:entityUUID",
   AuthController.authenticate,
-  entityValidator,
+  imageEntityValidator,
   async (request, response) => {
     const result = validationResult(request);
     if (!result.isEmpty()) {
@@ -116,7 +130,7 @@ router.delete(
 router.put(
   "/:imageType/:entityUUID",
   AuthController.authenticate,
-  entityValidator,
+  imageEntityValidator,
   jpegBase64Validator,
   async (request, response) => {
     const result = validationResult(request);
@@ -134,6 +148,8 @@ router.put(
         entityUUID,
         jpegBase64
       );
+
+      await ImagesController.updateImageInDb(imageType, entityUUID, url);
 
       response.status(200).json({
         status: "success",

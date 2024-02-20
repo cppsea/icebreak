@@ -2,9 +2,7 @@ const { param, body } = require("express-validator");
 
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
-
-const thumbnail_regex =
-  /^https:\/\/icebreak-assets.s3.us-west-1.amazonaws.com\/.+\.(jpg|jpeg)$/;
+const { s3ImagesUrlRegex } = require("../utils/s3");
 
 const createEventValidator = [
   param("guildId", "Invalid guild ID")
@@ -54,8 +52,8 @@ const createEventValidator = [
     .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
-    .matches(thumbnail_regex)
-    .withMessage("Thumbnail is not a valid image file"),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Thumbnail is not a valid image URL"),
 
   //Start Date checks
   body("startDate", "Invalid start date")
@@ -121,8 +119,8 @@ const updateEventValidator = [
     .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
-    .matches(thumbnail_regex)
-    .withMessage("Thumbnail is not a valid image file"),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Thumbnail is not a valid image URL"),
   //Start Date checks
   body("startDate", "Invalid start date")
     .trim()

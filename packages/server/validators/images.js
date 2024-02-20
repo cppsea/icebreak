@@ -7,7 +7,7 @@ const imageTypeRegex =
   /(user_avatar|guild_avatar|guild_banner|event_thumbnail)/;
 const jpegPrefixRegex = /\/9j\/.*/;
 
-const entityValidator = [
+const imageEntityValidator = [
   param("imageType")
     .trim()
     .blacklist("<>")
@@ -17,7 +17,7 @@ const entityValidator = [
     .trim()
     .blacklist("<>")
     .isUUID()
-    .withMessage("Invalid UUID provided")
+    .withMessage("Invalid UUID")
     .bail()
     .custom(async (entityUUID, { req }) => {
       switch (req.params.imageType) {
@@ -44,6 +44,8 @@ const entityValidator = [
 const jpegBase64Validator = body("jpegBase64")
   .trim()
   .isBase64()
+  .withMessage("Invalid Base64")
   .matches(jpegPrefixRegex)
-  .withMessage("Invalid Base64 JPEG data");
-module.exports = { entityValidator, jpegBase64Validator };
+  .withMessage("Input Base64 is not valid JPEG data");
+
+module.exports = { imageEntityValidator, jpegBase64Validator };
