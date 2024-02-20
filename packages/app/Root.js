@@ -21,9 +21,7 @@ import Constants from "expo-constants";
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-import {
-  GoogleSignin,
-} from "@react-native-google-signin/google-signin";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 function TabNavigation() {
   return (
@@ -100,7 +98,7 @@ function App() {
       webClientId: Constants.expoConfig.extra.webClientId,
       iosClientId: Constants.expoConfig.extra.iosClientId,
     });
-    
+
     currentSession();
   }, []);
 

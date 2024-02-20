@@ -242,4 +242,39 @@ router.get(
   }
 );
 
+router.get(
+  "/:guildId/leaderboard",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+
+    try {
+      const guildLeaderboard = await GuildController.getLeaderboard(guildId);
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          guildLeaderboard,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 module.exports = router;
