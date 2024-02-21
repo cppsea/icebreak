@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const token = require("../../utils/token");
 const bcrypt = require("bcrypt");
+const uuid = require("uuid");
 
 const { passwordResetValidator } = require("../../validators/auth");
 const { validationResult, matchedData } = require("express-validator");
@@ -313,10 +314,10 @@ router.post(
       const { password } = data.request.body;
 
       const { userId } = verifyPasswordResetToken(token);
-      if (!userId) {
+      if (!userId || !uuid.validate(userId)) {
         return response.status(400).json({
           status: "fail",
-          message: "No user ID was associated with the provided token!",
+          message: "Invalid user ID was associated with the provided token!",
         });
       }
 
