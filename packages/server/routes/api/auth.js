@@ -15,6 +15,8 @@ const {
   addToPasswordResetTokenBlacklist,
 } = require("../../utils/redis");
 
+const { verifyPasswordResetToken } = require("../../utils/token");
+
 router.get("/user", AuthController.authenticate, (request, response) => {
   const accessToken = token.generateAccessToken(request.user);
   const refreshToken = token.generateRefreshToken(request.user);
@@ -310,7 +312,13 @@ router.post(
       const { token } = data.request.body;
       const { password } = data.request.body;
 
-      // TODO: add the json web token check here once it's implemented, also get the user id from the payload after decoded.
+      const { userId } = verifyPasswordResetToken(token);
+      if (!userId) {
+        return response.status(400).json({
+          status: "fail",
+          message: "No user ID was associated with the provided token!",
+        });
+      }
 
       // TODO: Since the token will be encrypted, I might have to use bcrypt.compare here instead.
       const redisValidate = await checkInvalidPasswordResetToken(token);
@@ -321,22 +329,14 @@ router.post(
         });
       }
 
-      // Call password reset controller, then blacklist the token
-      try {
-        await AuthController.resetPassword(password);
+      await AuthController.resetPassword(userId, password);
 
-        // TODO: encrypt the token before adding it to the blacklist
-        await addToPasswordResetTokenBlacklist(token);
-        response.status(200).json({
-          status: "success",
-          data: null,
-        });
-      } catch (error) {
-        response.status(500).json({
-          status: "error",
-          message: error.message,
-        });
-      }
+      // TODO: encrypt the token before adding it to the blacklist
+      await addToPasswordResetTokenBlacklist(token);
+      response.status(200).json({
+        status: "success",
+        data: null,
+      });
     } catch (error) {
       response.status(500).json({
         status: "error",
