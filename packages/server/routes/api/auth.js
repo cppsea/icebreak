@@ -3,6 +3,9 @@ const router = express.Router();
 const token = require("../../utils/token");
 const bcrypt = require("bcrypt");
 
+const { passwordResetValidator } = require("../../validators/auth");
+const { validationResult, matchedData } = require("express-validator");
+
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
 const {
@@ -288,46 +291,59 @@ router.post("/token/revoke", async (request, response) => {
   }
 });
 
-router.post("/password/reset", async (request, response) => {
-  // TODO: add an express validator middleware to regex the password
-  try {
-    const { token } = request.query;
-    const { password } = request.body;
+router.post(
+  "/password/reset",
+  passwordResetValidator,
+  async (request, response) => {
+    const result = validationResult(request);
 
-    // TODO: add the json web token check here once it's implemented, also get the user id from the payload after decoded.
-
-    // TODO: Since the token will be encrypted, I might have to use bcrypt.compare here instead.
-    const redisValidate = await checkInvalidPasswordResetToken(token);
-    if (!redisValidate) {
+    if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        message: "This password reset token is expired/invalid!",
+        data: result.array(),
       });
     }
 
-    // Call password reset controller, then blacklist the token
+    const data = matchedData(request);
+
     try {
-      await AuthController.resetPassword(password);
+      const { token } = data.request.body;
+      const { password } = data.request.body;
 
-      // TODO: encrypt the token before adding it to the blacklist
-      await addToPasswordResetTokenBlacklist(token);
+      // TODO: add the json web token check here once it's implemented, also get the user id from the payload after decoded.
 
-      response.status(200).json({
-        status: "success",
-        data: null,
-      });
+      // TODO: Since the token will be encrypted, I might have to use bcrypt.compare here instead.
+      const redisValidate = await checkInvalidPasswordResetToken(token);
+      if (!redisValidate) {
+        return response.status(400).json({
+          status: "fail",
+          message: "This password reset token is expired/invalid!",
+        });
+      }
+
+      // Call password reset controller, then blacklist the token
+      try {
+        await AuthController.resetPassword(password);
+
+        // TODO: encrypt the token before adding it to the blacklist
+        await addToPasswordResetTokenBlacklist(token);
+        response.status(200).json({
+          status: "success",
+          data: null,
+        });
+      } catch (error) {
+        response.status(500).json({
+          status: "error",
+          message: error.message,
+        });
+      }
     } catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
       });
     }
-  } catch (error) {
-    response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
   }
-});
+);
 
 module.exports = router;
