@@ -5,6 +5,7 @@ const bcrypt = require("bcrypt");
 
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
+const TokenGenerator = require("../../utils/token");
 const { checkInvalidToken, addToTokenBlacklist } = require("../../utils/redis");
 
 router.get("/user", AuthController.authenticate, (request, response) => {
@@ -282,5 +283,49 @@ router.post("/token/revoke", async (request, response) => {
     });
   }
 });
+
+router.post("/forgot-password", async (request, response) => {
+  try {
+    // TODO: Implement /forgot-password route
+    const { email } = request.body;
+    
+    const verifyEmailResult = await AuthController.verifyEmail(email);
+    // Check if email exists, then if email is a Google OAuth Account
+    if (!verifyEmailResult) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          message: "User with given email does not exist.",
+        }
+      })
+    }
+
+    const isGoogleAccountResult = await AuthController.isGoogleAccount(email);
+
+    if (isGoogleAccountResult) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          message: "User with given email is a Google OAuth account.",
+        }
+      })
+    }
+
+    
+    // After both email and google oauth checks, call 
+    // generate json webtoken function
+    const user = await UserController.getUserByEmail(email);
+
+    const refreshToken = TokenGenerator.generateRefreshToken(user);
+
+    
+    // use template literal to append route
+
+    // 
+  }
+  catch (error) {
+    console.log(error);
+  }
+})
 
 module.exports = router;
