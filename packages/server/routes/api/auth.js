@@ -310,8 +310,8 @@ router.post(
     const data = matchedData(request);
 
     try {
-      const { token } = data.request.body;
-      const { password } = data.request.body;
+      const token = data.token;
+      const password = data.password;
 
       const { userId } = verifyPasswordResetToken(token);
       if (!userId || !uuid.validate(userId)) {
