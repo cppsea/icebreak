@@ -1,4 +1,5 @@
 const redis = require("ioredis");
+const bcrypt = require("bcrypt");
 
 // Create a Redis client instance
 const redisClient = new redis(process.env.REDIS_URL);
@@ -31,7 +32,10 @@ async function checkInvalidPasswordResetToken(token) {
 }
 
 async function addToPasswordResetTokenBlacklist(token) {
-  await redisClient.sadd("password_reset_token_blacklist", token);
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedToken = await bcrypt.hash(token, salt);
+  await redisClient.sadd("password_reset_token_blacklist", hashedToken);
 }
 
 // Log any errors that occur during the Redis connection
