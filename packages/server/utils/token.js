@@ -73,10 +73,15 @@ function verifyAccessToken(accessToken) {
   );
 }
 
+function verifyPasswordResetToken(passwordResetToken) {
+  return jwt.verify(passwordResetToken, process.env.TOKEN_SECRET);
+}
+
 module.exports = {
   generateRefreshToken,
   generateAccessToken,
   generateResetPasswordToken,
   verifyRefreshToken,
   verifyAccessToken,
+  verifyPasswordResetToken,
 };
