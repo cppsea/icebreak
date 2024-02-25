@@ -1,12 +1,14 @@
 const jwt = require("jsonwebtoken");
-require("bcrypt");
+const UserController = require("../controllers/users");
+const { hash } = require("bcrypt");
 
 
-function generateRefreshToken(userId) {
+function generateRefreshToken(user) {
+  const { userId } = user;
   return jwt.sign(
     {
+      userId,
     },
-    userId,
     process.env.TOKEN_SECRET,
     {
       expiresIn: "1d",
@@ -14,11 +16,15 @@ function generateRefreshToken(userId) {
   );
 }
 
-// TODO: refactor all to only take userId
-function generateAccessToken(userId) {
+function generateAccessToken(user) {
+  const { userId, firstName, lastName, avatar, email } = user;
   return jwt.sign(
     {
-      userId
+      userId,
+      firstName,
+      lastName,
+      avatar,
+      email,
     },
     process.env.WEB_CLIENT_SECRET,
     {
@@ -29,11 +35,15 @@ function generateAccessToken(userId) {
 
 // based off of this stackoverflow post:
 // https://stackoverflow.com/questions/50916619/password-reset-with-jwt-structure
-function generateResetPasswordToken(userId) {
+function generateResetPasswordToken(user) {
+  const { userId } = user;
+  const currentPasswordHash = UserController.getUser(userId).password;
 
   return jwt.sign(
     {
-      userId
+      sub: userId,
+      purpose: "password_reset",
+      key: hash(currentPasswordHash),
     },
     process.env.TOKEN_SECRET,
     {
