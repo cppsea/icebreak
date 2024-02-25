@@ -190,11 +190,15 @@ async function authenticate(request, response, next) {
 }
 
 async function verifyUserEmail(email) {
-  // TODO: implement with prisma later
-  if (email) return true;
-  // Use Prisma findUniqueOrThrow to find if a user with this email exists
+  const result = await prisma.findUnique({
+    where: {
+      email: email,
+    }
+  });
 
-  // Then return the userId
+  if (result === null) return false;
+
+  return true;
 }
 
 async function isGoogleAccount(userId) {
