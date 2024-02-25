@@ -303,16 +303,20 @@ router.post(
 
       const currentTime = new Date();
 
-      const EVENT_START_TIME = event.startDate.getTime() - 5 * 60000;
-      const EVENT_END_TIME = event.endDate.getTime() + 15 * 60000;
+      const MINUTES_TO_MILLISECONDS = 60000;
+      const eventCheckInStartBound =
+        event.startDate.getTime() - 5 * MINUTES_TO_MILLISECONDS;
+      const eventCheckInEndBound =
+        event.startDate.getTime() + 15 * MINUTES_TO_MILLISECONDS;
 
-      const checkInStartTime = new Date(EVENT_START_TIME);
-      const checkInEndTime = new Date(EVENT_END_TIME);
+      const checkInStartTime = new Date(eventCheckInStartBound);
+      const checkInEndTime = new Date(eventCheckInEndBound);
 
       if (currentTime >= checkInStartTime && currentTime <= checkInEndTime) {
         const eventAttendeeData = await EventController.updateAttendeeStatus(
           eventId,
-          userId
+          userId,
+          "CheckedIn"
         );
 
         response.status(200).json({

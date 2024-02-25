@@ -121,7 +121,7 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
-async function updateAttendeeStatus(eventId, userId) {
+async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
   const query = await prisma.eventAttendees.update({
     where: {
       userId_eventId: {
@@ -130,7 +130,7 @@ async function updateAttendeeStatus(eventId, userId) {
       },
     },
     data: {
-      status: "CheckedIn",
+      status: attendeeStatus,
     },
   });
 
