@@ -1,5 +1,5 @@
 const redis = require("ioredis");
-const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 // Create a Redis client instance
 const redisClient = new redis(process.env.REDIS_URL);
@@ -20,9 +20,14 @@ async function addToTokenBlacklist(token) {
 
 // Function to check if a password reset token is valid by verifying its absence in the Redis set
 async function checkInvalidPasswordResetToken(token) {
+  // hash the token before checking the hashed tokens in the set
+  const hash = crypto.createHash("sha256");
+  hash.update(token);
+  const hashedToken = hash.digest("hex");
+
   const isMember = await redisClient.sismember(
     "password_reset_token_blacklist",
-    token
+    hashedToken
   );
   if (isMember === 1) {
     return true;
@@ -32,9 +37,10 @@ async function checkInvalidPasswordResetToken(token) {
 }
 
 async function addToPasswordResetTokenBlacklist(token) {
-  const saltRounds = 10;
-  const salt = await bcrypt.genSalt(saltRounds);
-  const hashedToken = await bcrypt.hash(token, salt);
+  // hash the token before tossing it into the set
+  const hash = crypto.createHash("sha256");
+  hash.update(token);
+  const hashedToken = hash.digest("hex");
   await redisClient.sadd("password_reset_token_blacklist", hashedToken);
 }
 

@@ -321,7 +321,6 @@ router.post(
         });
       }
 
-      // TODO: Since the token will be encrypted, I might have to use bcrypt.compare here instead.
       const redisValidate = await checkInvalidPasswordResetToken(token);
       if (redisValidate) {
         return response.status(400).json({
@@ -332,7 +331,6 @@ router.post(
 
       await AuthController.resetPassword(userId, password);
 
-      // TODO: encrypt the token before adding it to the blacklist
       await addToPasswordResetTokenBlacklist(token);
       response.status(200).json({
         status: "success",
