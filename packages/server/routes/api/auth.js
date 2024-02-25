@@ -316,7 +316,7 @@ router.post("/forgot-password", async (request, response) => {
     // generate json webtoken function
     const user = await UserController.getUserByEmail(email);
 
-    const refreshToken = TokenGenerator.generateRefreshToken(user);
+    const refreshToken = TokenGenerator.generateResetPasswordToken(user);
 
     
     // use template literal to append route
