@@ -1,6 +1,7 @@
 const { param, body } = require("express-validator");
 
 const GuildController = require("../controllers/guilds");
+const { s3ImagesUrlRegex } = require("../utils/s3");
 
 const guildIdValidator = [
   // Guild ID & Existing Guild Checks
@@ -92,8 +93,8 @@ const createGuildValidator = [
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
-    .matches(/.*\.(jpg|png|JPG|PNG|JPEG|jpeg)$/)
-    .withMessage("Uploaded file is not a valid image."),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Not a valid image URL"),
 
   // Avatar Check
   body("avatar", "Invalid guild avatar.")
@@ -103,8 +104,8 @@ const createGuildValidator = [
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
-    .matches(/.*\.(jpg|png|JPG|PNG|JPEG|jpeg)$/)
-    .withMessage("Uploaded file is not a valid image."),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Not a valid image URL"),
 
   // Media Check
   body("media", "Invalid guild media.")
@@ -193,8 +194,8 @@ const updateGuildValidator = [
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
-    .matches(/.*\.(jpg|png|JPG|PNG|JPEG|jpeg)$/)
-    .withMessage("Uploaded file is not a valid image."),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Not a valid image URL"),
 
   // Avatar Check: OPTIONAl UPDATE
   body("avatar", "Invalid guild avatar.")
@@ -205,8 +206,8 @@ const updateGuildValidator = [
     .trim()
     .isLength({ max: 255 })
     .withMessage("Guild thumbnail max length is 255 characters.")
-    .matches(/.*\.(jpg|png|JPG|PNG|JPEG|jpeg)$/)
-    .withMessage("Uploaded file is not a valid image."),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Not a valid image URL"),
 
   // Media Check: OPTIONAl UPDATE
   body("media", "Invalid guild media.")
