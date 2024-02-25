@@ -323,7 +323,7 @@ router.post(
 
       // TODO: Since the token will be encrypted, I might have to use bcrypt.compare here instead.
       const redisValidate = await checkInvalidPasswordResetToken(token);
-      if (!redisValidate) {
+      if (redisValidate) {
         return response.status(400).json({
           status: "fail",
           message: "This password reset token is expired/invalid!",
