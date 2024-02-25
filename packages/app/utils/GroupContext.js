@@ -48,6 +48,33 @@ export function GroupProvider({ children }) {
     setGithubLink("");
   };
 
+  const isHandlerUnique = async (handler) => {
+    try {
+      const token = await SecureStore.getValueFor("accessToken");
+      const headers = { Authorization: token };
+      const response = await axios.get(
+        `${ENDPOINT}/guilds/`,
+        { params: { search: `@${handler}` } },
+        { headers }
+      );
+
+      const responseStatus = response.data.status;
+      console.log(responseStatus);
+
+      if (responseStatus === "fail") {
+        return true;
+      } else {
+        const matchHandler = response.data.data.guilds.some(
+          (guild) => guild.handler === handler
+        );
+        return !matchHandler;
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      return true;
+    }
+  };
+
   // form submission logic
   const submitForm = async () => {
     try {
@@ -165,6 +192,7 @@ export function GroupProvider({ children }) {
         githubLink,
         setGithubLink,
 
+        verifyHandler: isHandlerUnique,
         resetForm,
         submitForm,
       }}>

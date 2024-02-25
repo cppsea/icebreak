@@ -58,6 +58,7 @@ function CreateGroupFormScreen({ navigation }) {
     githubLink,
     setGithubLink,
 
+    verifyHandler,
     resetForm,
     submitForm,
   } = useContext(GroupContext);
@@ -220,6 +221,16 @@ function CreateGroupFormScreen({ navigation }) {
                   pattern: {
                     value: /^[\w]+$/,
                     message: `Only alphanumeric characters are allowed`,
+                  },
+                  validate: () => {
+                    const errors = {};
+                    if (verifyHandler(handler)) {
+                      errors.someField = {
+                        type: "manuel",
+                        message: "Handler already taken",
+                      };
+                    }
+                    return errors;
                   },
                 }}
               />

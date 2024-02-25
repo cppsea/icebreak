@@ -4,7 +4,7 @@ const { validate: uuidValidate } = require("uuid");
 
 const {
   guildIdValidator,
-  // createGuildValidator,
+  createGuildValidator,
   updateGuildValidator,
 } = require("../../validators/guilds");
 const { validationResult, matchedData } = require("express-validator");
@@ -94,7 +94,7 @@ router.get(
 router.post(
   "/",
   AuthController.authenticate,
-  // createGuildValidator,
+  createGuildValidator,
   async (request, response) => {
     const result = validationResult(request);
 
