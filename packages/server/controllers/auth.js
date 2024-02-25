@@ -189,6 +189,23 @@ async function authenticate(request, response, next) {
   }
 }
 
+async function verifyUserEmail(email) {
+  // TODO: implement with prisma later
+  if (email) return true;
+  // Use Prisma findUniqueOrThrow to find if a user with this email exists
+
+  // Then return the userId
+}
+
+async function isGoogleAccount(userId) {
+  // TODO: implement is google account
+  if (userId) return false;
+
+  // If password is null then it is a google account.
+}
+
+// TODO: implement send password reset email
+
 module.exports = {
   create,
   login,
@@ -197,4 +214,6 @@ module.exports = {
   deserialize,
   authenticate,
   authenticateWithGoogle,
+  verifyUserEmail,
+  isGoogleAccount,
 };
