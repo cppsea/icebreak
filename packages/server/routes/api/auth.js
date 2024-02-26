@@ -327,8 +327,12 @@ router.post(
         });
       }
 
+      // Grab the userID associated with the provided email.
+      const userId = await UserController.getUserIdByEmail(email);
+
       // Check if the user's account is a google OAuth Account.
-      const isGoogleAccountResult = await AuthController.isGoogleAccount(email);
+      const isGoogleAccountResult = await AuthController.isGoogleAccount(userId);
+
       if (isGoogleAccountResult) {
         return response.status(400).json({
           status: "fail",
@@ -337,9 +341,6 @@ router.post(
           },
         });
       }
-
-      // Grab the userID associated with the provided email.
-      const userId = await UserController.getUserIdByEmail(email);
 
       // Generate the JWT password reset token
       const passwordResetToken =
