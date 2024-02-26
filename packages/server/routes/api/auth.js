@@ -284,13 +284,15 @@ router.post("/token/revoke", async (request, response) => {
   }
 });
 
+// TODO: Merge forgot and reset password routes from other branch
+
+// TODO: Test Route
 router.post("/forgot-password", async (request, response) => {
   try {
-    // TODO: Implement /forgot-password route
     const { email } = request.body;
 
-    const verifyEmailResult = await AuthController.verifyEmail(email);
-    // Check if email exists, then if email is a Google OAuth Account
+    // Check if the user has an existing account.
+    const verifyEmailResult = await AuthController.verifyUserEmail(email);
     if (!verifyEmailResult) {
       return response.status(400).json({
         status: "fail",
@@ -300,24 +302,24 @@ router.post("/forgot-password", async (request, response) => {
       });
     }
 
+    // Check if the user's account is a google OAuth Account.
     const isGoogleAccountResult = await AuthController.isGoogleAccount(email);
-
     if (isGoogleAccountResult) {
       return response.status(400).json({
         status: "fail",
         data: {
-          message: "User with given email is a Google OAuth account.",
+          message: "Please login using Google.",
         },
       });
     }
 
-    // After both email and google oauth checks, call
-    // generate json webtoken function
-    const userId = await UserController.getUserByEmail(email);
+    // Grab the userID associated with the provided email.
+    const userId = await UserController.getUserIdByEmail(email);
 
+    // Generate the JWT password reset token
     const passwordResetToken =
       TokenGenerator.generateResetPasswordToken(userId);
-    if (!userId) {
+    if (!passwordResetToken) {
       return response.status(400).json({
         status: "fail",
         data: {
@@ -326,15 +328,14 @@ router.post("/forgot-password", async (request, response) => {
       });
     }
 
-    // Temporary link for testing purposes.
+    // Use template literal to embed the token as a query inside the link (Note: this is a testing link since the app is not hosted yet.)
     const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
 
     // Uncomment the line below when the app is offically launched.
     // const link = `https://icebreaksea.com/account/reset-password?token=${passwordResetToken}`;
 
-    // Call nodemailer controller to send reset link to user's email.
+    // Send the reset link to the user's email.
     const sendEmail = await AuthController.sendPasswordResetEmail(email, link);
-
     if (sendEmail === null) {
       return response.status(400).json({
         status: "fail",
@@ -352,7 +353,10 @@ router.post("/forgot-password", async (request, response) => {
       },
     });
   } catch (error) {
-    console.log(error);
+    response.status(500).json({
+      status: "error",
+      message: error.message,
+    });
   }
 });
 
