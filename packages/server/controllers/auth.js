@@ -202,10 +202,15 @@ async function verifyUserEmail(email) {
 }
 
 async function isGoogleAccount(userId) {
-  // TODO: implement is google account
-  if (userId) return false;
+  const result = await prisma.findUnique({
+    where: {
+      userId: userId,
+    }
+  });
 
-  // If password is null then it is a google account.
+  if (result.password.length() == 0) return true;
+
+  return false;
 }
 
 // TODO: implement send password reset email
