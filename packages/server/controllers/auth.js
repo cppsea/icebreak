@@ -4,6 +4,7 @@ const prisma = require("../prisma/prisma");
 const token = require("../utils/token");
 const bcrypt = require("bcrypt");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
+const nodemailer = require("nodemailer");
 
 const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
 
@@ -193,7 +194,7 @@ async function verifyUserEmail(email) {
   const result = await prisma.findUnique({
     where: {
       email: email,
-    }
+    },
   });
 
   if (result === null) return false;
@@ -209,6 +210,29 @@ async function isGoogleAccount(userId) {
 }
 
 // TODO: implement send password reset email
+async function sendPasswordResetEmail(email, link) {
+  const transporter = nodemailer.createTransport({
+    host: "smtp.forwardemail.net", // NEED THIS?
+    port: 465,
+    secure: true,
+    auth: {
+      // TODO: replace `user` and `pass` values from <https://forwardemail.net>
+      user: "icebreak@cppicebreak.com",
+      pass: "REPLACE-WITH-YOUR-GENERATED-PASSWORD", // NEED TO STORE THIS IN .ENV
+    },
+  });
+
+  // send mail with defined transport object
+  const info = await transporter.sendMail({
+    from: "icebreak@cppicebreak.com", // sender address
+    to: email, // list of receivers
+    subject: "Icebreak: Password Reset Request", // Subject line
+    text: `Please click the following link to reset your password: ${link}`, // plain text body
+    // html: "<b>Hello world?</b>", // html body (THE HTML email can be a frontend task.)
+  });
+
+  console.log("Message sent: %s", info.messageId);
+}
 
 module.exports = {
   create,
@@ -220,4 +244,5 @@ module.exports = {
   authenticateWithGoogle,
   verifyUserEmail,
   isGoogleAccount,
+  sendPasswordResetEmail,
 };
