@@ -288,7 +288,7 @@ router.post("/forgot-password", async (request, response) => {
   try {
     // TODO: Implement /forgot-password route
     const { email } = request.body;
-    
+
     const verifyEmailResult = await AuthController.verifyEmail(email);
     // Check if email exists, then if email is a Google OAuth Account
     if (!verifyEmailResult) {
@@ -296,8 +296,8 @@ router.post("/forgot-password", async (request, response) => {
         status: "fail",
         data: {
           message: "User with given email does not exist.",
-        }
-      })
+        },
+      });
     }
 
     const isGoogleAccountResult = await AuthController.isGoogleAccount(email);
@@ -307,25 +307,53 @@ router.post("/forgot-password", async (request, response) => {
         status: "fail",
         data: {
           message: "User with given email is a Google OAuth account.",
-        }
-      })
+        },
+      });
     }
 
-    
-    // After both email and google oauth checks, call 
+    // After both email and google oauth checks, call
     // generate json webtoken function
-    const user = await UserController.getUserByEmail(email);
+    const userId = await UserController.getUserByEmail(email);
 
-    const refreshToken = TokenGenerator.generateResetPasswordToken(user);
+    const passwordResetToken =
+      TokenGenerator.generateResetPasswordToken(userId);
+    if (!userId) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          message: "Could not generate a token from the provided userID.",
+        },
+      });
+    }
 
-    
-    // use template literal to append route
+    // Temporary link for testing purposes.
+    const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
 
-    // 
-  }
-  catch (error) {
+    // Uncomment the line below when the app is offically launched.
+    // const link = `https://icebreaksea.com/account/reset-password?token=${passwordResetToken}`;
+
+    // Call nodemailer controller to send reset link to user's email.
+    const sendEmail = await AuthController.sendPasswordResetEmail(email, link);
+
+    if (sendEmail === null) {
+      return response.status(400).json({
+        status: "fail",
+        data: {
+          message: "Failed to send reset email.",
+        },
+      });
+    }
+
+    response.status(200).json({
+      status: "success",
+      data: {
+        message:
+          "Sucessfully sent email! Check your inbox to reset your password.",
+      },
+    });
+  } catch (error) {
     console.log(error);
   }
-})
+});
 
 module.exports = router;
