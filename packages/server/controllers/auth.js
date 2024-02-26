@@ -208,7 +208,7 @@ async function isGoogleAccount(userId) {
     }
   });
 
-  if (result.password.length() == 0) return true;
+  if (result.password == null) return true;
 
   return false;
 }
