@@ -296,8 +296,6 @@ router.post("/token/revoke", async (request, response) => {
   }
 });
 
-// TODO: Merge forgot and reset password routes from other branch
-
 // TODO: Test Route
 router.post(
   "/forgot-password",
@@ -391,7 +389,6 @@ router.post(
   }
 );
 
-// TODO: merge into forgot password branch
 // TODO: test route
 router.post(
   "/password/reset",
