@@ -4,6 +4,7 @@ const prisma = require("../prisma/prisma");
 const token = require("../utils/token");
 const bcrypt = require("bcrypt");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
+const nodemailer = require("nodemailer");
 
 const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
 
@@ -206,6 +207,32 @@ async function resetPassword(userId, password) {
   });
 }
 
+async function sendPasswordResetConfirmationEmail(email) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "mail.privateemail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "icebreak@cppicebreak.com",
+        pass: process.env.MAILBOX_PASSWORD,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: "icebreak@cppicebreak.com", // sender address
+      to: email, // list of receivers
+      subject: "Icebreak: Password Changed", // Subject line
+      text: `Your Icebreak password has been changed. If this wasn't you immediately contact us at icebreak@cppicebreak.com`, // plain text body
+      // html: "<b>Hello world?</b>", // html body (THE HTML email can be a frontend task.)
+    });
+
+    return info.messageId;
+  } catch (error) {
+    return null;
+  }
+}
+
 module.exports = {
   create,
   login,
@@ -215,4 +242,5 @@ module.exports = {
   authenticate,
   authenticateWithGoogle,
   resetPassword,
+  sendPasswordResetConfirmationEmail,
 };

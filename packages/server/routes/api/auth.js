@@ -313,6 +313,7 @@ router.post(
       const token = data.token;
       const password = data.password;
 
+      // Verify if the JWT token is valid, extract userID from if it is.
       const { userId } = verifyPasswordResetToken(token);
       if (!userId || !uuid.validate(userId)) {
         return response.status(400).json({
@@ -321,6 +322,7 @@ router.post(
         });
       }
 
+      // Check if the JWT token has been used before (check if it's in the Redis set).
       const redisValidate = await checkInvalidPasswordResetToken(token);
       if (redisValidate) {
         return response.status(400).json({
@@ -329,9 +331,23 @@ router.post(
         });
       }
 
+      // Reset the password using the userID and desired new password.
       await AuthController.resetPassword(userId, password);
 
+      // Add the token to the blacklist once password reset is successful.
       await addToPasswordResetTokenBlacklist(token);
+
+      // Send a confirmation email to the user informing them that their pasword has been changed.
+      const email = UserController.getUserByEmail(userId);
+      const emailConfirmation =
+        await AuthController.sendPasswordResetConfirmationEmail(email);
+      if (emailConfirmation === null) {
+        return response.status(400).json({
+          status: "fail",
+          message: "Failed to send confirmation email",
+        });
+      }
+
       response.status(200).json({
         status: "success",
         data: null,
