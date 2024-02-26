@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 require("bcrypt");
 
-
 function generateRefreshToken(user) {
   const { userId } = user;
   return jwt.sign(
@@ -32,9 +31,8 @@ function generateAccessToken(user) {
   );
 }
 
-// based off of this stackoverflow post:
-// https://stackoverflow.com/questions/50916619/password-reset-with-jwt-structure
-function generateResetPasswordToken(userId) {
+function generateResetPasswordToken(user) {
+  const { userId } = user;
   return jwt.sign(
     {
       userId,
@@ -45,7 +43,6 @@ function generateResetPasswordToken(userId) {
     }
   );
 }
-
 
 function verifyRefreshToken(refreshToken) {
   return jwt.verify(refreshToken, process.env.TOKEN_SECRET);

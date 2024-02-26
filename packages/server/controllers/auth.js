@@ -241,6 +241,49 @@ async function sendPasswordResetEmail(email, link) {
   }
 }
 
+async function resetPassword(userId, password) {
+  // Encrypt the password with the method used for registering
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPass = await bcrypt.hash(password, salt);
+
+  // Update the db with the new encryped password
+  return await prisma.guilds.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      password: hashedPass,
+    },
+  });
+}
+
+async function sendPasswordResetConfirmationEmail(email) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "mail.privateemail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: "icebreak@cppicebreak.com",
+        pass: process.env.MAILBOX_PASSWORD,
+      },
+    });
+
+    const info = await transporter.sendMail({
+      from: "icebreak@cppicebreak.com", // sender address
+      to: email, // list of receivers
+      subject: "Icebreak: Password Changed", // Subject line
+      text: `Your Icebreak password has been changed. If this wasn't you immediately contact us at icebreak@cppicebreak.com`, // plain text body
+      // html: "<b>Hello world?</b>", // html body (THE HTML email can be a frontend task.)
+    });
+
+    return info.messageId;
+  } catch (error) {
+    return null;
+  }
+}
+
 module.exports = {
   create,
   login,
@@ -252,4 +295,6 @@ module.exports = {
   verifyUserEmail,
   isGoogleAccount,
   sendPasswordResetEmail,
+  resetPassword,
+  sendPasswordResetConfirmationEmail,
 };

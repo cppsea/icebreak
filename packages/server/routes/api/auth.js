@@ -2,14 +2,23 @@ const express = require("express");
 const router = express.Router();
 const token = require("../../utils/token");
 const bcrypt = require("bcrypt");
+const uuid = require("uuid");
 
-const { forgotPasswordValidator } = require("../../validators/auth");
+const {
+  forgotPasswordValidator,
+  passwordResetValidator,
+} = require("../../validators/auth");
 const { validationResult, matchedData } = require("express-validator");
 
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
 const TokenGenerator = require("../../utils/token");
-const { checkInvalidToken, addToTokenBlacklist } = require("../../utils/redis");
+const {
+  checkInvalidToken,
+  addToTokenBlacklist,
+  checkInvalidPasswordResetToken,
+  addToPasswordResetTokenBlacklist,
+} = require("../../utils/redis");
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   const accessToken = token.generateAccessToken(request.user);
@@ -372,6 +381,75 @@ router.post(
           message:
             "Sucessfully sent email! Check your inbox to reset your password.",
         },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+// TODO: merge into forgot password branch
+// TODO: test route
+router.post(
+  "/password/reset",
+  passwordResetValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+
+    try {
+      const token = data.token;
+      const password = data.password;
+
+      // Verify if the JWT token is valid, extract userID from if it is.
+      const { userId } = TokenGenerator.verifyPasswordResetToken(token);
+      if (!userId || !uuid.validate(userId)) {
+        return response.status(400).json({
+          status: "fail",
+          message: "Invalid user ID was associated with the provided token!",
+        });
+      }
+
+      // Check if the JWT token has been used before (check if it's in the Redis set).
+      const redisValidate = await checkInvalidPasswordResetToken(token);
+      if (redisValidate) {
+        return response.status(400).json({
+          status: "fail",
+          message: "This password reset token is expired/invalid!",
+        });
+      }
+
+      // Reset the password using the userID and desired new password.
+      await AuthController.resetPassword(userId, password);
+
+      // Add the token to the blacklist once password reset is successful.
+      await addToPasswordResetTokenBlacklist(token);
+
+      // Send a confirmation email to the user informing them that their pasword has been changed.
+      const email = UserController.getUserByEmail(userId);
+      const emailConfirmation =
+        await AuthController.sendPasswordResetConfirmationEmail(email);
+      if (emailConfirmation === null) {
+        return response.status(400).json({
+          status: "fail",
+          message: "Failed to send confirmation email",
+        });
+      }
+
+      response.status(200).json({
+        status: "success",
+        data: null,
       });
     } catch (error) {
       response.status(500).json({

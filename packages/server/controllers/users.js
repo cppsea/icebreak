@@ -6,11 +6,21 @@ async function getAllUsers() {
 }
 
 async function getUser(userId) {
-  return prisma.users.findUniqueOrThrow({
+  const query = await prisma.users.findUnique({
     where: {
       userId: userId,
     },
   });
+  return query;
+}
+
+async function getUserEmail(userId) {
+  const query = await prisma.users.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
+  return query.email;
 }
 
 async function getUserByEmail(email) {
@@ -58,4 +68,5 @@ module.exports = {
   getUserByEmail,
   getGuildsForUser,
   getUserIdByEmail,
+  getUserEmail,
 };
