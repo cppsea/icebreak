@@ -3,6 +3,9 @@ const router = express.Router();
 const token = require("../../utils/token");
 const bcrypt = require("bcrypt");
 
+const { forgotPasswordValidator } = require("../../validators/auth");
+const { validationResult, matchedData } = require("express-validator");
+
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
 const TokenGenerator = require("../../utils/token");
@@ -287,77 +290,96 @@ router.post("/token/revoke", async (request, response) => {
 // TODO: Merge forgot and reset password routes from other branch
 
 // TODO: Test Route
-router.post("/forgot-password", async (request, response) => {
-  try {
-    const { email } = request.body;
+router.post(
+  "/forgot-password",
+  forgotPasswordValidator,
+  async (request, response) => {
+    // Express validators for email checks
+    const result = validationResult(request);
 
-    // Check if the user has an existing account.
-    const verifyEmailResult = await AuthController.verifyUserEmail(email);
-    if (!verifyEmailResult) {
+    if (!result.isEmpty()) {
       return response.status(400).json({
         status: "fail",
-        data: {
-          message: "User with given email does not exist.",
-        },
+        data: result.array(),
       });
     }
 
-    // Check if the user's account is a google OAuth Account.
-    const isGoogleAccountResult = await AuthController.isGoogleAccount(email);
-    if (isGoogleAccountResult) {
-      return response.status(400).json({
-        status: "fail",
+    const data = matchedData(request);
+
+    try {
+      const email = data.email;
+
+      // Check if the user has an existing account.
+      const verifyEmailResult = await AuthController.verifyUserEmail(email);
+      if (!verifyEmailResult) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            message: "User with given email does not exist.",
+          },
+        });
+      }
+
+      // Check if the user's account is a google OAuth Account.
+      const isGoogleAccountResult = await AuthController.isGoogleAccount(email);
+      if (isGoogleAccountResult) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Please login using Google.",
+          },
+        });
+      }
+
+      // Grab the userID associated with the provided email.
+      const userId = await UserController.getUserIdByEmail(email);
+
+      // Generate the JWT password reset token
+      const passwordResetToken =
+        TokenGenerator.generateResetPasswordToken(userId);
+      if (!passwordResetToken) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Could not generate a token from the provided userID.",
+          },
+        });
+      }
+
+      // Use template literal to embed the token as a query inside the link (Note: this is a testing link since the app is not hosted yet.)
+      const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
+
+      // Uncomment the line below when the app is offically launched.
+      // const link = `https://icebreaksea.com/account/reset-password?token=${passwordResetToken}`;
+
+      // Send the reset link to the user's email.
+      const sendEmail = await AuthController.sendPasswordResetEmail(
+        email,
+        link
+      );
+      if (sendEmail === null) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Failed to send reset email.",
+          },
+        });
+      }
+
+      response.status(200).json({
+        status: "success",
         data: {
-          message: "Please login using Google.",
+          message:
+            "Sucessfully sent email! Check your inbox to reset your password.",
         },
       });
-    }
-
-    // Grab the userID associated with the provided email.
-    const userId = await UserController.getUserIdByEmail(email);
-
-    // Generate the JWT password reset token
-    const passwordResetToken =
-      TokenGenerator.generateResetPasswordToken(userId);
-    if (!passwordResetToken) {
-      return response.status(400).json({
-        status: "fail",
-        data: {
-          message: "Could not generate a token from the provided userID.",
-        },
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
       });
     }
-
-    // Use template literal to embed the token as a query inside the link (Note: this is a testing link since the app is not hosted yet.)
-    const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
-
-    // Uncomment the line below when the app is offically launched.
-    // const link = `https://icebreaksea.com/account/reset-password?token=${passwordResetToken}`;
-
-    // Send the reset link to the user's email.
-    const sendEmail = await AuthController.sendPasswordResetEmail(email, link);
-    if (sendEmail === null) {
-      return response.status(400).json({
-        status: "fail",
-        data: {
-          message: "Failed to send reset email.",
-        },
-      });
-    }
-
-    response.status(200).json({
-      status: "success",
-      data: {
-        message:
-          "Sucessfully sent email! Check your inbox to reset your password.",
-      },
-    });
-  } catch (error) {
-    response.status(500).json({
-      status: "error",
-      message: error.message,
-    });
   }
-});
+);
 
 module.exports = router;
