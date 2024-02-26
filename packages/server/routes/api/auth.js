@@ -294,6 +294,8 @@ router.post("/token/revoke", async (request, response) => {
   }
 });
 
+// TODO: merge into forgot password branch
+// TODO: test route
 router.post(
   "/password/reset",
   passwordResetValidator,
