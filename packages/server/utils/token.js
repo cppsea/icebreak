@@ -32,7 +32,7 @@ function generateAccessToken(user) {
 }
 
 function generateResetPasswordToken(user) {
-  const { userId } = user;
+  const userId = user;
   return jwt.sign(
     {
       userId,
