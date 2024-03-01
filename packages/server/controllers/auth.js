@@ -191,7 +191,7 @@ async function authenticate(request, response, next) {
 }
 
 async function verifyUserEmail(email) {
-  const result = await prisma.findUnique({
+  const result = await prisma.users.findUnique({
     where: {
       email: email,
     },
@@ -203,7 +203,7 @@ async function verifyUserEmail(email) {
 }
 
 async function isGoogleAccount(userId) {
-  const result = await prisma.findUnique({
+  const result = await prisma.users.findUnique({
     where: {
       userId: userId,
     },
