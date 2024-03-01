@@ -248,7 +248,7 @@ async function resetPassword(userId, password) {
   const hashedPass = await bcrypt.hash(password, salt);
 
   // Update the db with the new encryped password
-  return await prisma.guilds.update({
+  return await prisma.users.update({
     where: {
       userId: userId,
     },

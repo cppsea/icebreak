@@ -331,7 +331,9 @@ router.post(
       const userId = await UserController.getUserIdByEmail(email);
 
       // Check if the user's account is a google OAuth Account.
-      const isGoogleAccountResult = await AuthController.isGoogleAccount(userId);
+      const isGoogleAccountResult = await AuthController.isGoogleAccount(
+        userId
+      );
 
       if (isGoogleAccountResult) {
         return response.status(400).json({
@@ -435,7 +437,7 @@ router.post(
       await addToPasswordResetTokenBlacklist(token);
 
       // Send a confirmation email to the user informing them that their pasword has been changed.
-      const email = UserController.getUserByEmail(userId);
+      const email = await UserController.getUserEmail(userId);
       const emailConfirmation =
         await AuthController.sendPasswordResetConfirmationEmail(email);
       if (emailConfirmation === null) {
