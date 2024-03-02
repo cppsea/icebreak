@@ -64,7 +64,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("Start date is not in valid ISO 8601 format")
     .custom(async (startDate, { req }) => {
       //Start date given but not end date
       if (!req.body.endDate) {
@@ -78,7 +78,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("End date is not in valid ISO 8601 format")
     .custom(async (endDate, { req }) => {
       //End date given but no start date
       if (!req.body.startDate) {
@@ -131,7 +131,7 @@ const updateEventValidator = [
     .isISO8601()
     .toDate()
     .bail()
-    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("Start date is not in valid ISO 8601 format")
     .custom(async (startDate, { req }) => {
       //Check for when new start and end date is given
       if (req.body.endDate) {
@@ -160,7 +160,7 @@ const updateEventValidator = [
     .isISO8601()
     .toDate()
     .bail()
-    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("End date is not in valid ISO 8601 format")
     .custom(async (endDate, { req }) => {
       //Check for when new end date is given but no start date
       if (!req.body.startDate) {
