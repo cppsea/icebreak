@@ -317,8 +317,8 @@ router.post(
       const email = data.email;
 
       // Check if the user has an existing account.
-      const verifyEmailResult = await AuthController.verifyUserEmail(email);
-      if (!verifyEmailResult) {
+      const isUserEmailResult = await AuthController.isUserEmail(email);
+      if (!isUserEmailResult) {
         return response.status(400).json({
           status: "fail",
           data: {

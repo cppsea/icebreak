@@ -190,7 +190,7 @@ async function authenticate(request, response, next) {
   }
 }
 
-async function verifyUserEmail(email) {
+async function isUserEmail(email) {
   const result = await prisma.users.findUnique({
     where: {
       email: email,
@@ -292,7 +292,7 @@ module.exports = {
   deserialize,
   authenticate,
   authenticateWithGoogle,
-  verifyUserEmail,
+  isUserEmail,
   isGoogleAccount,
   sendPasswordResetEmail,
   resetPassword,
