@@ -121,6 +121,26 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
+// updateAttendeeStatus controller
+async function updateAttendeeStatus(eventId, userId, status) {
+  const eventAttendee = await prisma.eventAttendees.findFirst({
+    where: {
+      eventId: eventId,
+      userId: userId,
+    },
+  });
+
+  const updatedEventAttendee = await prisma.eventAttendees.update({
+    where: {
+      id: eventAttendee.id,
+    },
+    data: {
+      status: status,
+    },
+  });
+  return updatedEventAttendee;
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -130,4 +150,5 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
+  updateAttendeeStatus,
 };

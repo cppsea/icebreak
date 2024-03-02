@@ -280,4 +280,49 @@ router.get(
   }
 );
 
+// Event Attendee Status Route
+router.post(
+  "/:eventId/status",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+
+    const eventId = data.eventId;
+    const userId = data.userId;
+    const status = data.status;
+
+    try {
+      const updatedStatus = await EventController.updateAttendeeStatus(
+        eventId,
+        userId,
+        status
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          message: "Attendee status updated successfully",
+          updatedStatus: updatedStatus,
+        },
+      });
+    } catch (err) {
+      response.status(500).json({
+        status: "error",
+        message: err.message,
+      });
+    }
+  }
+);
+
 module.exports = router;
