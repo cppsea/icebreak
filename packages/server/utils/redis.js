@@ -1,5 +1,5 @@
 const redis = require("ioredis");
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 
 // Create a Redis client instance
 const redisClient = new redis(process.env.REDIS_URL);
