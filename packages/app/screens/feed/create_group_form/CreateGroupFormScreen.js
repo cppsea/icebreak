@@ -141,13 +141,13 @@ function CreateGroupFormScreen({ navigation }) {
 
   const validateHandler = async (value) => {
     try {
-      const isTaken = await isHandlerUnique(value);
-      if (isTaken) {
+      const isUnique = await isHandlerUnique(value);
+      if (!isUnique) {
         return "Handler is already taken";
       }
       return true;
     } catch (error) {
-      console.error("Error while checking handler uniqueness:", error);
+      console.error("Error validating handler:", error);
       return "An error occurred";
     }
   };

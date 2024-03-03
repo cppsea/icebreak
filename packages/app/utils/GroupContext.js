@@ -50,7 +50,6 @@ export function GroupProvider({ children }) {
 
   const isHandlerUnique = async (handler) => {
     try {
-      console.log(handler);
       const token = await SecureStore.getValueFor("accessToken");
       const headers = { Authorization: token };
       const response = await axios.get(
