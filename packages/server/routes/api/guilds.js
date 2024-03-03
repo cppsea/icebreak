@@ -90,6 +90,38 @@ router.get(
   }
 );
 
+// Get guild by handler
+router.get(
+  "/handler/:guildHandler",
+  AuthController.authenticate,
+  async (request, response) => {
+    const guildHandler = request.params.guildHandler;
+
+    try {
+      const guild = await GuildController.getGuildByHandler(guildHandler);
+
+      if (guild.length === 0) {
+        return response.status(404).json({
+          status: "error",
+          message: `Guild not found via @${guildHandler}`,
+        });
+      }
+
+      return response.status(200).json({
+        status: "success",
+        data: {
+          guild,
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 // Create Guild
 router.post(
   "/",

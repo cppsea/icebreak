@@ -13,6 +13,12 @@ async function getGuild(guildId) {
   });
 }
 
+async function getGuildByHandler(handler) {
+  return prisma.$queryRaw`
+    SELECT guild_id, name, handler, avatar FROM guilds 
+    WHERE handler = ${handler}`;
+}
+
 async function createGuild(guildData) {
   return await prisma.guilds.create({
     data: guildData,
@@ -116,6 +122,7 @@ async function getLeaderboard(guildId) {
 
 module.exports = {
   getGuild,
+  getGuildByHandler,
   searchGuildByName,
   searchGuildByHandler,
   getAllGuilds,

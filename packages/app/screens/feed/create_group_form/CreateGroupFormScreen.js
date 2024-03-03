@@ -58,7 +58,7 @@ function CreateGroupFormScreen({ navigation }) {
     githubLink,
     setGithubLink,
 
-    verifyHandler,
+    isHandlerUnique,
     resetForm,
     submitForm,
   } = useContext(GroupContext);
@@ -136,6 +136,19 @@ function CreateGroupFormScreen({ navigation }) {
       console.error("Error submitting form:", error);
     } finally {
       setIsButtonDisabled(false);
+    }
+  };
+
+  const validateHandler = async (value) => {
+    try {
+      const isTaken = await isHandlerUnique(value);
+      if (isTaken) {
+        return "Handler is already taken";
+      }
+      return true;
+    } catch (error) {
+      console.error("Error while checking handler uniqueness:", error);
+      return "An error occurred";
     }
   };
 
@@ -222,15 +235,8 @@ function CreateGroupFormScreen({ navigation }) {
                     value: /^[\w]+$/,
                     message: `Only alphanumeric characters are allowed`,
                   },
-                  validate: () => {
-                    const errors = {};
-                    if (verifyHandler(handler)) {
-                      errors.someField = {
-                        type: "manuel",
-                        message: "Handler already taken",
-                      };
-                    }
-                    return errors;
+                  validate: {
+                    isUniqueHandler: validateHandler,
                   },
                 }}
               />

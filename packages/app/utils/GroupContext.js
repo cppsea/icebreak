@@ -50,28 +50,31 @@ export function GroupProvider({ children }) {
 
   const isHandlerUnique = async (handler) => {
     try {
+      console.log(handler);
       const token = await SecureStore.getValueFor("accessToken");
       const headers = { Authorization: token };
       const response = await axios.get(
-        `${ENDPOINT}/guilds/`,
-        { params: { search: `@${handler}` } },
+        `${ENDPOINT}/guilds/handler/${handler}`,
         { headers }
       );
 
       const responseStatus = response.data.status;
-      console.log(responseStatus);
+      console.log(`Reponse Status: ${responseStatus}`);
 
-      if (responseStatus === "fail") {
-        return true;
-      } else {
-        const matchHandler = response.data.data.guilds.some(
-          (guild) => guild.handler === handler
-        );
-        return !matchHandler;
-      }
+      return false;
     } catch (error) {
-      console.error("Error:", error);
-      return true;
+      if (error.response.status === 404) {
+        console.log(`Reponse Status: ${error.response.status}`);
+        // if handler is unique, return true
+        return true;
+      } else if (error.response) {
+        console.error("Response Error Data:", error.response.data);
+      } else if (error.request) {
+        console.error("Request Error:", error.request);
+      } else {
+        console.error("Error:", error.message);
+      }
+      return false;
     }
   };
 
@@ -87,13 +90,18 @@ export function GroupProvider({ children }) {
         githubLink,
       ].filter((item) => item);
 
+      const defaultBanner = `https://icebreak-assets.s3.us-west-1.amazonaws.com/guild_banner.5325b147-5524-4539-b652-0549e074a159.jpg`;
+      const defaultAvatar = `https://icebreak-assets.s3.us-west-1.amazonaws.com/guild_avatar.5325b147-5524-4539-b652-0549e074a159.jpg`;
+
       const guildData = {
         name,
         handler,
         description,
+        banner: defaultBanner,
+        avatar: defaultAvatar,
         category,
-        location,
-        website,
+        location: location || undefined,
+        website: website || undefined,
         tags,
         media,
         isInviteOnly,
@@ -192,7 +200,7 @@ export function GroupProvider({ children }) {
         githubLink,
         setGithubLink,
 
-        verifyHandler: isHandlerUnique,
+        isHandlerUnique,
         resetForm,
         submitForm,
       }}>
