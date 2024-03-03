@@ -195,27 +195,8 @@ const eventIdValidator = [
     }),
 ];
 
-const guildIdValidator = [
-  param("guildId", "Invalid guild ID")
-    .trim()
-    .blacklist("<>")
-    .exists({ checkFalsy: true })
-    .withMessage("guildId cannot be null or empty")
-    .isUUID()
-    .withMessage("Not a UUID")
-    .bail()
-    .custom(async (value) => {
-      try {
-        await GuildController.getGuild(value); //Check if guild exists by getting it
-      } catch (error) {
-        throw new Error(`No guild exists with an ID of ${value}`);
-      }
-    }),
-];
-
 module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
-  guildIdValidator,
 };

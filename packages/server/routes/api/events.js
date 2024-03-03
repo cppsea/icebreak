@@ -6,8 +6,8 @@ const {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
-  guildIdValidator,
 } = require("../../validators/events");
+const { guildIdValidator } = require("../../validators/guilds");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 /**

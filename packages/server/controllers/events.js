@@ -126,7 +126,7 @@ async function getUpcomingEvents(currentDate, guildId) {
   const upcomingEvents = await prisma.events.findMany({
     where: {
       guildId: guildId,
-      startDate: { gt: currentDate },
+      startDate: { gte: currentDate },
     },
     orderBy: {
       startDate: "asc",
