@@ -18,6 +18,9 @@ import { logoutUser } from "@app/utils/datalayer";
 
 import Constants from "expo-constants";
 
+import { Palette } from "@app/utils/theme";
+import { ThemeProvider } from "@app/utils/theme";
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -117,11 +120,13 @@ function App() {
 
 function Root() {
   return (
-    <UserProvider>
-      <NavigationContainer>
-        <App />
-      </NavigationContainer>
-    </UserProvider>
+    <ThemeProvider theme={Palette}>
+      <UserProvider>
+        <NavigationContainer>
+          <App />
+        </NavigationContainer>
+      </UserProvider>
+    </ThemeProvider>
   );
 }
 
