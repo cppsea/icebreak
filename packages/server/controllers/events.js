@@ -121,6 +121,20 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
+async function getUpcomingEvents(currentDate, guildId) {
+  const upcomingEvents = await prisma.events.findMany({
+    where: {
+      guildId: guildId,
+      startDate: { gte: currentDate },
+    },
+    orderBy: {
+      startDate: "asc",
+    },
+  });
+
+  return upcomingEvents;
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -130,4 +144,5 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
+  getUpcomingEvents,
 };
