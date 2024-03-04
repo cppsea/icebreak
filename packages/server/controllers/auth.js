@@ -214,31 +214,41 @@ async function isGoogleAccount(userId) {
   return false;
 }
 
-// TODO: implement send password reset email
-async function sendPasswordResetEmail(email, link) {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: "mail.privateemail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "icebreak@cppicebreak.com",
-        pass: process.env.MAILBOX_PASSWORD,
-      },
-    });
+async function sendEmail(address, subject, body) {
+  const transporter = nodemailer.createTransport({
+    host: "mail.privateemail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "icebreak@cppicebreak.com",
+      pass: process.env.MAILBOX_PASSWORD,
+    },
+  });
 
-    const info = await transporter.sendMail({
-      from: "icebreak@cppicebreak.com", // sender address
-      to: email, // list of receivers
-      subject: "Icebreak: Password Reset Request", // Subject line
-      text: `Please click the following link to reset your password: ${link}`, // plain text body
-      // html: "<b>Hello world?</b>", // html body (THE HTML email can be a frontend task.)
-    });
+  const info = await transporter.sendMail({
+    from: "icebreak@cppicebreak.com",
+    to: address,
+    subject: subject,
+    text: body,
+  });
 
-    return info.messageId;
-  } catch (error) {
-    return null;
-  }
+  return info;
+}
+
+async function sendPasswordResetEmail(address, passwordResetToken) {
+  const subject = "Icebreak: Password Reset Request";
+  const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
+  const body = `Please click the following link to reset your password: ${link}`;
+
+  sendEmail(address, subject, body);
+}
+
+async function sendPasswordResetConfirmationEmail(address) {
+  const subject = "Icebreak: Password Reset";
+  const body =
+    "Your Icebreak password has been changed. If you did not request a password change, please immediately contact us at icebreak@cppicebreak.com.";
+
+  sendEmail(address, subject, body);
 }
 
 async function resetPassword(userId, password) {
@@ -258,32 +268,6 @@ async function resetPassword(userId, password) {
   });
 }
 
-async function sendPasswordResetConfirmationEmail(email) {
-  try {
-    const transporter = nodemailer.createTransport({
-      host: "mail.privateemail.com",
-      port: 465,
-      secure: true,
-      auth: {
-        user: "icebreak@cppicebreak.com",
-        pass: process.env.MAILBOX_PASSWORD,
-      },
-    });
-
-    const info = await transporter.sendMail({
-      from: "icebreak@cppicebreak.com", // sender address
-      to: email, // list of receivers
-      subject: "Icebreak: Password Changed", // Subject line
-      text: `Your Icebreak password has been changed. If this wasn't you immediately contact us at icebreak@cppicebreak.com`, // plain text body
-      // html: "<b>Hello world?</b>", // html body (THE HTML email can be a frontend task.)
-    });
-
-    return info.messageId;
-  } catch (error) {
-    return null;
-  }
-}
-
 module.exports = {
   create,
   login,
@@ -295,6 +279,6 @@ module.exports = {
   isUserEmail,
   isGoogleAccount,
   sendPasswordResetEmail,
-  resetPassword,
   sendPasswordResetConfirmationEmail,
+  resetPassword,
 };

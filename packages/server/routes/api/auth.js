@@ -356,16 +356,10 @@ router.post(
         });
       }
 
-      // Use template literal to embed the token as a query inside the link (Note: this is a testing link since the app is not hosted yet.)
-      const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
-
-      // Uncomment the line below when the app is offically launched.
-      // const link = `https://icebreaksea.com/account/reset-password?token=${passwordResetToken}`;
-
       // Send the reset link to the user's email.
       const sendEmail = await AuthController.sendPasswordResetEmail(
         email,
-        link
+        passwordResetToken
       );
       if (sendEmail === null) {
         return response.status(400).json({
