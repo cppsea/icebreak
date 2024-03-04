@@ -16,7 +16,6 @@ const TokenGenerator = require("../../utils/token");
 const {
   checkInvalidToken,
   addToTokenBlacklist,
-  checkInvalidPasswordResetToken,
   addToPasswordResetTokenBlacklist,
 } = require("../../utils/redis");
 
@@ -296,7 +295,6 @@ router.post("/token/revoke", async (request, response) => {
   }
 });
 
-// TODO: Test Route
 router.post(
   "/forgot-password",
   forgotPasswordValidator,
@@ -316,33 +314,8 @@ router.post(
     try {
       const email = data.email;
 
-      // Check if the user has an existing account.
-      const isUserEmailResult = await AuthController.isUserEmail(email);
-      if (!isUserEmailResult) {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            message: "User with given email does not exist.",
-          },
-        });
-      }
-
       // Grab the userID associated with the provided email.
       const userId = await UserController.getUserIdByEmail(email);
-
-      // Check if the user's account is a google OAuth Account.
-      const isGoogleAccountResult = await AuthController.isGoogleAccount(
-        userId
-      );
-
-      if (isGoogleAccountResult) {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            message: "Please login using Google.",
-          },
-        });
-      }
 
       // Generate the JWT password reset token
       const passwordResetToken =
@@ -386,7 +359,6 @@ router.post(
   }
 );
 
-// TODO: test route
 router.post(
   "/password/reset",
   passwordResetValidator,
@@ -412,15 +384,6 @@ router.post(
         return response.status(400).json({
           status: "fail",
           message: "Invalid user ID was associated with the provided token!",
-        });
-      }
-
-      // Check if the JWT token has been used before (check if it's in the Redis set).
-      const redisValidate = await checkInvalidPasswordResetToken(token);
-      if (redisValidate) {
-        return response.status(400).json({
-          status: "fail",
-          message: "This password reset token is expired/invalid!",
         });
       }
 
