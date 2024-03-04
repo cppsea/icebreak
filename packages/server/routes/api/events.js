@@ -312,7 +312,7 @@ router.get(
       response.status(200).json({
         status: "success",
         data: {
-          upcoming: upcoming,
+          upcomingEvents: upcoming,
         },
       });
     } catch (error) {
