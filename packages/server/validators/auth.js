@@ -11,14 +11,14 @@ const forgotPasswordValidator = [
 
 const passwordResetValidator = [
   body("token", "Invalid token.")
+    .trim()
     .exists({ checkFalsy: true })
-    .withMessage("Token can't be null or empty.")
-    .trim(),
+    .withMessage("Token can't be null or empty."),
 
   body("password", "Invalid password.")
+    .trim()
     .exists({ checkFalsy: true })
-    .withMessage("Password can't be null or empty.")
-    .trim(),
+    .withMessage("Password can't be null or empty."),
 ];
 
 module.exports = {
