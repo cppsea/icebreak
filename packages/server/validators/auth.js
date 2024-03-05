@@ -45,7 +45,24 @@ const passwordResetValidator = [
   body("password", "Invalid password.")
     .trim()
     .exists({ checkFalsy: true })
-    .withMessage("Password can't be null or empty."),
+    .withMessage("Password can't be null or empty.")
+    .matches(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,20}$/
+    )
+    .withMessage(
+      "Password must be 12-20 characters long and contain at least one uppercase and lowercase letter, number, and special character!"
+    ),
+
+  body("passwordConfirmation", "Invalid confirmation password.").custom(
+    (passwordConfirmation, { req }) => {
+      if (passwordConfirmation !== req.body.password) {
+        throw new Error(
+          "Confirmation password does not match original password!"
+        );
+      }
+      return true;
+    }
+  ),
 ];
 
 module.exports = {
