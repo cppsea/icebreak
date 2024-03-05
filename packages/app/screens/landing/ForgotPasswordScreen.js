@@ -7,17 +7,19 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
-  Button,
 } from "react-native";
 
+import Button from "@app/components/Button";
 import Screen from "@app/components/Screen";
 import TextInput from "@app/components/TextInput";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import PropTypes from "prop-types";
 
-const LIGHT_GRAY = "#ebebeb";
+const CYAN = "#489FB5";
+const GRAY = "#6D6D6D";
 
-function ForgotPasswordScreen({ route }) {
+function ForgotPasswordScreen({ navigation, route }) {
   const [inputs, setInputs] = useState({
     email: route.params?.email ?? "",
   });
@@ -31,39 +33,34 @@ function ForgotPasswordScreen({ route }) {
     setErrors((prevState) => ({ ...prevState, [inputKey]: error }));
   };
 
-  const validateInput = () => {
-    let isValid = true;
-
-    // Reset the error message
-    for (const inputKey in inputs) {
-      handleError(inputKey, null);
-    }
-
-    if (!inputs.email) {
-      handleError("email", "Please enter an email.");
-      isValid = false;
-    } else if (!isValidEmail(inputs.email)) {
-      handleError("email", "Please enter a valid email.");
-      isValid = false;
-    }
-
-    return isValid;
-  };
-
   return (
     <Screen style={styles.container}>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
           style={styles.container}>
-          <Text>This is {route.params.name}</Text>
+          <FontAwesome5
+            name="chevron-left"
+            style={[styles.component, styles.mediaIconStyle]}
+            onPress={() => {
+              navigation.navigate("LandingScreen", { email: inputs.email });
+            }}
+          />
+          <Text
+            testID="forgotPassword"
+            style={[styles.component, styles.textTitle]}>
+            Forgot Password
+          </Text>
+
+          <Text testID="info" style={[styles.component, styles.textInfo]}>
+            Please enter your email for password reset instructions.
+          </Text>
 
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
-            container={{ marginBottom: 10 }}
             style={[styles.component, styles.textInput]}
-            borderColor="#cccccc"
+            borderColor="#489FB5"
             onChangeText={(text) => {
               handleOnChange("email", text);
               handleError("email", null);
@@ -72,15 +69,12 @@ function ForgotPasswordScreen({ route }) {
             placeholder="Email"></TextInput>
 
           <Button
-            testID="loginButton"
-            title="Log In"
-            onPress={() => {
-              validateInput();
-            }}
+            testID="continueButton"
+            title="Continue"
             underlayColor="#0e81c4"
             fontColor="#ffffff"
             fontWeight="bold"
-            style={[styles.loginButton, styles.component]}
+            style={[styles.continueButton, styles.component]}
             textStyle={styles.boldText}
           />
         </KeyboardAvoidingView>
@@ -99,26 +93,40 @@ const styles = StyleSheet.create({
   container: {
     alignItems: "center",
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     paddingLeft: 20,
     paddingRight: 20,
     width: "100%",
   },
+  continueButton: {
+    backgroundColor: CYAN,
+    borderColor: CYAN,
+    marginBottom: 30,
+  },
+  mediaIconStyle: {
+    display: "flex",
+    fontSize: 22,
+    marginBottom: 20,
+    marginTop: 30,
+    paddingRight: 10,
+  },
+  textInfo: {
+    color: GRAY,
+    fontSize: 16,
+    marginBottom: 50,
+  },
   textInput: {
-    backgroundColor: LIGHT_GRAY,
-    borderWidth: 1,
+    borderWidth: 3,
     justifyContent: "space-between",
-    marginBottom: 7,
+    marginBottom: 300,
     paddingLeft: 10,
     paddingRight: 10,
   },
+  textTitle: {
+    fontSize: 28,
+    fontWeight: "bold",
+  },
 });
-
-const isValidEmail = (email) => {
-  const emailRE =
-    /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
-  return email.match(emailRE);
-};
 
 ForgotPasswordScreen.propTypes = {
   navigation: PropTypes.object,

@@ -4,7 +4,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LandingScreen from "./LandingScreen";
 import SignUpScreen from "./SignUpScreen";
 import ForgotPasswordScreen from "./ForgotPasswordScreen";
-import ResetPasswordScreen from "./ResetPasswordScreen";
 
 const Landing = createNativeStackNavigator();
 
@@ -18,10 +17,6 @@ function LandingStack() {
       <Landing.Screen
         name="ForgotPasswordScreen"
         component={ForgotPasswordScreen}
-      />
-      <Landing.Screen
-        name="ResetPasswordScreen"
-        component={ResetPasswordScreen}
       />
     </Landing.Navigator>
   );
