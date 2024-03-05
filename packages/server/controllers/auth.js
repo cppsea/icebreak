@@ -240,7 +240,7 @@ async function sendPasswordResetEmail(address, passwordResetToken) {
   const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
   const body = `Please click the following link to reset your password: ${link}`;
 
-  sendEmail(address, subject, body);
+  return sendEmail(address, subject, body);
 }
 
 async function sendPasswordResetConfirmationEmail(address) {
@@ -248,7 +248,7 @@ async function sendPasswordResetConfirmationEmail(address) {
   const body =
     "Your Icebreak password has been changed. If you did not request a password change, please immediately contact us at icebreak@cppicebreak.com.";
 
-  sendEmail(address, subject, body);
+  return sendEmail(address, subject, body);
 }
 
 async function resetPassword(userId, password) {

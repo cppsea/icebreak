@@ -3,7 +3,7 @@ const AuthController = require("../controllers/auth");
 const UserController = require("../controllers/users");
 const { checkInvalidPasswordResetToken } = require("../utils/redis");
 
-const forgotPasswordValidator = [
+const userEmailValidator = [
   body("email", "Invalid email.")
     .trim()
     .exists({ checkFalsy: true })
@@ -12,6 +12,7 @@ const forgotPasswordValidator = [
     .withMessage("Invalid email entered!")
 
     // Check If User Exists in DB & If User is a Google OAuth Acc
+    .bail()
     .custom(async (email) => {
       const userExists = await AuthController.isUserEmail(email);
       if (!userExists) {
@@ -33,6 +34,7 @@ const passwordResetValidator = [
     .withMessage("Token can't be null or empty.")
 
     // Check if the password reset token has been used before.
+    .bail()
     .custom(async (token) => {
       const isUsedToken = await checkInvalidPasswordResetToken(token);
       if (isUsedToken) {
@@ -47,6 +49,6 @@ const passwordResetValidator = [
 ];
 
 module.exports = {
-  forgotPasswordValidator,
+  userEmailValidator,
   passwordResetValidator,
 };

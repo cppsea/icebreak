@@ -5,7 +5,7 @@ const bcrypt = require("bcrypt");
 const uuid = require("uuid");
 
 const {
-  forgotPasswordValidator,
+  userEmailValidator,
   passwordResetValidator,
 } = require("../../validators/auth");
 const { validationResult, matchedData } = require("express-validator");
@@ -297,7 +297,7 @@ router.post("/token/revoke", async (request, response) => {
 
 router.post(
   "/forgot-password",
-  forgotPasswordValidator,
+  userEmailValidator,
   async (request, response) => {
     // Express validators for email checks
     const result = validationResult(request);

@@ -31,8 +31,7 @@ function generateAccessToken(user) {
   );
 }
 
-function generateResetPasswordToken(user) {
-  const userId = user;
+function generateResetPasswordToken(userId) {
   return jwt.sign(
     {
       userId,
