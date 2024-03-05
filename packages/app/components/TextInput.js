@@ -29,6 +29,10 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
   },
+  labelField: {
+    alignItems: "flex-start",
+    flexDirection: "column",
+  },
   textField: {
     alignItems: "flex-start",
     flexDirection: "row",
@@ -42,8 +46,14 @@ const TextInput = forwardRef(function textInput(props, ref) {
     <View testID={props.testID} style={[styles.container, props.container]}>
       <View
         testID={`${props.testID}.errorBorder`}
-        style={[styles.textField, props.style]}
+        style={
+          props.label
+            ? [styles.labelField, props.style]
+            : [styles.textField, props.style]
+        }
         borderColor={props.error ? "#f54242" : props.borderColor}>
+        {props.label && <Text>word</Text>}
+
         <RNTextInput
           testID={`${props.testID}.textInput`}
           value={props.value}
@@ -75,6 +85,7 @@ const TextInput = forwardRef(function textInput(props, ref) {
 
 TextInput.propTypes = {
   testID: PropTypes.string,
+  label: PropTypes.bool,
   password: PropTypes.bool,
   container: PropTypes.object,
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),

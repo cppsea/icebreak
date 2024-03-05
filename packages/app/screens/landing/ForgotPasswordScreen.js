@@ -66,7 +66,9 @@ function ForgotPasswordScreen({ navigation, route }) {
               handleError("email", null);
             }}
             error={errors.email}
-            placeholder="Email"></TextInput>
+            placeholder="Email"
+            label
+          />
 
           <Button
             testID="continueButton"
@@ -74,6 +76,11 @@ function ForgotPasswordScreen({ navigation, route }) {
             underlayColor="#0e81c4"
             fontColor="#ffffff"
             fontWeight="bold"
+            onPress={() => {
+              navigation.navigate("ResetPasswordScreen", {
+                email: inputs.email,
+              });
+            }}
             style={[styles.continueButton, styles.component]}
             textStyle={styles.boldText}
           />
@@ -84,7 +91,6 @@ function ForgotPasswordScreen({ navigation, route }) {
 }
 const styles = StyleSheet.create({
   component: {
-    alignItems: "center",
     borderRadius: 10,
     height: 50,
     justifyContent: "center",
