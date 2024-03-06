@@ -68,12 +68,11 @@ async function createEvent(eventData, guildId) {
 }
 
 async function getEvent(eventId) {
-  const event = await prisma.events.findUniqueOrThrow({
+  return prisma.events.findUniqueOrThrow({
     where: {
       eventId: eventId,
     },
   });
-  return event;
 }
 
 async function deleteEvent(eventId) {
@@ -122,6 +121,20 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
+async function getUpcomingEvents(currentDate, guildId) {
+  const upcomingEvents = await prisma.events.findMany({
+    where: {
+      guildId: guildId,
+      startDate: { gte: currentDate },
+    },
+    orderBy: {
+      startDate: "asc",
+    },
+  });
+
+  return upcomingEvents;
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -131,4 +144,5 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
+  getUpcomingEvents,
 };

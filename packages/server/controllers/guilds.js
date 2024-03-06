@@ -6,7 +6,7 @@ async function getAllGuilds() {
 }
 
 async function getGuild(guildId) {
-  return await prisma.guilds.findUniqueOrThrow({
+  return prisma.guilds.findUniqueOrThrow({
     where: {
       guildId: guildId,
     },
