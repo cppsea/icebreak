@@ -59,7 +59,7 @@ function ForgotPasswordScreen({ navigation, route }) {
           <TextInput
             testID="emailInput"
             value={inputs["email"]}
-            style={[styles.component, styles.textInput]}
+            style={[styles.textInputComponent, styles.textInput]}
             borderColor="#489FB5"
             onChangeText={(text) => {
               handleOnChange("email", text);
@@ -67,7 +67,9 @@ function ForgotPasswordScreen({ navigation, route }) {
             }}
             error={errors.email}
             placeholder="Email"
+            labelPlaceholder="Email Address"
             label
+            email
           />
 
           <Button
@@ -127,6 +129,12 @@ const styles = StyleSheet.create({
     marginBottom: 300,
     paddingLeft: 10,
     paddingRight: 10,
+  },
+  textInputComponent: {
+    borderRadius: 10,
+    height: 100,
+    justifyContent: "center",
+    width: "100%",
   },
   textTitle: {
     fontSize: 28,
