@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function EventCardText(props) {
+function EventCardText({ event, navigation, previousScreen }) {
   const [isTitlePressed, setPressState] = useState(false);
 
   function formatDate(rawDate) {
@@ -49,13 +49,11 @@ function EventCardText(props) {
 
   const onTitlePress = () => {
     setPressState(true);
-    props.navigation.navigate("EventOverviewScreen", {
-      previousScreen: props.previousScreen,
-      title: props.title,
-      timeBegin: formatDate(props.timeBegin),
-      timeEnd: formatDate(props.timeEnd),
-      location: props.location,
-      description: props.description,
+    navigation.navigate("EventOverviewScreen", {
+      previousScreen: previousScreen,
+      event: event,
+      timeBegin: formatDate(event.startDate),
+      timeEnd: formatDate(event.endDate),
     });
 
     setTimeout(() => {
@@ -66,29 +64,25 @@ function EventCardText(props) {
   return (
     <View>
       <Text style={styles.smallText}>
-        {formatDate(props.timeBegin)} - {formatDate(props.timeEnd)}
+        {formatDate(event.startDate)} - {formatDate(event.endDate)}
       </Text>
       <Text
         {...(isTitlePressed
           ? { style: styles.eventTitlePressed }
           : { style: styles.eventTitle })}
         onPress={onTitlePress}>
-        {props.title}
+        {event.title}
       </Text>
-      <Text style={styles.smallText}>📌 {props.location}</Text>
+      <Text style={styles.smallText}>📌 {event.location}</Text>
       <Text style={styles.description} numberOfLines={3}>
-        {props.description}
+        {event.description}
       </Text>
     </View>
   );
 }
 
 EventCardText.propTypes = {
-  description: PropTypes.string,
-  location: PropTypes.string,
-  timeBegin: PropTypes.string,
-  timeEnd: PropTypes.string,
-  title: PropTypes.string,
+  event: PropTypes.array,
   navigation: PropTypes.object,
   previousScreen: PropTypes.string,
 };

@@ -46,19 +46,15 @@ function FeedScreen({ navigation }) {
   }, [setUser]);
 
   const EventFlatList = () => {
-    const { events, refreshing, onRefresh, previousScreen } = useFeedContext();
+    const { events, refreshing, onRefresh } = useFeedContext();
     const handleRenderItem = useCallback(({ item }) => {
       return (
         <View style={styles.card}>
           <View style={styles.container}>
             <EventCardText
-              title={item.title}
-              description={item.description}
-              location={item.location}
-              timeBegin={item.startDate}
-              timeEnd={item.endDate}
+              event={item}
               navigation={navigation}
-              previousScreen={previousScreen}
+              previousScreen="FeedDrawer"
             />
             <EventCardRegistration registerState={false} />
           </View>

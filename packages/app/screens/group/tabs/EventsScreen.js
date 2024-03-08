@@ -3,7 +3,6 @@ import { View, StyleSheet, Text, Image } from "react-native";
 import PropTypes from "prop-types";
 import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
-import { useGuildContext } from "@app/utils/GuildContext";
 import { useEventContext } from "@app/utils/EventContext";
 
 const DARK_GRAY = "#2C2C2C";
@@ -25,7 +24,6 @@ const mockData = [
 ];
 
 function EventsScreen(props) {
-  const { previousScreen } = useGuildContext();
   const event = useEventContext();
 
   return (
@@ -41,13 +39,9 @@ function EventsScreen(props) {
               />
               <View style={styles.container}>
                 <EventCardText
-                  title={event.title}
-                  description={event.description}
-                  location={event.location}
-                  timeBegin={event.startDate}
-                  timeEnd={event.endDate}
+                  event={event}
                   navigation={props.navigation}
-                  previousScreen={previousScreen}
+                  previousScreen="GroupScreen"
                 />
                 <EventCardRegistration registerState={false} />
               </View>
@@ -63,7 +57,6 @@ EventsScreen.propTypes = {
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   testID: PropTypes.string,
   navigation: PropTypes.object,
-  previousScreen: PropTypes.string,
 };
 
 const styles = StyleSheet.create({

@@ -12,13 +12,14 @@ const transparentColor = "#00000077";
 const styles = StyleSheet.create({
   backArrow: {
     color: WHITE,
-    padding: 10,
+    paddingLeft: 11,
+    paddingTop: 10,
   },
   backArrowView: {
     backgroundColor: transparentColor,
     borderRadius: 29 / 2,
     height: 40,
-    left: 5,
+    left: 6,
     position: "absolute",
     resizeMode: "cover",
     top: 30,
@@ -44,8 +45,7 @@ const styles = StyleSheet.create({
 });
 
 export default function EventOverviewScreen({ navigation, route }) {
-  const { previousScreen, title, timeBegin, timeEnd, location, description } =
-    route.params;
+  const { previousScreen, event, timeBegin, timeEnd } = route.params;
 
   const onBackPress = () => {
     navigation.navigate(previousScreen);
@@ -74,11 +74,11 @@ export default function EventOverviewScreen({ navigation, route }) {
       <View style={styles.overview}>
         <EventOverviewText
           groupName="Software Engineering Association"
-          title={title}
+          title={event.title}
           timeBegin={timeBegin}
           timeEnd={timeEnd}
-          location={location}
-          description={description}
+          location={event.location}
+          description={event.description}
         />
       </View>
       <View style={styles.register}>

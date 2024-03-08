@@ -17,8 +17,6 @@ export function FeedProvider({ children }) {
   const [events, setEvents] = useState([]);
   const [refreshing, setRefreshing] = useState(false);
 
-  const previousScreen = "FeedDrawer";
-
   async function getEventsData() {
     try {
       const token = await SecureStore.getValueFor("accessToken");
@@ -60,7 +58,6 @@ export function FeedProvider({ children }) {
   }, []);
 
   const feedCtx = useMemo(() => ({
-    previousScreen,
     events,
     refreshing,
     onRefresh,
