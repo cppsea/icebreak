@@ -12,17 +12,17 @@ const transparentColor = "#00000077";
 const styles = StyleSheet.create({
   backArrow: {
     color: WHITE,
-    padding: 5.2,
+    padding: 10,
   },
   backArrowView: {
     backgroundColor: transparentColor,
     borderRadius: 29 / 2,
-    height: 29,
+    height: 40,
     left: 5,
     position: "absolute",
     resizeMode: "cover",
-    top: 5,
-    width: 29,
+    top: 30,
+    width: 40,
   },
   banner: {
     height: 160,

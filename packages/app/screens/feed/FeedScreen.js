@@ -16,7 +16,7 @@ import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
-const WHITE = "#F5F5F5";
+const WHITE = "#FFFFFF";
 
 function FeedScreen({ navigation }) {
   const { user, setUser } = useUserContext();

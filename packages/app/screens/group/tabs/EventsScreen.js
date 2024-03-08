@@ -7,7 +7,7 @@ import { useGuildContext } from "@app/utils/GuildContext";
 import { useEventContext } from "@app/utils/EventContext";
 
 const DARK_GRAY = "#2C2C2C";
-const WHITE = "#F5F5F5";
+const WHITE = "#FFFFFF";
 
 const mockData = [
   {
