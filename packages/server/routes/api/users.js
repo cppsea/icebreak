@@ -92,4 +92,50 @@ router.get(
   }
 );
 
+router.put(
+  //Route handler to update user
+  "/:userId",
+  AuthController.authenticate,
+  userIdValidator,
+  // updateUserValidator,
+  async (request, response) => {
+    // access validation results
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const validatedData = matchedData(request);
+      const userId = validatedData.userId;
+
+      const updatedEvent = await UserController.updateEvent(
+        userId,
+        validatedData
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          event: updatedEvent,
+        },
+      });
+    } catch (error) {
+      //Any error that happens in the update controller will be caught and handled here
+      //For now just respond with the error message
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+      return;
+    }
+  }
+);
+
 module.exports = router;

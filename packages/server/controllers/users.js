@@ -43,9 +43,29 @@ async function getGuildsForUser(userId) {
   return guilds;
 }
 
+async function updateNewUser(userId, userData) {
+  const updateEvent = await prisma.events.update({
+    where: {
+      userId: userId,
+    },
+    //If a given data was not updated, it will be undefined and prisma will ignore the update of that field
+    data: {
+      firstName: userData.firstName,
+      lastName: userData.lastName,
+      avatar: userData.avatar,
+      age: userData.age,
+      pronouns: userData.pronouns,
+      major: userData.major,
+      interests: userData.interests,
+    },
+  });
+  return updateEvent;
+}
+
 module.exports = {
   getUser,
   getAllUsers,
   getUserByEmail,
   getGuildsForUser,
+  updateNewUser,
 };
