@@ -2,9 +2,7 @@ const { param, body } = require("express-validator");
 
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
-
-const thumbnail_regex =
-  /^https:\/\/icebreak-assets.s3.us-west-1.amazonaws.com\/.+\.(jpg|jpeg)$/;
+const { s3ImagesUrlRegex } = require("../utils/s3");
 
 const createEventValidator = [
   param("guildId", "Invalid guild ID")
@@ -54,8 +52,8 @@ const createEventValidator = [
     .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
-    .matches(thumbnail_regex)
-    .withMessage("Thumbnail is not a valid image file"),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Thumbnail is not a valid image URL"),
 
   //Start Date checks
   body("startDate", "Invalid start date")
@@ -64,7 +62,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("Start date is not in valid ISO 8601 format")
     .custom(async (startDate, { req }) => {
       //Start date given but not end date
       if (!req.body.endDate) {
@@ -78,7 +76,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("End date is not in valid ISO 8601 format")
     .custom(async (endDate, { req }) => {
       //End date given but no start date
       if (!req.body.startDate) {
@@ -121,8 +119,8 @@ const updateEventValidator = [
     .optional()
     .isLength({ max: 255 })
     .withMessage("Thumbnail max length is 255 characters")
-    .matches(thumbnail_regex)
-    .withMessage("Thumbnail is not a valid image file"),
+    .matches(s3ImagesUrlRegex)
+    .withMessage("Thumbnail is not a valid image URL"),
   //Start Date checks
   body("startDate", "Invalid start date")
     .trim()
@@ -131,7 +129,7 @@ const updateEventValidator = [
     .isISO8601()
     .toDate()
     .bail()
-    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("Start date is not in valid ISO 8601 format")
     .custom(async (startDate, { req }) => {
       //Check for when new start and end date is given
       if (req.body.endDate) {
@@ -160,7 +158,7 @@ const updateEventValidator = [
     .isISO8601()
     .toDate()
     .bail()
-    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("End date is not in valid ISO 8601 format")
     .custom(async (endDate, { req }) => {
       //Check for when new end date is given but no start date
       if (!req.body.startDate) {

@@ -6,7 +6,7 @@ async function getAllGuilds() {
 }
 
 async function getGuild(guildId) {
-  return await prisma.guilds.findUniqueOrThrow({
+  return prisma.guilds.findUniqueOrThrow({
     where: {
       guildId: guildId,
     },
@@ -82,6 +82,38 @@ async function getGuildMembers(guildId) {
   return members;
 }
 
+async function getLeaderboard(guildId) {
+  const guildLeaderboard = await prisma.guildMembers.findMany({
+    where: {
+      guildId: guildId,
+    },
+
+    include: {
+      members: {
+        select: {
+          firstName: true,
+          lastName: true,
+          handler: true,
+          avatar: true,
+        },
+      },
+    },
+
+    orderBy: [
+      {
+        points: "desc",
+      },
+    ],
+  });
+
+  const members = guildLeaderboard.map((member) => ({
+    ...member.members,
+    points: member.points,
+  }));
+
+  return members;
+}
+
 module.exports = {
   getGuild,
   searchGuildByName,
@@ -92,4 +124,5 @@ module.exports = {
   deleteGuild,
   getGuildMembers,
   guildExists,
+  getLeaderboard,
 };
