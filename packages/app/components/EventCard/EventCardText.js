@@ -29,13 +29,31 @@ const styles = StyleSheet.create({
 
 function EventCardText(props) {
   const [isTitlePressed, setPressState] = useState(false);
+
+  function formatDate(rawDate) {
+    const date = new Date(rawDate);
+    let hours = date.getUTCHours();
+    let minutes = date.getMinutes();
+    let dayPeriod = "AM";
+
+    if (hours > 12) {
+      hours -= 12;
+      dayPeriod = "PM";
+    }
+    if (minutes < 10) minutes = "0" + minutes;
+
+    return `${date.getMonth() + 1}/${date.getDate()}/${
+      date.getFullYear() - 2000
+    } at ${hours}:${minutes} ${dayPeriod}`;
+  }
+
   const onTitlePress = () => {
     setPressState(true);
     props.navigation.navigate("EventOverviewScreen", {
       previousScreen: props.previousScreen,
       title: props.title,
-      timeBegin: props.timeBegin,
-      timeEnd: props.timeEnd,
+      timeBegin: formatDate(props.timeBegin),
+      timeEnd: formatDate(props.timeEnd),
       location: props.location,
       description: props.description,
     });
@@ -48,7 +66,7 @@ function EventCardText(props) {
   return (
     <View>
       <Text style={styles.smallText}>
-        {props.timeBegin} - {props.timeEnd}
+        {formatDate(props.timeBegin)} - {formatDate(props.timeEnd)}
       </Text>
       <Text
         {...(isTitlePressed

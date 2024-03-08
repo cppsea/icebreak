@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
 import { Text, Image, StyleSheet, FlatList, View } from "react-native";
 import axios from "axios";
 import PropTypes from "prop-types";
@@ -7,6 +7,8 @@ import Screen from "@app/components/Screen";
 import Button from "@app/components/Button";
 import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
+import { useFeedContext } from "@app/utils/FeedContext";
+import { FeedProvider } from "@app/utils/FeedContext";
 
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
@@ -18,8 +20,6 @@ const WHITE = "#F5F5F5";
 
 function FeedScreen({ navigation }) {
   const { user, setUser } = useUserContext();
-  const [events, setEvents] = useState([]);
-  const [refreshing, setRefreshing] = useState(false);
 
   const handleOnLogout = useCallback(async () => {
     console.log("logout");
@@ -45,61 +45,28 @@ function FeedScreen({ navigation }) {
     }
   }, [setUser]);
 
-  const getEvents = async () => {
-    const token = await SecureStore.getValueFor("accessToken");
-    const { data: response } = await axios.get(`${ENDPOINT}/events/pages`, {
-      headers: {
-        Authorization: token,
-      },
-    });
-
-    const serializeEvents = response.data.events.map((event) => {
-      return {
-        ...event,
-        key: event.eventId,
-      };
-    });
-
-    setEvents(serializeEvents);
-  };
-
-  useEffect(() => {
-    getEvents();
-  }, [refreshing]);
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await getEvents();
-    setRefreshing(false);
-  }, []);
-
-  const handleRenderItem = useCallback(({ item }) => {
-    return (
-      <View style={styles.card}>
-        <View style={styles.container}>
-          <EventCardText
-            title={item.title}
-            description={item.description}
-            location={item.location}
-            timeBegin={item.start_date}
-            timeEnd={item.end_date}
-            navigation={navigation}
-            previousScreen="FeedDrawer"
-          />
-          <EventCardRegistration registerState={false} />
+  const EventFlatList = () => {
+    const { events, refreshing, onRefresh, previousScreen } = useFeedContext();
+    const handleRenderItem = useCallback(({ item }) => {
+      return (
+        <View style={styles.card}>
+          <View style={styles.container}>
+            <EventCardText
+              title={item.title}
+              description={item.description}
+              location={item.location}
+              timeBegin={item.startDate}
+              timeEnd={item.endDate}
+              navigation={navigation}
+              previousScreen={previousScreen}
+            />
+            <EventCardRegistration registerState={false} />
+          </View>
         </View>
-      </View>
-    );
-  }, []);
+      );
+    }, []);
 
-  return (
-    <>
-      <Screen>
-        <Text>Hello, {user.firstName}</Text>
-        <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
-        <Text>{JSON.stringify(user)}</Text>
-        <Button onPress={handleOnLogout} title="logout" />
-      </Screen>
+    return (
       <FlatList
         onRefresh={onRefresh}
         refreshing={refreshing}
@@ -107,6 +74,20 @@ function FeedScreen({ navigation }) {
         renderItem={handleRenderItem}
         keyExtractor={(item) => item.key}
       />
+    );
+  };
+
+  return (
+    <>
+      <FeedProvider>
+        <Screen>
+          <Text>Hello, {user.firstName}</Text>
+          <Image style={styles.avatar} source={{ uri: user.data.avatar }} />
+          <Text>{JSON.stringify(user)}</Text>
+          <Button onPress={handleOnLogout} title="logout" />
+        </Screen>
+        <EventFlatList />
+      </FeedProvider>
     </>
   );
 }

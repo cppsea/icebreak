@@ -17,6 +17,7 @@ export function GuildProvider({
   guildId = "5f270196-ee82-4477-8277-8d4df5fcc864",
   children,
 }) {
+  const previousScreen = "GroupScreen";
   const [guild, setGuild] = useState({});
   const [guildMembers, setGuildMembers] = useState([]);
 
@@ -73,6 +74,7 @@ export function GuildProvider({
   }, []);
 
   const ctxValue = useMemo(() => ({
+    previousScreen,
     guild,
     setGuild,
     guildMembers,
