@@ -66,7 +66,7 @@ function ForgotPasswordScreen({ navigation, route }) {
               handleError("email", null);
             }}
             error={errors.email}
-            placeholder="Email"
+            placeholder="Enter Email"
             labelPlaceholder="Email Address"
             label
             email

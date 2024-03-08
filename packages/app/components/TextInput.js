@@ -82,13 +82,13 @@ const TextInput = forwardRef(function textInput(props, ref) {
           )}
 
           {props.label && (
-            <Text testID={`${props.testID}.errorBorder`} style={styles.text}>
+            <Text testID={`${props.testID}.iconText`} style={styles.text}>
               {props.labelPlaceholder}
             </Text>
           )}
         </View>
 
-        <View style={styles.textField}>
+        {!props.label && (
           <RNTextInput
             testID={`${props.testID}.textInput`}
             value={props.value}
@@ -99,15 +99,38 @@ const TextInput = forwardRef(function textInput(props, ref) {
             secureTextEntry={hidePassword}
             ref={ref}
           />
+        )}
 
-          {props.password && (
-            <TouchableOpacity
-              testID={`${props.testID}.visibility`}
-              onPress={() => setHidePassword(!hidePassword)}>
-              {hidePassword ? <EyeOff /> : <EyeOn />}
-            </TouchableOpacity>
-          )}
-        </View>
+        {!props.label && props.password && (
+          <TouchableOpacity
+            testID={`${props.testID}.visibility`}
+            onPress={() => setHidePassword(!hidePassword)}>
+            {hidePassword ? <EyeOff /> : <EyeOn />}
+          </TouchableOpacity>
+        )}
+
+        {props.label && (
+          <View style={styles.textField}>
+            <RNTextInput
+              testID={`${props.testID}.textInput`}
+              value={props.value}
+              style={styles.input}
+              onChangeText={props.onChangeText}
+              onSubmitEditing={props.onSubmitEditing}
+              placeholder={props.placeholder}
+              secureTextEntry={hidePassword}
+              ref={ref}
+            />
+
+            {props.password && (
+              <TouchableOpacity
+                testID={`${props.testID}.visibility`}
+                onPress={() => setHidePassword(!hidePassword)}>
+                {hidePassword ? <EyeOff /> : <EyeOn />}
+              </TouchableOpacity>
+            )}
+          </View>
+        )}
       </View>
 
       {props.error && (
