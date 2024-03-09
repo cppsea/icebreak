@@ -287,12 +287,12 @@ router.post(
   AuthController.authenticate,
   eventIdValidator,
   async (request, response) => {
-    const result = validationResult(request);
+    const errors = validationResult(request);
 
-    if (!result.isEmpty()) {
+    if (!errors.isEmpty()) {
       response.status(400).json({
         status: "fail",
-        data: result.array(),
+        data: errors.array(),
       });
       return;
     }
@@ -312,15 +312,12 @@ router.post(
 
       response.status(200).json({
         status: "success",
-        data: {
-          message: "Attendee status updated successfully",
-          updatedStatus: updatedStatus,
-        },
+        updatedStatus: updatedStatus,
       });
-    } catch (err) {
+    } catch (error) {
       response.status(500).json({
         status: "error",
-        message: err.message,
+        message: error.message,
       });
     }
   }

@@ -122,23 +122,35 @@ async function getEventAttendees(eventId) {
 }
 
 // updateAttendeeStatus controller
-async function updateAttendeeStatus(eventId, userId, status) {
-  const eventAttendee = await prisma.eventAttendees.findFirst({
-    where: {
-      eventId: eventId,
-      userId: userId,
-    },
-  });
+async function updateEventAttendeeStatus(eventId, userId, status) {
+  try {
+    // Validate status
+    const allowedStatusValues = ["not interested", "interested", "attending"];
+    if (!allowedStatusValues.includes(status)) {
+      throw new Error(
+        "Invalid status value. Allowed values are: not interested, interested, attending"
+      );
+    }
 
-  const updatedEventAttendee = await prisma.eventAttendees.update({
-    where: {
-      id: eventAttendee.id,
-    },
-    data: {
-      status: status,
-    },
-  });
-  return updatedEventAttendee;
+    const eventAttendee = await prisma.eventAttendees.findFirst({
+      where: {
+        eventId: eventId,
+        userId: userId,
+      },
+    });
+
+    const updatedEventAttendee = await prisma.eventAttendees.update({
+      where: {
+        id: eventAttendee.id,
+      },
+      data: {
+        status: status,
+      },
+    });
+    return updatedEventAttendee;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 async function getUpcomingEvents(currentDate, guildId) {
@@ -164,6 +176,6 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
-  updateAttendeeStatus,
+  updateEventAttendeeStatus,
   getUpcomingEvents,
 };
