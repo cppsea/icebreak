@@ -7,7 +7,6 @@ const {
   updateEventValidator,
   eventIdValidator,
 } = require("../../validators/events");
-const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
@@ -272,66 +271,6 @@ router.get(
           eventAttendees: eventAttendeesData,
         },
       });
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
-  }
-);
-
-router.post(
-  "/:eventId/check-in",
-  AuthController.authenticate,
-  eventIdValidator,
-  userIdBodyValidator,
-  async (request, response) => {
-    const errors = validationResult(request);
-
-    if (!errors.isEmpty()) {
-      response.status(400).json({
-        status: "fail",
-        data: errors.array(),
-      });
-      return;
-    }
-
-    try {
-      const { userId, eventId } = matchedData(request);
-      const event = await EventController.getEvent(eventId);
-
-      const currentTime = new Date();
-
-      const MINUTES_TO_MILLISECONDS = 60000;
-      const eventCheckInStartBound =
-        event.startDate.getTime() - 5 * MINUTES_TO_MILLISECONDS;
-      const eventCheckInEndBound =
-        event.startDate.getTime() + 15 * MINUTES_TO_MILLISECONDS;
-
-      const checkInStartTime = new Date(eventCheckInStartBound);
-      const checkInEndTime = new Date(eventCheckInEndBound);
-
-      if (currentTime >= checkInStartTime && currentTime <= checkInEndTime) {
-        const eventAttendeeData = await EventController.updateAttendeeStatus(
-          eventId,
-          userId,
-          "CheckedIn"
-        );
-
-        response.status(200).json({
-          status: "success",
-          data: {
-            eventRegistration: eventAttendeeData,
-          },
-        });
-      } else {
-        // Return error if check-in window has closed
-        response.status(403).json({
-          status: "fail",
-          message: "Check-in window has closed.",
-        });
-      }
     } catch (error) {
       response.status(500).json({
         status: "error",
