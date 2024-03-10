@@ -282,7 +282,7 @@ router.get(
 );
 
 // Event Attendee Status Route
-router.post(
+router.put(
   "/:eventId/status",
   AuthController.authenticate,
   eventIdValidator,
@@ -297,16 +297,13 @@ router.post(
       return;
     }
 
-    const data = matchedData(request);
-
-    const eventId = data.eventId;
-    const userId = data.userId;
-    const status = data.status;
+    const { userId, status } = request.body;
+    const eventId = request.params.eventId;
 
     try {
-      const updatedStatus = await EventController.updateAttendeeStatus(
-        eventId,
+      const updatedStatus = await EventController.updateEventAttendeeStatus(
         userId,
+        eventId,
         status
       );
 
