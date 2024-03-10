@@ -237,7 +237,8 @@ async function sendEmail(address, subject, body) {
 
 async function sendPasswordResetEmail(address, passwordResetToken) {
   const subject = "Icebreak: Password Reset Request";
-  const link = `http://localhost:5050/reset-password?token=${passwordResetToken}`;
+  const baseUrl = process.env.BASE_URL || "http://localhost:5050"; // Note: If the .env file does not contain BASE_URL, it will default to localhost:5050
+  const link = `${baseUrl}/reset-password?token=${passwordResetToken}`;
   const body = `Please click the following link to reset your password: ${link}`;
 
   return sendEmail(address, subject, body);
