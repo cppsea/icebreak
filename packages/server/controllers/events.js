@@ -122,14 +122,19 @@ async function getEventAttendees(eventId) {
 }
 
 async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
-  const query = await prisma.eventAttendees.update({
+  const query = await prisma.eventAttendees.upsert({
     where: {
       userId_eventId: {
         userId: userId,
         eventId: eventId,
       },
     },
-    data: {
+    create: {
+      userId: userId,
+      eventId: eventId,
+      status: attendeeStatus,
+    },
+    update: {
       status: attendeeStatus,
     },
   });
@@ -175,7 +180,7 @@ async function addCheckInPoints(eventId, userId) {
 
   await prisma.guildMembers.update({
     where: {
-      userId_guildId: {
+      guildId_userId: {
         userId: userId,
         guildId: event.guildId,
       },
