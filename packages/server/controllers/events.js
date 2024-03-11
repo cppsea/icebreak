@@ -153,7 +153,7 @@ async function addCheckInPoints(eventId, userId) {
     },
     select: {
       startDate: true,
-      guildId: true, // Assuming you need the guild ID to find the guildMember
+      guildId: true,
     },
   });
 
@@ -163,7 +163,6 @@ async function addCheckInPoints(eventId, userId) {
   const eventStartTime = event.startDate.getTime();
   const fiveMinutesInMilliseconds = 5 * 60 * 1000;
   const currentTimeInMilliseconds = currentTime.getTime();
-  //Default points to add
   let pointsToAdd = 3;
 
   if (
