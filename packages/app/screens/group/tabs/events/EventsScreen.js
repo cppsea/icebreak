@@ -1,16 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, StyleSheet, Text, Image, Button } from "react-native";
 import PropTypes from "prop-types";
 import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
-import axios from "axios";
-
-import { ENDPOINT } from "@app/utils/constants";
-import * as SecureStore from "@app/utils/SecureStore";
+import { useEventContext } from "@app/utils/EventContext";
 
 const DARK_GRAY = "#2C2C2C";
 const WHITE = "#FFFFFF";
-const EVENTID = "6e22eb57-fce2-4db7-9279-5ab6c3acfec7";
 
 const mockData = [
   {
@@ -28,41 +24,7 @@ const mockData = [
 ];
 
 function EventsScreen(props) {
-  const [event, setEvent] = useState([]);
-
-  const getEvents = async () => {
-    const token = await SecureStore.getValueFor("accessToken");
-    const { data: response } = await axios.get(
-      `${ENDPOINT}/events/${EVENTID}`,
-      {
-        headers: {
-          Authorization: token,
-        },
-      }
-    );
-    setEvent(response.data.event);
-  };
-
-  useEffect(() => {
-    getEvents();
-  }, []);
-
-  function formatDate(rawDate) {
-    const date = new Date(rawDate);
-    let hours = date.getUTCHours();
-    let minutes = date.getMinutes();
-    let dayPeriod = "AM";
-
-    if (hours > 12) {
-      hours -= 12;
-      dayPeriod = "PM";
-    }
-    if (minutes < 10) minutes = "0" + minutes;
-
-    return `${date.getMonth() + 1}/${date.getDate()}/${
-      date.getFullYear() - 2000
-    } at ${hours}:${minutes} ${dayPeriod}`;
-  }
+  const event = useEventContext();
 
   return (
     <View style={[props.style, styles.container]} testID={props.testID}>
@@ -81,13 +43,9 @@ function EventsScreen(props) {
               />
               <View style={styles.container}>
                 <EventCardText
-                  title={event.title}
-                  timeBegin={formatDate(event.startDate)}
-                  timeEnd={formatDate(event.endDate)}
-                  location={event.location}
-                  description={event.description}
+                  event={event}
                   navigation={props.navigation}
-                  previousScreen={props.previousScreen}
+                  previousScreen="GroupScreen"
                 />
                 <EventCardRegistration registerState={false} />
               </View>
@@ -103,7 +61,6 @@ EventsScreen.propTypes = {
   style: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
   testID: PropTypes.string,
   navigation: PropTypes.object,
-  previousScreen: PropTypes.string,
 };
 
 const styles = StyleSheet.create({
