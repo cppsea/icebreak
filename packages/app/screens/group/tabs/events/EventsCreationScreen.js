@@ -4,6 +4,7 @@ import { Text, TextInput, Button } from "react-native";
 import Screen from "@app/components/Screen";
 import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
+import DatePicker from "@app/components/DatePicker";
 
 const white = "white";
 
@@ -59,14 +60,7 @@ function EventsCreationScreen() {
         rules={{
           maxLength: 100,
         }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-          />
-        )}
+        render={() => <DatePicker />}
         name="startDate"
       />
 
@@ -76,14 +70,7 @@ function EventsCreationScreen() {
         rules={{
           maxLength: 100,
         }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
-          />
-        )}
+        render={() => <DatePicker />}
         name="endDate"
       />
 
