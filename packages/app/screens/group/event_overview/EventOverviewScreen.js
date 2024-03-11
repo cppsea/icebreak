@@ -74,11 +74,9 @@ export default function EventOverviewScreen({ navigation, route }) {
       <View style={styles.overview}>
         <EventOverviewText
           groupName="Software Engineering Association"
-          title={event.title}
           timeBegin={timeBegin}
           timeEnd={timeEnd}
-          location={event.location}
-          description={event.description}
+          event={event}
         />
       </View>
       <View style={styles.register}>

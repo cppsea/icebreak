@@ -7,23 +7,25 @@ const titleColor = "#002366";
 
 const styles = StyleSheet.create({
   description: {
-    fontSize: 12,
+    fontSize: 13,
     marginBottom: 10,
   },
   eventTitle: {
     color: titleColor,
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 7,
   },
   eventTitlePressed: {
     color: GRAY,
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 7,
     textDecorationLine: "underline",
   },
   smallText: {
     color: GRAY,
-    fontSize: 9,
+    fontSize: 12,
   },
 });
 
@@ -49,12 +51,19 @@ function EventCardText({ event, navigation, previousScreen }) {
 
   const onTitlePress = () => {
     setPressState(true);
-    navigation.navigate("EventOverviewScreen", {
-      previousScreen: previousScreen,
-      event: event,
-      timeBegin: formatDate(event.startDate),
-      timeEnd: formatDate(event.endDate),
-    });
+    if (event.startDate) {
+      navigation.navigate("EventOverviewScreen", {
+        previousScreen: previousScreen,
+        event: event,
+        timeBegin: formatDate(event.startDate),
+        timeEnd: formatDate(event.endDate),
+      });
+    } else {
+      navigation.navigate("EventOverviewScreen", {
+        previousScreen: previousScreen,
+        event: event,
+      });
+    }
 
     setTimeout(() => {
       setPressState(false);
@@ -63,9 +72,11 @@ function EventCardText({ event, navigation, previousScreen }) {
 
   return (
     <View>
-      <Text style={styles.smallText}>
-        {formatDate(event.startDate)} - {formatDate(event.endDate)}
-      </Text>
+      {event.startDate && (
+        <Text style={styles.smallText}>
+          {formatDate(event.startDate)} - {formatDate(event.endDate)}
+        </Text>
+      )}
       <Text
         {...(isTitlePressed
           ? { style: styles.eventTitlePressed }
@@ -73,10 +84,14 @@ function EventCardText({ event, navigation, previousScreen }) {
         onPress={onTitlePress}>
         {event.title}
       </Text>
-      <Text style={styles.smallText}>📌 {event.location}</Text>
-      <Text style={styles.description} numberOfLines={3}>
-        {event.description}
-      </Text>
+      {event.location && (
+        <Text style={styles.smallText}>📌 {event.location}</Text>
+      )}
+      {event.description && (
+        <Text style={styles.description} numberOfLines={3}>
+          {event.description}
+        </Text>
+      )}
     </View>
   );
 }
