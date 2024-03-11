@@ -43,9 +43,24 @@ async function getGuildsForUser(userId) {
   return guilds;
 }
 
+async function updateNewUser(userId, userData) {
+  const updatedNewUser = await prisma.events.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      avatar: userData.avatar,
+      age: userData.age,
+      interests: userData.interests,
+    },
+  });
+  return updatedNewUser;
+}
+
 module.exports = {
   getUser,
   getAllUsers,
   getUserByEmail,
   getGuildsForUser,
+  updateNewUser,
 };
