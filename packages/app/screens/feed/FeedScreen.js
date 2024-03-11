@@ -9,6 +9,7 @@ import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
 import { useFeedContext } from "@app/utils/FeedContext";
 import { FeedProvider } from "@app/utils/FeedContext";
+import { GuildProvider } from "@app/utils/GuildContext";
 
 import { useUserContext } from "@app/utils/UserContext";
 import { logoutUser } from "@app/utils/datalayer";
@@ -49,16 +50,18 @@ function FeedScreen({ navigation }) {
     const { events, refreshing, onRefresh } = useFeedContext();
     const handleRenderItem = useCallback(({ item }) => {
       return (
-        <View style={styles.card}>
-          <View style={styles.container}>
-            <EventCardText
-              event={item}
-              navigation={navigation}
-              previousScreen="FeedDrawer"
-            />
-            <EventCardRegistration registerState={false} />
+        <GuildProvider guildId={item.guildId}>
+          <View style={styles.card}>
+            <View style={styles.container}>
+              <EventCardText
+                event={item}
+                navigation={navigation}
+                previousScreen="FeedDrawer"
+              />
+              <EventCardRegistration registerState={false} />
+            </View>
           </View>
-        </View>
+        </GuildProvider>
       );
     }, []);
 

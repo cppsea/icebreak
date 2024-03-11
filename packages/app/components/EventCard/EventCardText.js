@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import PropTypes from "prop-types";
+import { useGuildContext } from "@app/utils/GuildContext";
 
 const GRAY = "grey";
 const titleColor = "#002366";
@@ -31,6 +32,7 @@ const styles = StyleSheet.create({
 
 function EventCardText({ event, navigation, previousScreen }) {
   const [isTitlePressed, setPressState] = useState(false);
+  const { guild } = useGuildContext();
 
   function formatDate(rawDate) {
     const date = new Date(rawDate);
@@ -57,11 +59,13 @@ function EventCardText({ event, navigation, previousScreen }) {
         event: event,
         timeBegin: formatDate(event.startDate),
         timeEnd: formatDate(event.endDate),
+        guild: guild,
       });
     } else {
       navigation.navigate("EventOverviewScreen", {
         previousScreen: previousScreen,
         event: event,
+        guild: guild,
       });
     }
 

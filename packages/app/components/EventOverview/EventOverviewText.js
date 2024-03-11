@@ -54,13 +54,13 @@ const OverviewHeader = ({ groupName }) => {
 
 export default function EventOverviewText({
   event,
-  groupName,
+  guild,
   timeBegin,
   timeEnd,
 }) {
   return (
     <View>
-      <OverviewHeader groupName={groupName} />
+      <OverviewHeader groupName={guild.name} />
       <Text style={styles.eventTitle}>{event.title}</Text>
       <Text style={styles.smallText}>
         {timeBegin} - {timeEnd}
@@ -72,7 +72,7 @@ export default function EventOverviewText({
 }
 
 EventOverviewText.propTypes = {
-  groupName: PropTypes.string,
+  guild: PropTypes.any,
   event: PropTypes.any,
   timeBegin: PropTypes.string,
   timeEnd: PropTypes.string,

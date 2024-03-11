@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
 });
 
 export default function EventOverviewScreen({ navigation, route }) {
-  const { previousScreen, event, timeBegin, timeEnd } = route.params;
+  const { previousScreen, event, timeBegin, timeEnd, guild } = route.params;
 
   const onBackPress = () => {
     navigation.navigate(previousScreen);
@@ -73,7 +73,7 @@ export default function EventOverviewScreen({ navigation, route }) {
       <BackArrow />
       <View style={styles.overview}>
         <EventOverviewText
-          groupName="Software Engineering Association"
+          guild={guild}
           timeBegin={timeBegin}
           timeEnd={timeEnd}
           event={event}
