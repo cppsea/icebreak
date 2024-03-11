@@ -59,8 +59,8 @@ export function GuildProvider({
         );
 
         const guild = guildResponse.data.guild;
-        guild.avatar = guildAvatarResponse.data.imageURL;
-        guild.banner = guildBannerResponse.data.imageURL;
+        guild.avatar = guildAvatarResponse.data.imageURL.avatar;
+        guild.banner = guildBannerResponse.data.imageURL.banner;
 
         setGuild(guildResponse.data.guild);
         setGuildMembers(guildMembersResponse.data.guildMembers);
