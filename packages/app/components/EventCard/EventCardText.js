@@ -82,7 +82,7 @@ function EventCardText({ event, navigation, previousScreen }) {
 }
 
 EventCardText.propTypes = {
-  event: PropTypes.array,
+  event: PropTypes.any,
   navigation: PropTypes.object,
   previousScreen: PropTypes.string,
 };
