@@ -302,8 +302,8 @@ router.put(
 
     try {
       const updatedStatus = await EventController.updateEventAttendeeStatus(
-        userId,
         eventId,
+        userId,
         status
       );
 

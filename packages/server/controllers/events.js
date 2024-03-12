@@ -125,12 +125,14 @@ async function getEventAttendees(eventId) {
 async function updateEventAttendeeStatus(eventId, userId, status) {
   try {
     // Validate status
-    const allowedStatusValues = ["not interested", "interested", "attending"];
+    const allowedStatusValues = ["NotInterested", "Interested", "Attending"];
     if (!allowedStatusValues.includes(status)) {
       throw new Error(
         "Invalid status value. Allowed values are: not interested, interested, attending"
       );
     }
+
+    console.log("before findFirst");
 
     const eventAttendee = await prisma.eventAttendees.findFirst({
       where: {
@@ -138,6 +140,8 @@ async function updateEventAttendeeStatus(eventId, userId, status) {
         userId: userId,
       },
     });
+
+    console.log("after findfirst and this is eventAttendee: ", eventAttendee);
 
     const updatedEventAttendee = await prisma.eventAttendees.update({
       where: {
