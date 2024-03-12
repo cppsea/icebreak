@@ -4,6 +4,7 @@ import { Text, TextInput, Button } from "react-native";
 import Screen from "@app/components/Screen";
 import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
+import DatePicker from "@app/components/DatePicker";
 import axios from "axios";
 import * as SecureStore from "@app/utils/SecureStore";
 
@@ -165,6 +166,16 @@ function EventsCreationScreen() {
       />
 
       <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+
+      <Text>Test Date Picker</Text>
+      <Controller
+        control={control}
+        rules={{
+          maxLength: 100,
+        }}
+        render={() => <DatePicker />}
+        name="startDate"
+      />
     </Screen>
   );
 }
