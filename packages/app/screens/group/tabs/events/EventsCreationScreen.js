@@ -4,7 +4,8 @@ import { Text, TextInput, Button } from "react-native";
 import Screen from "@app/components/Screen";
 import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
-import DatePicker from "@app/components/DatePicker";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
+import { useState } from "react";
 import axios from "axios";
 import * as SecureStore from "@app/utils/SecureStore";
 
@@ -14,6 +15,21 @@ const gray = "gray";
 const guildId = "5f270196-ee82-4477-8277-8d4df5fcc864";
 
 function EventsCreationScreen() {
+  const [dateTime, setDateTime] = useState(new Date());
+  const [dateTime2, setDateTime2] = useState(new Date());
+
+  const handleDateTimeChange = (event, selectedDateTime) => {
+    const currentDate = selectedDateTime || dateTime;
+    setDateTime(currentDate);
+    console.log(JSON.stringify(dateTime));
+  };
+
+  const handleDateTimeChange2 = (event, selectedDateTime) => {
+    const currentDate = selectedDateTime || dateTime2;
+    setDateTime2(currentDate);
+    console.log(JSON.stringify(dateTime2));
+  };
+
   const { handleSubmit, control } = useForm({
     defaultValues: {
       title: "",
@@ -26,14 +42,17 @@ function EventsCreationScreen() {
   });
 
   const onSubmit = async (data) => {
-    const { title, description, startDate, endDate, location, thumbnail } =
-      data;
+    var { title, description, startDate, endDate, location, thumbnail } = data;
+    startDate = JSON.stringify(dateTime).substring(1, 25);
+    endDate = JSON.stringify(dateTime2).substring(1, 25);
+
     console.log("title:", title);
     console.log("description:", description);
     console.log("startDate:", startDate);
     console.log("endDate:", endDate);
     console.log("location:", location);
     console.log("thumbnail:", thumbnail);
+
     const token = await SecureStore.getValueFor("accessToken");
     const headers = { Authorization: token };
     const response = await axios.post(
@@ -41,10 +60,10 @@ function EventsCreationScreen() {
       {
         title: title,
         description: description,
-        // "startDate": startDate,
-        // "endDate": endDate,
+        startDate: startDate,
+        endDate: endDate,
         location: location,
-        // "thumbnail": thumbnail,
+        thumbnail: thumbnail,
       },
       { headers }
     );
@@ -99,13 +118,12 @@ function EventsCreationScreen() {
         rules={{
           maxLength: 100,
         }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+        render={() => (
+          <RNDateTimePicker
+            value={dateTime}
+            mode="datetime"
+            display="default"
+            onChange={handleDateTimeChange}
           />
         )}
         name="startDate"
@@ -117,13 +135,12 @@ function EventsCreationScreen() {
         rules={{
           maxLength: 100,
         }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+        render={() => (
+          <RNDateTimePicker
+            value={dateTime2}
+            mode="datetime"
+            display="default"
+            onChange={handleDateTimeChange2}
           />
         )}
         name="endDate"
@@ -166,16 +183,6 @@ function EventsCreationScreen() {
       />
 
       <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-
-      <Text>Test Date Picker</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={() => <DatePicker />}
-        name="startDate"
-      />
     </Screen>
   );
 }

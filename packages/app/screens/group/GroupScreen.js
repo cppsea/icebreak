@@ -9,7 +9,7 @@ import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { EventProvider } from "@app/utils/EventContext.js";
-import EventsScreen from "../../screens/group/tabs/EventsScreen";
+import EventsScreen from "../../screens/group/tabs/events/EventsScreen";
 import MembersScreen from "../../screens/group/tabs/MembersScreen";
 import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
 import AboutScreen from "../../screens/group/tabs/AboutScreen";
