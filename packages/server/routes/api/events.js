@@ -287,29 +287,38 @@ router.put(
   AuthController.authenticate,
   eventIdValidator,
   async (request, response) => {
-    const errors = validationResult(request);
+    const result = validationResult(request);
 
-    if (!errors.isEmpty()) {
+    if (!result.isEmpty()) {
       response.status(400).json({
         status: "fail",
-        data: errors.array(),
+        data: result.array(),
       });
       return;
     }
 
+    // const status = matchedData(request);
+    // const userId = status.userId;
+    // const eventId = status.eventId;
+
     const { userId, status } = request.body;
-    const eventId = request.params.eventId;
+    const { eventId } = request.params;
+
+    console.log(userId);
+    console.log(eventId);
+    console.log(status);
 
     try {
-      const updatedStatus = await EventController.updateEventAttendeeStatus(
-        eventId,
-        userId,
-        status
-      );
+      const updatedEventAttendeeStatus =
+        await EventController.updateEventAttendeeStatus(
+          userId,
+          eventId,
+          status
+        );
 
       response.status(200).json({
         status: "success",
-        updatedStatus: updatedStatus,
+        data: { updatedEventAttendeeStatus: updatedEventAttendeeStatus },
       });
     } catch (error) {
       response.status(500).json({
