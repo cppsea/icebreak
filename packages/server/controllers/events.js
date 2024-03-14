@@ -121,20 +121,21 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
-// updateAttendeeStatus controller
 async function updateEventAttendeeStatus(userId, eventId, status) {
   // Validate status
   const allowedStatusValues = ["NotInterested", "Interested", "Attending"];
   if (!allowedStatusValues.includes(status)) {
     throw new Error(
-      "Invalid status value. Allowed values are: not interested, interested, attending"
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending"
     );
   }
 
   const updatedEventAttendee = await prisma.eventAttendees.update({
     where: {
-      userId: userId,
-      eventId: eventId,
+      userId_eventId: {
+        userId: userId,
+        eventId: eventId,
+      },
     },
     data: {
       status: status,
