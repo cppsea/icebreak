@@ -15,6 +15,8 @@ import PropTypes from "prop-types";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
+import CreateGroupStack from "./create_group_form/CreateGroupStack";
+
 const Feed = createDrawerNavigator();
 
 const DARK_BLUE = "darkblue";
@@ -58,6 +60,13 @@ function FeedDrawer() {
       <Feed.Screen
         name="Settings"
         component={Settings}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Feed.Screen
+        name="Create Group"
+        component={CreateGroupStack}
         options={{
           headerShown: false,
         }}

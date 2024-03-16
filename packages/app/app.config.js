@@ -55,5 +55,12 @@ module.exports = {
         iosUrlScheme: process.env.IOS_GOOGLE_URL_SCHEME,
       },
     ],
+    [
+      "expo-image-picker",
+      {
+        photosPermission:
+          "Allow Icebreak to access your photos for choosing profile icons and thumbnail images.",
+      },
+    ],
   ],
 };
