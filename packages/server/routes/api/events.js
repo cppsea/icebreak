@@ -6,6 +6,7 @@ const {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  attendeeStatusValidator,
 } = require("../../validators/events");
 const { guildIdValidator } = require("../../validators/guilds");
 const { validationResult, matchedData } = require("express-validator");
@@ -285,6 +286,7 @@ router.put(
   "/:eventId/status",
   AuthController.authenticate,
   eventIdValidator,
+  attendeeStatusValidator,
   async (request, response) => {
     const result = validationResult(request);
 
@@ -296,8 +298,11 @@ router.put(
       return;
     }
 
-    const { userId, status } = request.body;
-    const { eventId } = request.params;
+    const data = matchedData(request);
+
+    const userId = data.userId;
+    const eventId = data.eventId;
+    const status = data.status;
 
     try {
       const updatedEventAttendeeStatus =
@@ -309,7 +314,7 @@ router.put(
 
       response.status(200).json({
         status: "success",
-        data: { updatedEventAttendeeStatus: updatedEventAttendeeStatus },
+        data: { eventAttendee: updatedEventAttendeeStatus },
       });
     } catch (error) {
       response.status(500).json({
