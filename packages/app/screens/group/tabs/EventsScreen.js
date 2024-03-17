@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Image } from "react-native";
+import { View, Text, Image } from "react-native";
 import PropTypes from "prop-types";
 import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
@@ -7,9 +7,8 @@ import axios from "axios";
 
 import { ENDPOINT } from "@app/utils/constants";
 import * as SecureStore from "@app/utils/SecureStore";
+import { useTheme } from "@app/utils/theme";
 
-const DARK_GRAY = "#2C2C2C";
-const WHITE = "#FFFFFF";
 const EVENTID = "6e22eb57-fce2-4db7-9279-5ab6c3acfec7";
 
 const mockData = [
@@ -27,7 +26,33 @@ const mockData = [
   },
 ];
 
+const useStyles = () => {
+  const theme = useTheme();
+  return {
+    banner: {
+      borderTopLeftRadius: 15,
+      borderTopRightRadius: 15,
+      height: 144,
+      width: "100%",
+    },
+    card: {
+      borderRadius: 15,
+      backgroundColor: theme.brand.secondary,
+      marginBottom: 10,
+      marginTop: 10,
+    },
+    container: {
+      margin: 10,
+    },
+    header: {
+      color: theme.SecondaryBodyText.opacity70,
+      fontSize: 20,
+      fontWeight: "700",
+    },
+  };
+};
 function EventsScreen(props) {
+  const styles = useStyles();
   const [event, setEvent] = useState([]);
 
   const getEvents = async () => {
@@ -68,7 +93,7 @@ function EventsScreen(props) {
     <View style={[props.style, styles.container]} testID={props.testID}>
       {mockData.map((section) => (
         <View key={section.title}>
-          <Text style={styles.header}>{section.title}</Text>
+          <Text style={styles.header}>Upcoming</Text>
           {section.data.map((item, index) => (
             <View style={styles.card} key={index}>
               <Image
@@ -102,27 +127,27 @@ EventsScreen.propTypes = {
   previousScreen: PropTypes.string,
 };
 
-const styles = StyleSheet.create({
-  banner: {
-    borderTopLeftRadius: 15,
-    borderTopRightRadius: 15,
-    height: 144,
-    width: "100%",
-  },
-  card: {
-    backgroundColor: WHITE,
-    marginBottom: 10,
-    marginTop: 10,
-  },
-  container: {
-    margin: 10,
-  },
-  header: {
-    backgroundColor: WHITE,
-    color: DARK_GRAY,
-    fontSize: 20,
-    fontWeight: "700",
-  },
-});
+// const styles = StyleSheet.create({
+//   banner: {
+//     borderTopLeftRadius: 15,
+//     borderTopRightRadius: 15,
+//     height: 144,
+//     width: "100%",
+//   },
+//   card: {
+//     backgroundColor: WHITE,
+//     marginBottom: 10,
+//     marginTop: 10,
+//   },
+//   container: {
+//     margin: 10,
+//   },
+//   header: {
+//     backgroundColor: WHITE,
+//     color: DARK_GRAY,
+//     fontSize: 20,
+//     fontWeight: "700",
+//   },
+// });
 
 export default EventsScreen;

@@ -1,14 +1,52 @@
 import React from "react";
-import { StyleSheet, Text, View, Linking } from "react-native";
+import { Text, View, Linking } from "react-native";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Screen from "@app/components/Screen";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useGuildContext } from "@app/utils/GuildContext";
+import { useTheme } from "@app/utils/theme";
 
-const BLUE = "#3498DB";
-const GRAY = "#2C2C2C";
+const useStyles = () => {
+  const theme = useTheme();
+  return {
+    container: {
+      alignItems: "flex-start",
+      flex: 1,
+      marginTop: 10,
+    },
+    description: {
+      fontSize: 15,
+    },
+    mediaContainer: {
+      alignItems: "center",
+      flexDirection: "row",
+      marginBottom: 10,
+      paddingLeft: 15,
+    },
+    mediaIconStyle: {
+      color: theme.SecondaryBodyText.opacity70,
+      display: "flex",
+      paddingRight: 10,
+    },
+    subContainer: {
+      marginBottom: 20,
+      paddingLeft: 15,
+      paddingRight: 15,
+    },
+    title: {
+      fontSize: 20,
+      fontWeight: "bold",
+      marginBottom: 10,
+    },
+    url: {
+      color: theme.link.opacity50,
+      flexShrink: 1,
+    },
+  };
+};
 
 function getIcon(url) {
+  const styles = useStyles();
   let icon = "link";
 
   if (url.includes("discord")) {
@@ -30,6 +68,9 @@ function getIcon(url) {
 
 function AboutScreen() {
   const { guild, guildMembers } = useGuildContext();
+  const styles = useStyles();
+  const theme = useTheme();
+
   return (
     <Screen style={styles.container}>
       <View style={styles.subContainer}>
@@ -60,7 +101,7 @@ function AboutScreen() {
             name="location-sharp"
             style={styles.mediaIconStyle}
             size={20}
-            color={GRAY}
+            color={theme.SecondaryBodyText.opacity70}
           />
           <Text>{guild.location}</Text>
         </View>
@@ -69,7 +110,7 @@ function AboutScreen() {
             name="person"
             style={styles.mediaIconStyle}
             size={20}
-            color={GRAY}
+            color={theme.SecondaryBodyText.opacity70}
           />
           <Text>{guildMembers ? guildMembers.length : 0} Members</Text>
         </View>
@@ -77,41 +118,5 @@ function AboutScreen() {
     </Screen>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "flex-start",
-    flex: 1,
-    marginTop: 10,
-  },
-  description: {
-    fontSize: 15,
-  },
-  mediaContainer: {
-    alignItems: "center",
-    flexDirection: "row",
-    marginBottom: 10,
-    paddingLeft: 15,
-  },
-  mediaIconStyle: {
-    color: GRAY,
-    display: "flex",
-    paddingRight: 10,
-  },
-  subContainer: {
-    marginBottom: 20,
-    paddingLeft: 15,
-    paddingRight: 15,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  url: {
-    color: BLUE,
-    flexShrink: 1,
-  },
-});
 
 export default AboutScreen;
