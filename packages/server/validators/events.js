@@ -2,6 +2,7 @@ const { param, body } = require("express-validator");
 
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
+const UserController = require("../controllers/users");
 const { s3ImagesUrlRegex } = require("../utils/s3");
 
 const createEventValidator = [
@@ -193,8 +194,41 @@ const eventIdValidator = [
     }),
 ];
 
+const attendeeStatusValidator = [
+  // validate status
+  body("status", "invalid status")
+    .trim()
+    .blacklist("<>")
+    .exists({ checkFalsy: true })
+    .withMessage("status cannot be null or empty")
+    .custom(async (status) => {
+      // Validate status
+      const allowedStatusValues = ["NotInterested", "Interested", "Attending"];
+      if (!allowedStatusValues.includes(status)) {
+        throw new Error(
+          "Invalid status value. Allowed values are: NotInterested, Interested, Attending"
+        );
+      }
+    }),
+  // validate userId (only difference between this and the validator in users is that it validates the body not params)
+  body("userId")
+    .notEmpty()
+    .withMessage("User ID cannot be empty")
+    .blacklist("<>")
+    .isUUID()
+    .withMessage("Invalid user ID provided")
+    .custom(async (value) => {
+      try {
+        await UserController.getUser(value);
+      } catch (error) {
+        throw new Error("User with ID ${value} not found");
+      }
+    }),
+];
+
 module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  attendeeStatusValidator,
 };
