@@ -2,8 +2,11 @@ import { createTheming } from "@callstack/react-theme-provider";
 
 const Palette = {
   brand: {
-    primary: "#76cadf",
-    secondary: "#c0e3de",
+    arctic: "#2a4d6e",
+    aegean: "#489fb5",
+    sky: "#7fc8db",
+    powder: "#b2d9e0",
+    dull: "#c0e3de",
   },
   link: {
     opacity30: "#36a5f6",
