@@ -123,7 +123,6 @@ async function getEventAttendees(eventId) {
 
 async function updateEventAttendeeStatus(userId, eventId, status) {
   const updatedEventAttendee = await prisma.eventAttendees.upsert({
-    // use upsert
     where: {
       userId_eventId: {
         userId: userId,
