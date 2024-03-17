@@ -1,6 +1,14 @@
 import * as React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { Text, TextInput, Button } from "react-native";
+import {
+  Text,
+  TextInput,
+  Button,
+  Keyboard,
+  TouchableWithoutFeedback,
+  View,
+  Alert,
+} from "react-native";
 import Screen from "@app/components/Screen";
 import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
@@ -42,147 +50,171 @@ function EventsCreationScreen() {
   });
 
   const onSubmit = async (data) => {
-    var { title, description, startDate, endDate, location, thumbnail } = data;
-    startDate = JSON.stringify(dateTime).substring(1, 25);
-    endDate = JSON.stringify(dateTime2).substring(1, 25);
+    try {
+      var { title, description, startDate, endDate, location, thumbnail } =
+        data;
+      startDate = JSON.stringify(dateTime).substring(1, 25);
+      endDate = JSON.stringify(dateTime2).substring(1, 25);
 
-    console.log("title:", title);
-    console.log("description:", description);
-    console.log("startDate:", startDate);
-    console.log("endDate:", endDate);
-    console.log("location:", location);
-    console.log("thumbnail:", thumbnail);
+      console.log("title:", title);
+      console.log("description:", description);
+      console.log("startDate:", startDate);
+      console.log("endDate:", endDate);
+      console.log("location:", location);
+      console.log("thumbnail:", thumbnail);
 
-    const token = await SecureStore.getValueFor("accessToken");
-    const headers = { Authorization: token };
-    const response = await axios.post(
-      `${ENDPOINT}/events/${guildId}`,
-      {
-        title: title,
-        description: description,
-        startDate: startDate,
-        endDate: endDate,
-        location: location,
-        thumbnail: thumbnail,
-      },
-      { headers }
-    );
+      const token = await SecureStore.getValueFor("accessToken");
+      const headers = { Authorization: token };
 
-    const { status } = response.data;
-    console.log("Status:", status);
+      const testThumbnail =
+        "https://icebreak-assets.s3.us-west-1.amazonaws.com/guild_banner.5325b147-5524-4539-b652-0549e074a159.jpg";
+
+      const response = await axios.post(
+        `${ENDPOINT}/events/${guildId}`,
+        {
+          title: title,
+          description: description,
+          startDate: startDate,
+          endDate: endDate,
+          location: location,
+          thumbnail: testThumbnail,
+        },
+        { headers }
+      );
+
+      const { status } = response.data;
+      console.log("Status:", status);
+
+      Alert.alert("Success", "Event created successfully!");
+    } catch (error) {
+      Alert.alert("Error", "Failed to create event.");
+
+      if (error.response) {
+        console.error("Response Error Data:", error.response.data);
+      } else if (error.request) {
+        console.error("Request Error:", error.request);
+      } else {
+        console.error("Error:", error.message);
+      }
+      return false;
+    }
   };
 
   return (
     <Screen>
-      <Text>Event Creation Form</Text>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View>
+          <Text>Event Creation Form</Text>
 
-      <Text>Title</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+          <Text>Title</Text>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                multiline={true}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="title"
           />
-        )}
-        name="title"
-      />
 
-      <Text>Event Description</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+          <Text>Event Description</Text>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                multiline={true}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="description"
           />
-        )}
-        name="description"
-      />
 
-      <Text>Start Date</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={() => (
-          <RNDateTimePicker
-            value={dateTime}
-            mode="datetime"
-            display="default"
-            onChange={handleDateTimeChange}
+          <Text>Start Date</Text>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={() => (
+              <RNDateTimePicker
+                value={dateTime}
+                mode="datetime"
+                display="default"
+                onChange={handleDateTimeChange}
+              />
+            )}
+            name="startDate"
           />
-        )}
-        name="startDate"
-      />
 
-      <Text>End Date</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={() => (
-          <RNDateTimePicker
-            value={dateTime2}
-            mode="datetime"
-            display="default"
-            onChange={handleDateTimeChange2}
+          <Text>End Date</Text>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={() => (
+              <RNDateTimePicker
+                value={dateTime2}
+                mode="datetime"
+                display="default"
+                onChange={handleDateTimeChange2}
+              />
+            )}
+            name="endDate"
           />
-        )}
-        name="endDate"
-      />
 
-      <Text>Location</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+          <Text>Location</Text>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                multiline={true}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="location"
           />
-        )}
-        name="location"
-      />
 
-      <Text>Thumbnail</Text>
-      <Controller
-        control={control}
-        rules={{
-          maxLength: 100,
-        }}
-        render={({ field: { onChange, onBlur, value } }) => (
-          <TextInput
-            style={styles.input}
-            multiline={true}
-            onBlur={onBlur}
-            onChangeText={onChange}
-            value={value}
+          <Text>Thumbnail</Text>
+          <Controller
+            control={control}
+            rules={{
+              maxLength: 100,
+            }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <TextInput
+                style={styles.input}
+                multiline={true}
+                onBlur={onBlur}
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+            name="thumbnail"
           />
-        )}
-        name="thumbnail"
-      />
 
-      <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+          <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+        </View>
+      </TouchableWithoutFeedback>
     </Screen>
   );
 }
