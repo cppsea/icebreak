@@ -222,7 +222,10 @@ const checkInTimeValidator = [
       const checkInStartTime = new Date(eventCheckInStartBound);
       const checkInEndTime = new Date(eventCheckInEndBound);
 
-      if (currentTime < checkInStartTime || currentTime > checkInEndTime) {
+      if (currentTime < checkInStartTime) {
+        throw new Error("This event has not opened for check-in yet.");
+      }
+      if (currentTime > checkInEndTime) {
         throw new Error("Check-in window has closed.");
       }
     }),
