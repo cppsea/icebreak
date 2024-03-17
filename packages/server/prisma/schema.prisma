@@ -54,12 +54,21 @@ model events {
   guilds         guilds           @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "fk_guild")
 }
 
+enum GuildMemberRole {
+  Member  @map("member")
+  Officer @map("officer")
+  Owner   @map("owner")
+
+  @@map("guild_member_role")
+}
+
 model guildMembers {
-  userId  String @map("user_id") @db.Uuid
-  guildId String @map("guild_id") @db.Uuid
-  points  Int    @db.SmallInt
-  guilds  guilds @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
-  members users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+  userId  String          @map("user_id") @db.Uuid
+  guildId String          @map("guild_id") @db.Uuid
+  points  Int             @db.SmallInt
+  role    GuildMemberRole @default(Member)
+  guilds  guilds          @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
+  members users           @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
   @@id([guildId, userId], map: "pk_guild_member")
   @@map("guild_members")
