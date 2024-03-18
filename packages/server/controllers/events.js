@@ -121,18 +121,75 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
-async function getUpcomingEvents(currentDate, guildId) {
-  const upcomingEvents = await prisma.events.findMany({
+async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
+  const query = await prisma.eventAttendees.upsert({
     where: {
-      guildId: guildId,
-      startDate: { gte: currentDate },
+      userId_eventId: {
+        userId: userId,
+        eventId: eventId,
+      },
     },
-    orderBy: {
-      startDate: "asc",
+    create: {
+      userId: userId,
+      eventId: eventId,
+      status: attendeeStatus,
+    },
+    update: {
+      status: attendeeStatus,
     },
   });
 
-  return upcomingEvents;
+  if (attendeeStatus === "CheckedIn") {
+    await addCheckInPoints(eventId, userId);
+  }
+
+  return query;
+}
+
+async function addCheckInPoints(eventId, userId) {
+  const event = await prisma.events.findUnique({
+    where: {
+      eventId: eventId,
+    },
+    select: {
+      startDate: true,
+      guildId: true,
+    },
+  });
+
+  if (!event) throw new Error("Event not found");
+
+  const currentTime = new Date();
+  const eventStartTime = event.startDate.getTime();
+  const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+  const currentTimeInMilliseconds = currentTime.getTime();
+  let pointsToAdd = 3;
+
+  if (
+    currentTimeInMilliseconds <= eventStartTime &&
+    currentTimeInMilliseconds >= eventStartTime - fiveMinutesInMilliseconds
+  ) {
+    pointsToAdd = 5;
+  } else if (
+    currentTimeInMilliseconds > eventStartTime &&
+    currentTimeInMilliseconds <= eventStartTime + fiveMinutesInMilliseconds
+  ) {
+    pointsToAdd = 4;
+  }
+
+  await prisma.guildMembers.update({
+    where: {
+      guildId_userId: {
+        userId: userId,
+        guildId: event.guildId,
+      },
+    },
+    data: {
+      points: {
+        increment: pointsToAdd,
+      },
+    },
+  });
 }
 
 module.exports = {
@@ -144,5 +201,5 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
-  getUpcomingEvents,
+  updateAttendeeStatus,
 };
