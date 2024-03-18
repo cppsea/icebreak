@@ -171,6 +171,16 @@ async function getLeaderboard(guildId) {
   return members;
 }
 
+async function isGuildMember(guildId, userId) {
+  const guildMember = await prisma.guildMembers.findUnique({
+    where: {
+      guildId: guildId,
+      userId: userId,
+    },
+  });
+  return !!guildMember;
+}
+
 module.exports = {
   getGuild,
   searchGuildByName,
@@ -186,4 +196,5 @@ module.exports = {
   deleteGuildMember,
   guildExists,
   getLeaderboard,
+  isGuildMember,
 };
