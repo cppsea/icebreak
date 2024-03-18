@@ -26,6 +26,7 @@ const userIdBodyValidator = [
     .blacklist("<>")
     .isUUID()
     .withMessage("Invalid user ID provided")
+    .bail()
     .custom(async (value) => {
       try {
         await UserController.getUser(value);
