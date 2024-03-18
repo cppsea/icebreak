@@ -1,3 +1,4 @@
+const { GuildMemberRole } = require("@prisma/client");
 const prisma = require("../prisma/prisma");
 const MINIMUM_SIMILARITY = 0.3;
 
@@ -60,6 +61,41 @@ async function guildExists(guildId) {
   return !!guild;
 }
 
+async function addGuildMember(guildId, userId) {
+  return await prisma.guildMembers.create({
+    data: {
+      userId: userId,
+      guildId: guildId,
+      points: 0,
+      role: GuildMemberRole.Member,
+    },
+  });
+}
+
+// Returns a record containing the userId, firstName, lastName, avatar, and role.
+async function getGuildMember(guildId, userId) {
+  return await prisma.guildMembers.findUniqueOrThrow({
+    where: {
+      guildId: guildId,
+      userId: userId,
+    },
+    select: {
+      members: {
+        where: {
+          userId: userId,
+        },
+        select: {
+          userId: true,
+          firstName: true,
+          lastName: true,
+          avatar: true,
+        },
+      },
+      role: true,
+    },
+  });
+}
+
 async function getGuildMembers(guildId) {
   const getMembers = await prisma.guildMembers.findMany({
     where: {
@@ -80,6 +116,27 @@ async function getGuildMembers(guildId) {
   const members = getMembers.flatMap((member) => member.members);
 
   return members;
+}
+
+async function updateGuildMemberRole(guildId, userId, role) {
+  return await prisma.guildMembers.update({
+    where: {
+      guildId: guildId,
+      userId: userId,
+    },
+    data: {
+      role: role,
+    },
+  });
+}
+
+async function deleteGuildMember(guildId, userId) {
+  return await prisma.guildMembers.delete({
+    where: {
+      guildId: guildId,
+      userId: userId,
+    },
+  });
 }
 
 async function getLeaderboard(guildId) {
@@ -122,7 +179,11 @@ module.exports = {
   createGuild,
   updateGuild,
   deleteGuild,
+  addGuildMember,
+  getGuildMember,
   getGuildMembers,
+  updateGuildMemberRole,
+  deleteGuildMember,
   guildExists,
   getLeaderboard,
 };
