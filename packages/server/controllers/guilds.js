@@ -96,7 +96,7 @@ async function getGuildMember(guildId, userId) {
   });
 }
 
-async function getGuildMembers(guildId) {
+async function getAllGuildMembers(guildId) {
   const getMembers = await prisma.guildMembers.findMany({
     where: {
       guildId: guildId,
@@ -181,7 +181,7 @@ module.exports = {
   deleteGuild,
   addGuildMember,
   getGuildMember,
-  getGuildMembers,
+  getAllGuildMembers,
   updateGuildMemberRole,
   deleteGuildMember,
   guildExists,

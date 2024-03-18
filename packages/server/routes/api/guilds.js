@@ -226,7 +226,7 @@ router.get(
         });
       }
 
-      const guildMembers = await GuildController.getGuildMembers(guildId);
+      const guildMembers = await GuildController.getAllGuildMembers(guildId);
       response.status(200).json({
         status: "success",
         data: {
