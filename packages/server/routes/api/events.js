@@ -6,11 +6,11 @@ const {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  checkInTimeValidator,
   attendeeStatusValidator,
 } = require("../../validators/events");
-const { guildIdValidator } = require("../../validators/guilds");
-const { validationResult, matchedData } = require("express-validator");
 const { userIdBodyValidator } = require("../../validators/users");
+const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
  * cursor is base-64 encoded and formatted as
@@ -283,6 +283,45 @@ router.get(
   }
 );
 
+router.post(
+  "/:eventId/check-in",
+  AuthController.authenticate,
+  userIdBodyValidator,
+  checkInTimeValidator,
+  async (request, response) => {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: errors.array(),
+      });
+      return;
+    }
+
+    try {
+      const { userId, eventId } = matchedData(request);
+      const eventAttendeeData = await EventController.updateAttendeeStatus(
+        eventId,
+        userId,
+        "CheckedIn"
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          eventRegistration: eventAttendeeData,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 router.put(
   "/:eventId/status",
   AuthController.authenticate,
@@ -308,58 +347,11 @@ router.put(
 
     try {
       const updatedEventAttendeeStatus =
-        await EventController.updateEventAttendeeStatus(
-          userId,
-          eventId,
-          status
-        );
+        await EventController.updateAttendeeStatus(eventId, userId, status);
 
       response.status(200).json({
         status: "success",
         data: { eventAttendee: updatedEventAttendeeStatus },
-      });
-    } catch (error) {
-      response.status(500).json({
-        status: "error",
-        message: error.message,
-      });
-    }
-  }
-);
-
-router.get(
-  "/:guildId/upcoming",
-  AuthController.authenticate,
-  guildIdValidator,
-  async (request, response) => {
-    const result = validationResult(request);
-
-    // if validation result is not empty, errors occurred
-    if (!result.isEmpty()) {
-      response.status(400).json({
-        status: "fail",
-        data: result.array(),
-      });
-      return;
-    }
-
-    try {
-      const currDate = new Date();
-
-      const validatedData = matchedData(request);
-      const guildId = validatedData.guildId;
-
-      //Should return a list of events from the guild that are upcoming and in ascending order
-      const upcoming = await EventController.getUpcomingEvents(
-        currDate,
-        guildId
-      );
-
-      response.status(200).json({
-        status: "success",
-        data: {
-          upcomingEvents: upcoming,
-        },
       });
     } catch (error) {
       response.status(500).json({

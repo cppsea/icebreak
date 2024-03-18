@@ -121,38 +121,75 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
-async function updateEventAttendeeStatus(userId, eventId, status) {
-  const updatedEventAttendee = await prisma.eventAttendees.upsert({
+async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
+  const query = await prisma.eventAttendees.upsert({
     where: {
       userId_eventId: {
         userId: userId,
         eventId: eventId,
       },
     },
-    update: {
-      status: status,
-    },
     create: {
       userId: userId,
       eventId: eventId,
-      status: status,
+      status: attendeeStatus,
+    },
+    update: {
+      status: attendeeStatus,
     },
   });
-  return updatedEventAttendee;
+
+  if (attendeeStatus === "CheckedIn") {
+    await addCheckInPoints(eventId, userId);
+  }
+
+  return query;
 }
 
-async function getUpcomingEvents(currentDate, guildId) {
-  const upcomingEvents = await prisma.events.findMany({
+async function addCheckInPoints(eventId, userId) {
+  const event = await prisma.events.findUnique({
     where: {
-      guildId: guildId,
-      startDate: { gte: currentDate },
+      eventId: eventId,
     },
-    orderBy: {
-      startDate: "asc",
+    select: {
+      startDate: true,
+      guildId: true,
     },
   });
 
-  return upcomingEvents;
+  if (!event) throw new Error("Event not found");
+
+  const currentTime = new Date();
+  const eventStartTime = event.startDate.getTime();
+  const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+  const currentTimeInMilliseconds = currentTime.getTime();
+  let pointsToAdd = 3;
+
+  if (
+    currentTimeInMilliseconds <= eventStartTime &&
+    currentTimeInMilliseconds >= eventStartTime - fiveMinutesInMilliseconds
+  ) {
+    pointsToAdd = 5;
+  } else if (
+    currentTimeInMilliseconds > eventStartTime &&
+    currentTimeInMilliseconds <= eventStartTime + fiveMinutesInMilliseconds
+  ) {
+    pointsToAdd = 4;
+  }
+
+  await prisma.guildMembers.update({
+    where: {
+      guildId_userId: {
+        userId: userId,
+        guildId: event.guildId,
+      },
+    },
+    data: {
+      points: {
+        increment: pointsToAdd,
+      },
+    },
+  });
 }
 
 module.exports = {
@@ -164,6 +201,5 @@ module.exports = {
   updateEvent,
   createEvent,
   getEventAttendees,
-  updateEventAttendeeStatus,
-  getUpcomingEvents,
+  updateAttendeeStatus,
 };
