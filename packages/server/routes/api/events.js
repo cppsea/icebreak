@@ -10,6 +10,7 @@ const {
 } = require("../../validators/events");
 const { guildIdValidator } = require("../../validators/guilds");
 const { validationResult, matchedData } = require("express-validator");
+const { userIdBodyValidator } = require("../../validators/users");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
  * cursor is base-64 encoded and formatted as
@@ -287,6 +288,7 @@ router.put(
   AuthController.authenticate,
   eventIdValidator,
   attendeeStatusValidator,
+  userIdBodyValidator,
   async (request, response) => {
     const result = validationResult(request);
 
