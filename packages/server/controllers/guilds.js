@@ -174,8 +174,10 @@ async function getLeaderboard(guildId) {
 async function isGuildMember(guildId, userId) {
   const guildMember = await prisma.guildMembers.findUnique({
     where: {
-      guildId: guildId,
-      userId: userId,
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
     },
   });
   return !!guildMember;
