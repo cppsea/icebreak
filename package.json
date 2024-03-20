@@ -19,7 +19,7 @@
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
     "dev": "node ./scripts/run.js",
-    "postinstall": "husky install"
+    "postinstall": "husky"
   },
   "description": "organization engagement platform",
   "main": "index.js",
