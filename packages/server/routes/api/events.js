@@ -8,6 +8,7 @@ const {
   eventIdValidator,
   checkInTimeValidator,
 } = require("../../validators/events");
+const { guildIdValidator } = require("../../validators/guilds");
 const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
@@ -271,6 +272,49 @@ router.get(
         status: "success",
         data: {
           eventAttendees: eventAttendeesData,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.get(
+  "/:guildId/upcoming",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    // if validation result is not empty, errors occurred
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const currDate = new Date();
+
+      const validatedData = matchedData(request);
+      const guildId = validatedData.guildId;
+
+      //Should return a list of events from the guild that are upcoming and in ascending order
+      const upcoming = await EventController.getUpcomingEvents(
+        currDate,
+        guildId
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          upcomingEvents: upcoming,
         },
       });
     } catch (error) {

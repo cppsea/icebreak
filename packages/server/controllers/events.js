@@ -121,6 +121,20 @@ async function getEventAttendees(eventId) {
   return query;
 }
 
+async function getUpcomingEvents(currentDate, guildId) {
+  const upcomingEvents = await prisma.events.findMany({
+    where: {
+      guildId: guildId,
+      startDate: { gte: currentDate },
+    },
+    orderBy: {
+      startDate: "asc",
+    },
+  });
+
+  return upcomingEvents;
+}
+
 async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
   const query = await prisma.eventAttendees.upsert({
     where: {
@@ -200,6 +214,7 @@ module.exports = {
   deleteEvent,
   updateEvent,
   createEvent,
+  getUpcomingEvents,
   getEventAttendees,
   updateAttendeeStatus,
 };
