@@ -73,27 +73,48 @@ async function addGuildMember(guildId, userId) {
 }
 
 // Returns a record containing the userId, firstName, lastName, avatar, and role.
+// Fix this so that
 async function getGuildMember(guildId, userId) {
-  return await prisma.guildMembers.findUniqueOrThrow({
+  const getMember = await prisma.guildMembers.findUniqueOrThrow({
     where: {
-      guildId: guildId,
-      userId: userId,
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
     },
-    select: {
+    include: {
       members: {
-        where: {
-          userId: userId,
-        },
         select: {
-          userId: true,
           firstName: true,
           lastName: true,
           avatar: true,
         },
       },
-      role: true,
     },
   });
+
+  // temp for functionality, replace later
+  const flattenedData = Object.entries(getMember)
+    .flatMap(([key, value]) => {
+      if (
+        typeof value === "object" &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
+        return Object.entries(value).map(([subKey, subValue]) => [
+          subKey,
+          subValue,
+        ]);
+      } else {
+        return [[key, value]];
+      }
+    })
+    .reduce((acc, [key, value]) => {
+      acc[key] = value;
+      return acc;
+    }, {});
+
+  return flattenedData;
 }
 
 async function getAllGuildMembers(guildId) {
@@ -121,8 +142,10 @@ async function getAllGuildMembers(guildId) {
 async function updateGuildMemberRole(guildId, userId, role) {
   return await prisma.guildMembers.update({
     where: {
-      guildId: guildId,
-      userId: userId,
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
     },
     data: {
       role: role,
@@ -133,8 +156,10 @@ async function updateGuildMemberRole(guildId, userId, role) {
 async function deleteGuildMember(guildId, userId) {
   return await prisma.guildMembers.delete({
     where: {
-      guildId: guildId,
-      userId: userId,
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
     },
   });
 }
@@ -191,12 +216,12 @@ module.exports = {
   createGuild,
   updateGuild,
   deleteGuild,
+  guildExists,
   addGuildMember,
   getGuildMember,
   getAllGuildMembers,
   updateGuildMemberRole,
   deleteGuildMember,
-  guildExists,
   getLeaderboard,
   isGuildMember,
 };
