@@ -7,10 +7,13 @@ const {
   createGuildValidator,
   updateGuildValidator,
 } = require("../../validators/guilds");
+const { userIdValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
+
+const { GuildMemberRole } = require("@prisma/client");
 
 router.get("/", AuthController.authenticate, async (request, response) => {
   const search = request.query.search;
@@ -238,6 +241,86 @@ router.get(
         status: "error",
         message: error.message,
       });
+    }
+  }
+);
+
+// Delete guild member
+router.delete(
+  "/:guildId/members/:userId",
+  AuthController.authenticate,
+  guildIdValidator,
+  userIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const userId = data.userId;
+
+    try {
+      // If member does not exist, fail
+      if (!(await GuildController.isGuildMember(guildId, userId))) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId: "Guild member does not exist.",
+          },
+        });
+      }
+
+      // Get client and user data
+      const client = request.user;
+      let clientData = await GuildController.getGuildMember(
+        guildId,
+        client.userId
+      );
+      let userData = await GuildController.getGuildMember(guildId, userId);
+
+      // Not auth if client is member or has a lower role than the added user, fail
+      if (
+        clientData.role === GuildMemberRole.Member ||
+        userData.role > clientData.role
+      ) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId:
+              "Access denied. User is not authorized to perform this function.",
+          },
+        });
+      }
+
+      return response.status(200).json({
+        status: "success",
+        data: {
+          deletedMember: await GuildController.deleteGuildMember(
+            guildId,
+            userId
+          ),
+        },
+      });
+    } catch (error) {
+      if (error.code === "P2025") {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            clientUserId: "Client is not a member of this guild.",
+          },
+        });
+      } else {
+        return response.status(500).json({
+          status: "error",
+          message: error.message,
+        });
+      }
     }
   }
 );
