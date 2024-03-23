@@ -72,10 +72,9 @@ async function addGuildMember(guildId, userId) {
   });
 }
 
-// Returns a record containing the userId, firstName, lastName, avatar, and role.
-// Fix this so that
+// Returns a record containing the userId, guildId, points, role, firstName, lastName, avatar
 async function getGuildMember(guildId, userId) {
-  const getMember = await prisma.guildMembers.findUniqueOrThrow({
+  const getMember = await prisma.guildMembers.findUnique({
     where: {
       guildId_userId: {
         guildId: guildId,
@@ -93,28 +92,31 @@ async function getGuildMember(guildId, userId) {
     },
   });
 
-  // temp for functionality, replace later
-  const flattenedData = Object.entries(getMember)
-    .flatMap(([key, value]) => {
-      if (
-        typeof value === "object" &&
-        value !== null &&
-        !Array.isArray(value)
-      ) {
-        return Object.entries(value).map(([subKey, subValue]) => [
-          subKey,
-          subValue,
-        ]);
-      } else {
-        return [[key, value]];
-      }
-    })
-    .reduce((acc, [key, value]) => {
-      acc[key] = value;
-      return acc;
-    }, {});
+  if (getMember) {
+    // temp for functionality, replace later
+    const flattenedData = Object.entries(getMember)
+      .flatMap(([key, value]) => {
+        if (
+          typeof value === "object" &&
+          value !== null &&
+          !Array.isArray(value)
+        ) {
+          return Object.entries(value).map(([subKey, subValue]) => [
+            subKey,
+            subValue,
+          ]);
+        } else {
+          return [[key, value]];
+        }
+      })
+      .reduce((acc, [key, value]) => {
+        acc[key] = value;
+        return acc;
+      }, {});
 
-  return flattenedData;
+    return flattenedData;
+  }
+  return getMember;
 }
 
 async function getAllGuildMembers(guildId) {
