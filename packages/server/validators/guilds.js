@@ -223,8 +223,19 @@ const updateGuildValidator = [
     .withMessage("Invite mode must be set to true or false."),
 ];
 
+const updateGuildMemberRoleValidator = [
+  body("role", "Invalid Role.")
+    .trim()
+    .exists({ checkFalsy: true })
+    .withMessage("Role can't be null or empty")
+    .blacklist("<>")
+    .matches(/^(?:Member|Officer|Owner)$/)
+    .withMessage("Invalid role. Allowed values are: Member, Officer, or Owner"),
+];
+
 module.exports = {
   guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
+  updateGuildMemberRoleValidator,
 };

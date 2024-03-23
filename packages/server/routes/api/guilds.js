@@ -6,6 +6,7 @@ const {
   guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
+  updateGuildMemberRoleValidator,
 } = require("../../validators/guilds");
 const { userIdValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
@@ -245,6 +246,154 @@ router.get(
   }
 );
 
+// Add guild member
+router.post(
+  "/:guildId/members/:userId",
+  AuthController.authenticate,
+  guildIdValidator,
+  userIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const userId = data.userId;
+
+    try {
+      const client = request.user;
+      const guildData = await GuildController.getGuild(guildId);
+      const clientData = await GuildController.getGuildMember(
+        guildId,
+        client.userId
+      );
+
+      if (await GuildController.isGuildMember(guildId, userId)) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId: "Guild member already exists.",
+          },
+        });
+      }
+
+      if (
+        !(await GuildController.isGuildMember(guildId, client.userId)) &&
+        client.userId !== userId
+      ) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId: "Access denied. Non-members cannot add other users.",
+          },
+        });
+      }
+
+      // If invite-only guild, fail if
+      // - Non-member attempts to join the guild
+      // - unauth member attempts to add another user
+      if (guildData.isInviteOnly) {
+        if (
+          client.userId === userId ||
+          clientData.role === GuildMemberRole.Member
+        ) {
+          return response.status(403).json({
+            status: "fail",
+            data: {
+              userId:
+                "Access denied. Only authorized members may add users to an invite-only guild.",
+            },
+          });
+        }
+      }
+
+      return response.status(200).json({
+        status: "success",
+        data: {
+          createdMember: await GuildController.addGuildMember(guildId, userId),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+// Update guild member's role
+router.put(
+  "/:guildId/role/:userId",
+  AuthController.authenticate,
+  guildIdValidator,
+  userIdValidator,
+  updateGuildMemberRoleValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const userId = data.userId;
+    const role = request.body.role;
+
+    try {
+      const client = request.user;
+      const clientData = await GuildController.getGuildMember(
+        guildId,
+        client.userId
+      );
+
+      if (!(await GuildController.isGuildMember(guildId, userId))) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId: "Guild member does not exist.",
+          },
+        });
+      }
+
+      if (!clientData || clientData.role !== GuildMemberRole.Owner) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId: "Access denied. Only the guild owner can edit roles.",
+          },
+        });
+      }
+
+      return response.status(200).json({
+        status: "success",
+        data: {
+          updatedMember: await GuildController.updateGuildMemberRole(
+            guildId,
+            userId,
+            role
+          ),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
 // Delete guild member
 router.delete(
   "/:guildId/members/:userId",
@@ -278,14 +427,15 @@ router.delete(
 
       // Get client and user data
       const client = request.user;
-      let clientData = await GuildController.getGuildMember(
+      const clientData = await GuildController.getGuildMember(
         guildId,
         client.userId
       );
-      let userData = await GuildController.getGuildMember(guildId, userId);
+      const userData = await GuildController.getGuildMember(guildId, userId);
 
       // Not auth if client is member or has a lower role than the added user, fail
       if (
+        !clientData ||
         clientData.role === GuildMemberRole.Member ||
         userData.role > clientData.role
       ) {
@@ -308,19 +458,10 @@ router.delete(
         },
       });
     } catch (error) {
-      if (error.code === "P2025") {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            clientUserId: "Client is not a member of this guild.",
-          },
-        });
-      } else {
-        return response.status(500).json({
-          status: "error",
-          message: error.message,
-        });
-      }
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
     }
   }
 );
