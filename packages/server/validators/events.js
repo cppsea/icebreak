@@ -193,8 +193,61 @@ const eventIdValidator = [
     }),
 ];
 
+const attendeeStatusValidator = [
+  // validate status
+  body("status", "invalid status")
+    .trim()
+    .blacklist("<>")
+    .exists({ checkFalsy: true })
+    .withMessage("status cannot be null or empty")
+    .matches(/^(NotInterested|Interested|Attending)$/)
+    .withMessage(
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending",
+    ),
+];
+
+const checkInTimeValidator = [
+  param("eventId", "Invalid event ID")
+    .trim()
+    .blacklist("<>")
+    .isUUID()
+    .bail()
+    .withMessage("Not a UUID")
+    .exists({ checkFalsy: true })
+    .withMessage("Event Id cannot be null or empty")
+    .custom(async (eventId, { req }) => {
+      const userId = req.body.userId;
+      const event = await EventController.getEvent(eventId);
+      const isMember = await GuildController.isGuildMember(
+        event.guildId,
+        userId,
+      );
+      if (!isMember) {
+        throw new Error("User is not a member of the guild.");
+      }
+
+      const currentTime = new Date();
+      const MINUTES_TO_MILLISECONDS = 60000;
+      const eventCheckInStartBound =
+        event.startDate.getTime() - 5 * MINUTES_TO_MILLISECONDS;
+      const eventCheckInEndBound =
+        event.startDate.getTime() + 15 * MINUTES_TO_MILLISECONDS;
+      const checkInStartTime = new Date(eventCheckInStartBound);
+      const checkInEndTime = new Date(eventCheckInEndBound);
+
+      if (currentTime < checkInStartTime) {
+        throw new Error("This event has not opened for check-in yet.");
+      }
+      if (currentTime > checkInEndTime) {
+        throw new Error("Check-in window has closed.");
+      }
+    }),
+];
+
 module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  attendeeStatusValidator,
+  checkInTimeValidator,
 };

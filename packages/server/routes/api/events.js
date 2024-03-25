@@ -6,8 +6,11 @@ const {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  checkInTimeValidator,
+  attendeeStatusValidator,
 } = require("../../validators/events");
 const { guildIdValidator } = require("../../validators/guilds");
+const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
@@ -40,7 +43,7 @@ router.get(
       const events = await EventController.getEvents(
         eventLimit,
         action,
-        eventId
+        eventId,
       );
 
       if (events.length === 0) {
@@ -53,10 +56,10 @@ router.get(
       const firstEventId = events[0].eventId;
       const lastEventId = events[events.length - 1].eventId;
       const prevCursor = Buffer.from(
-        `${currentPage - 1}___prev___${firstEventId}`
+        `${currentPage - 1}___prev___${firstEventId}`,
       ).toString("base64");
       const nextCursor = Buffer.from(
-        `${currentPage + 1}___next___${lastEventId}`
+        `${currentPage + 1}___next___${lastEventId}`,
       ).toString("base64");
 
       // follow-up request, not first request to api route
@@ -94,7 +97,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.post(
@@ -132,7 +135,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -165,7 +168,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.delete(
@@ -200,7 +203,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -228,7 +231,7 @@ router.put(
 
       const updatedEvent = await EventController.updateEvent(
         eventId,
-        validatedData
+        validatedData,
       );
 
       response.status(200).json({
@@ -246,7 +249,7 @@ router.put(
       });
       return;
     }
-  }
+  },
 );
 
 router.get(
@@ -263,9 +266,8 @@ router.get(
     }
     try {
       const { eventId } = matchedData(request);
-      const eventAttendeesData = await EventController.getEventAttendees(
-        eventId
-      );
+      const eventAttendeesData =
+        await EventController.getEventAttendees(eventId);
       response.status(200).json({
         status: "success",
         data: {
@@ -278,7 +280,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -306,7 +308,7 @@ router.get(
       //Should return a list of events from the guild that are upcoming and in ascending order
       const upcoming = await EventController.getUpcomingEvents(
         currDate,
-        guildId
+        guildId,
       );
 
       response.status(200).json({
@@ -321,7 +323,86 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
+);
+
+router.post(
+  "/:eventId/check-in",
+  AuthController.authenticate,
+  userIdBodyValidator,
+  checkInTimeValidator,
+  async (request, response) => {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: errors.array(),
+      });
+      return;
+    }
+
+    try {
+      const { userId, eventId } = matchedData(request);
+      const eventAttendeeData = await EventController.updateAttendeeStatus(
+        eventId,
+        userId,
+        "CheckedIn",
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          eventRegistration: eventAttendeeData,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
+router.put(
+  "/:eventId/status",
+  AuthController.authenticate,
+  eventIdValidator,
+  attendeeStatusValidator,
+  userIdBodyValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+
+    const userId = data.userId;
+    const eventId = data.eventId;
+    const status = data.status;
+
+    try {
+      const updatedEventAttendeeStatus =
+        await EventController.updateAttendeeStatus(eventId, userId, status);
+
+      response.status(200).json({
+        status: "success",
+        data: { eventAttendee: updatedEventAttendeeStatus },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
 );
 
 module.exports = router;
