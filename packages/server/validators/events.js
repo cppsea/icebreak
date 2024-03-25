@@ -202,7 +202,7 @@ const attendeeStatusValidator = [
     .withMessage("status cannot be null or empty")
     .matches(/^(NotInterested|Interested|Attending)$/)
     .withMessage(
-      "Invalid status value. Allowed values are: NotInterested, Interested, Attending"
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending",
     ),
 ];
 
@@ -220,7 +220,7 @@ const checkInTimeValidator = [
       const event = await EventController.getEvent(eventId);
       const isMember = await GuildController.isGuildMember(
         event.guildId,
-        userId
+        userId,
       );
       if (!isMember) {
         throw new Error("User is not a member of the guild.");
