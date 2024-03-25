@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { validationResult, matchedData } = require("express-validator");
-const { userIdValidator } = require("../../validators/users");
+const {
+  userIdValidator,
+  updateNewUserValidator,
+} = require("../../validators/users");
 
 const UserController = require("../../controllers/users");
 const AuthController = require("../../controllers/auth");
@@ -93,47 +96,45 @@ router.get(
 );
 
 router.put(
-  //Route handler to update user
-  "/:userId",
+  "/:userId/new",
   AuthController.authenticate,
   userIdValidator,
-  // updateUserValidator,
+  updateNewUserValidator,
   async (request, response) => {
-    // access validation results
     const result = validationResult(request);
 
-    // if validation result is not empty, errors occurred
     if (!result.isEmpty()) {
-      response.status(400).json({
+      return response.status(400).json({
         status: "fail",
         data: result.array(),
       });
-      return;
     }
-
+    const validatedData = matchedData(request);
+    const { userId } = matchedData(request);
     try {
-      const validatedData = matchedData(request);
-      const userId = validatedData.userId;
-
-      const updatedEvent = await UserController.updateEvent(
+      const updatedNewUser = await UserController.updateNewUser(
         userId,
         validatedData
       );
-
-      response.status(200).json({
-        status: "success",
-        data: {
-          event: updatedEvent,
-        },
-      });
+      if (validatedData.isNew) {
+        validatedData.isNew == false;
+        response.status(200).json({
+          status: "success",
+          data: {
+            updatedNewUser,
+          },
+        });
+      } else {
+        return response.status(400).json({
+          status: "fail",
+          data: result.array(),
+        });
+      }
     } catch (error) {
-      //Any error that happens in the update controller will be caught and handled here
-      //For now just respond with the error message
       response.status(500).json({
         status: "error",
         message: error.message,
       });
-      return;
     }
   }
 );
