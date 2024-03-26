@@ -58,7 +58,7 @@ function App() {
     } catch (err) {
       await logoutUser();
       console.log(
-        "Something went wrong trying to auto log in with stored access token",
+        "Something went wrong trying to auto log in with stored access token"
       );
     }
 
@@ -89,7 +89,7 @@ function App() {
     } catch (err) {
       await logoutUser();
       console.log(
-        "Something went wrong trying to auto log in with newly fetched access token from stored refresh token",
+        "Something went wrong trying to auto log in with newly fetched access token from stored refresh token"
       );
     }
   };

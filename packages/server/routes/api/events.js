@@ -405,4 +405,41 @@ router.put(
   },
 );
 
+router.get(
+  "/:eventId/qr-code",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+    const eventId = data.eventId;
+
+    try {
+      const generatedQRURI =
+        await EventController.generateCheckInQRCode(eventId);
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          qrCodeURI: generatedQRURI,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
 module.exports = router;
