@@ -193,6 +193,19 @@ const eventIdValidator = [
     }),
 ];
 
+const attendeeStatusValidator = [
+  // validate status
+  body("status", "invalid status")
+    .trim()
+    .blacklist("<>")
+    .exists({ checkFalsy: true })
+    .withMessage("status cannot be null or empty")
+    .matches(/^(NotInterested|Interested|Attending)$/)
+    .withMessage(
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending",
+    ),
+];
+
 const checkInTimeValidator = [
   param("eventId", "Invalid event ID")
     .trim()
@@ -207,7 +220,7 @@ const checkInTimeValidator = [
       const event = await EventController.getEvent(eventId);
       const isMember = await GuildController.isGuildMember(
         event.guildId,
-        userId
+        userId,
       );
       if (!isMember) {
         throw new Error("User is not a member of the guild.");
@@ -235,5 +248,6 @@ module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  attendeeStatusValidator,
   checkInTimeValidator,
 };
