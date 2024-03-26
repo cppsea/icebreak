@@ -4,6 +4,7 @@ const prisma = require("../prisma/prisma");
 const token = require("../utils/token");
 const bcrypt = require("bcrypt");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
+const nodemailer = require("nodemailer");
 
 const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
 
@@ -189,6 +190,85 @@ async function authenticate(request, response, next) {
   }
 }
 
+async function isUserEmail(email) {
+  const result = await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
+  });
+
+  if (result === null) return false;
+
+  return true;
+}
+
+async function isGoogleAccount(userId) {
+  const result = await prisma.users.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
+
+  if (result.password == null) return true;
+
+  return false;
+}
+
+async function sendEmail(address, subject, body) {
+  const transporter = nodemailer.createTransport({
+    host: "mail.privateemail.com",
+    port: 465,
+    secure: true,
+    auth: {
+      user: "icebreak@cppicebreak.com",
+      pass: process.env.MAILBOX_PASSWORD,
+    },
+  });
+
+  const info = await transporter.sendMail({
+    from: "icebreak@cppicebreak.com",
+    to: address,
+    subject: subject,
+    text: body,
+  });
+
+  return info;
+}
+
+async function sendPasswordResetEmail(address, passwordResetToken) {
+  const subject = "Icebreak: Password Reset Request";
+  const baseUrl = process.env.BASE_URL || "http://localhost:5050"; // Note: If the .env file does not contain BASE_URL, it will default to localhost:5050
+  const link = `${baseUrl}/api/auth/reset-password?token=${passwordResetToken}`;
+  const body = `Please click the following link to reset your password: ${link}`;
+
+  return sendEmail(address, subject, body);
+}
+
+async function sendPasswordResetConfirmationEmail(address) {
+  const subject = "Icebreak: Password Reset";
+  const body =
+    "Your Icebreak password has been changed. If you did not request a password change, please immediately contact us at icebreak@cppicebreak.com.";
+
+  return sendEmail(address, subject, body);
+}
+
+async function resetPassword(userId, password) {
+  // Encrypt the password with the method used for registering
+  const saltRounds = 10;
+  const salt = await bcrypt.genSalt(saltRounds);
+  const hashedPass = await bcrypt.hash(password, salt);
+
+  // Update the db with the new encryped password
+  return await prisma.users.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      password: hashedPass,
+    },
+  });
+}
+
 module.exports = {
   create,
   login,
@@ -197,4 +277,9 @@ module.exports = {
   deserialize,
   authenticate,
   authenticateWithGoogle,
+  isUserEmail,
+  isGoogleAccount,
+  sendPasswordResetEmail,
+  sendPasswordResetConfirmationEmail,
+  resetPassword,
 };
