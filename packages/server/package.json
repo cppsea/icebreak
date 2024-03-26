@@ -8,7 +8,7 @@
   "scripts": {
     "start": "dotenvx run --env-file=.env.production -- nodemon index.js",
     "forward": "ttab node scripts/ngrok.js",
-    "dev": "dotenvx run --env-file=.env.development -- ttab yarn start",
+    "dev": "dotenvx run --env-file=.env.development -- nodemon index.js",
     "test": "jest"
   },
   "dependencies": {
