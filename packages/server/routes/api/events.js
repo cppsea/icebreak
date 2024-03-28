@@ -12,6 +12,7 @@ const {
 const { guildIdValidator } = require("../../validators/guilds");
 const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
+const { DateTime } = require("luxon");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
  * cursor is base-64 encoded and formatted as
@@ -43,7 +44,7 @@ router.get(
       const events = await EventController.getEvents(
         eventLimit,
         action,
-        eventId
+        eventId,
       );
 
       if (events.length === 0) {
@@ -56,10 +57,10 @@ router.get(
       const firstEventId = events[0].eventId;
       const lastEventId = events[events.length - 1].eventId;
       const prevCursor = Buffer.from(
-        `${currentPage - 1}___prev___${firstEventId}`
+        `${currentPage - 1}___prev___${firstEventId}`,
       ).toString("base64");
       const nextCursor = Buffer.from(
-        `${currentPage + 1}___next___${lastEventId}`
+        `${currentPage + 1}___next___${lastEventId}`,
       ).toString("base64");
 
       // follow-up request, not first request to api route
@@ -97,7 +98,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.post(
@@ -135,7 +136,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -168,7 +169,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.delete(
@@ -203,7 +204,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -231,7 +232,7 @@ router.put(
 
       const updatedEvent = await EventController.updateEvent(
         eventId,
-        validatedData
+        validatedData,
       );
 
       response.status(200).json({
@@ -249,7 +250,7 @@ router.put(
       });
       return;
     }
-  }
+  },
 );
 
 router.get(
@@ -266,9 +267,8 @@ router.get(
     }
     try {
       const { eventId } = matchedData(request);
-      const eventAttendeesData = await EventController.getEventAttendees(
-        eventId
-      );
+      const eventAttendeesData =
+        await EventController.getEventAttendees(eventId);
       response.status(200).json({
         status: "success",
         data: {
@@ -281,7 +281,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -309,7 +309,7 @@ router.get(
       //Should return a list of events from the guild that are upcoming and in ascending order
       const upcoming = await EventController.getUpcomingEvents(
         currDate,
-        guildId
+        guildId,
       );
 
       response.status(200).json({
@@ -324,7 +324,50 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
+);
+
+router.get(
+  "/:guildId/archived",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const currDate = DateTime.now();
+      const pastDate = currDate.plus({ months: -1 }); //Get events from within the past month
+
+      const validatedData = matchedData(request);
+      const guildId = validatedData.guildId;
+
+      const archived = await EventController.getArchivedEvents(
+        currDate.toISO(),
+        pastDate.toISO(),
+        guildId,
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          archivedEvents: archived,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
 );
 
 router.post(
@@ -348,7 +391,7 @@ router.post(
       const eventAttendeeData = await EventController.updateAttendeeStatus(
         eventId,
         userId,
-        "CheckedIn"
+        "CheckedIn",
       );
 
       response.status(200).json({
@@ -363,7 +406,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -403,7 +446,7 @@ router.put(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 module.exports = router;

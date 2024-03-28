@@ -135,6 +135,17 @@ async function getUpcomingEvents(currentDate, guildId) {
   return upcomingEvents;
 }
 
+async function getArchivedEvents(currDate, pastDate, guildId) {
+  const archivedEvents = await prisma.events.findMany({
+    where: {
+      guildId: guildId,
+      AND: [{ startDate: { gte: pastDate } }, { endDate: { lte: currDate } }],
+    },
+  });
+
+  return archivedEvents;
+}
+
 async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
   const query = await prisma.eventAttendees.upsert({
     where: {
@@ -215,6 +226,7 @@ module.exports = {
   updateEvent,
   createEvent,
   getUpcomingEvents,
+  getArchivedEvents,
   getEventAttendees,
   updateAttendeeStatus,
 };
