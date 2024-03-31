@@ -26,7 +26,6 @@ function FeedDrawer() {
   return (
     <Feed.Navigator
       testID="navigation-drawer"
-      useLegacyImplementation
       drawerContent={(props) => <CustomDrawerContent {...props} />}>
       <Feed.Screen
         testID="navigation-drawer-item"

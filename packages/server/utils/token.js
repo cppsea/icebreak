@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+require("bcrypt");
 
 function generateRefreshToken(user) {
   const { userId } = user;
@@ -9,7 +10,7 @@ function generateRefreshToken(user) {
     process.env.TOKEN_SECRET,
     {
       expiresIn: "1d",
-    }
+    },
   );
 }
 
@@ -26,7 +27,19 @@ function generateAccessToken(user) {
     process.env.WEB_CLIENT_SECRET,
     {
       expiresIn: "1h",
-    }
+    },
+  );
+}
+
+function generateResetPasswordToken(userId) {
+  return jwt.sign(
+    {
+      userId,
+    },
+    process.env.TOKEN_SECRET,
+    {
+      expiresIn: "15m",
+    },
   );
 }
 
@@ -46,13 +59,19 @@ function verifyAccessToken(accessToken) {
         // Return the payload of the access token
         return decoded;
       }
-    }
+    },
   );
+}
+
+function verifyPasswordResetToken(passwordResetToken) {
+  return jwt.verify(passwordResetToken, process.env.TOKEN_SECRET);
 }
 
 module.exports = {
   generateRefreshToken,
   generateAccessToken,
+  generateResetPasswordToken,
   verifyRefreshToken,
   verifyAccessToken,
+  verifyPasswordResetToken,
 };

@@ -52,27 +52,30 @@ const OverviewHeader = ({ groupName }) => {
   );
 };
 
-export default function EventOverviewText(props) {
+export default function EventOverviewText({
+  event,
+  guild,
+  timeBegin,
+  timeEnd,
+}) {
   return (
     <View>
-      <OverviewHeader groupName={props.groupName} />
-      <Text style={styles.eventTitle}>{props.title}</Text>
+      <OverviewHeader groupName={guild.name} />
+      <Text style={styles.eventTitle}>{event.title}</Text>
       <Text style={styles.smallText}>
-        {props.timeBegin} - {props.timeEnd}
+        {timeBegin} - {timeEnd}
       </Text>
-      <Text style={styles.smallText}> 📌 {props.location} </Text>
-      <Text style={styles.description}> {props.description} </Text>
+      <Text style={styles.smallText}> 📌 {event.location} </Text>
+      <Text style={styles.description}> {event.description} </Text>
     </View>
   );
 }
 
 EventOverviewText.propTypes = {
-  groupName: PropTypes.string,
-  description: PropTypes.string,
-  location: PropTypes.string,
+  guild: PropTypes.any,
+  event: PropTypes.any,
   timeBegin: PropTypes.string,
   timeEnd: PropTypes.string,
-  title: PropTypes.string,
 };
 
 OverviewHeader.propTypes = {

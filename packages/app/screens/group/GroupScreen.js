@@ -8,6 +8,7 @@ import Screen from "@app/components/Screen";
 import { StyleSheet, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
+import { EventProvider } from "@app/utils/EventContext.js";
 import EventsScreen from "../../screens/group/tabs/EventsScreen";
 import MembersScreen from "../../screens/group/tabs/MembersScreen";
 import LeaderboardScreen from "../../screens/group/tabs/LeaderboardScreen";
@@ -56,14 +57,15 @@ function GroupScreen({ navigation, route }) {
               selectTab={(tab) => setActiveTab(tab)}
             />
           </View>
-          {activeTab.screen && (
-            <activeTab.screen
-              testID="tab"
-              style={styles.screen}
-              navigation={navigation}
-              previousScreen="GroupScreen"
-            />
-          )}
+          <EventProvider>
+            {activeTab.screen && (
+              <activeTab.screen
+                testID="tab"
+                style={styles.screen}
+                navigation={navigation}
+              />
+            )}
+          </EventProvider>
         </ScrollView>
       </GuildProvider>
     </Screen>
