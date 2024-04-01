@@ -62,7 +62,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("Start date is not in valid ISO 8601 format")
     .custom(async (startDate, { req }) => {
       //Start date given but not end date
       if (!req.body.endDate) {
@@ -76,7 +76,7 @@ const createEventValidator = [
     .optional()
     .isISO8601()
     .toDate()
-    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("End date is not in valid ISO 8601 format")
     .custom(async (endDate, { req }) => {
       //End date given but no start date
       if (!req.body.startDate) {
@@ -129,7 +129,7 @@ const updateEventValidator = [
     .isISO8601()
     .toDate()
     .bail()
-    .withMessage("Start date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("Start date is not in valid ISO 8601 format")
     .custom(async (startDate, { req }) => {
       //Check for when new start and end date is given
       if (req.body.endDate) {
@@ -158,7 +158,7 @@ const updateEventValidator = [
     .isISO8601()
     .toDate()
     .bail()
-    .withMessage("End date is not in a valid date format (use YYYY-MM-DD)")
+    .withMessage("End date is not in valid ISO 8601 format")
     .custom(async (endDate, { req }) => {
       //Check for when new end date is given but no start date
       if (!req.body.startDate) {
@@ -193,8 +193,61 @@ const eventIdValidator = [
     }),
 ];
 
+const attendeeStatusValidator = [
+  // validate status
+  body("status", "invalid status")
+    .trim()
+    .blacklist("<>")
+    .exists({ checkFalsy: true })
+    .withMessage("status cannot be null or empty")
+    .matches(/^(NotInterested|Interested|Attending)$/)
+    .withMessage(
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending",
+    ),
+];
+
+const checkInTimeValidator = [
+  param("eventId", "Invalid event ID")
+    .trim()
+    .blacklist("<>")
+    .isUUID()
+    .bail()
+    .withMessage("Not a UUID")
+    .exists({ checkFalsy: true })
+    .withMessage("Event Id cannot be null or empty")
+    .custom(async (eventId, { req }) => {
+      const userId = req.body.userId;
+      const event = await EventController.getEvent(eventId);
+      const isMember = await GuildController.isGuildMember(
+        event.guildId,
+        userId,
+      );
+      if (!isMember) {
+        throw new Error("User is not a member of the guild.");
+      }
+
+      const currentTime = new Date();
+      const MINUTES_TO_MILLISECONDS = 60000;
+      const eventCheckInStartBound =
+        event.startDate.getTime() - 5 * MINUTES_TO_MILLISECONDS;
+      const eventCheckInEndBound =
+        event.startDate.getTime() + 15 * MINUTES_TO_MILLISECONDS;
+      const checkInStartTime = new Date(eventCheckInStartBound);
+      const checkInEndTime = new Date(eventCheckInEndBound);
+
+      if (currentTime < checkInStartTime) {
+        throw new Error("This event has not opened for check-in yet.");
+      }
+      if (currentTime > checkInEndTime) {
+        throw new Error("Check-in window has closed.");
+      }
+    }),
+];
+
 module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  attendeeStatusValidator,
+  checkInTimeValidator,
 };

@@ -31,7 +31,7 @@ export function GuildProvider({
             headers: {
               Authorization: accessToken,
             },
-          }
+          },
         );
         const { data: guildMembersResponse } = await axios.get(
           `${ENDPOINT}/guilds/${guildId}/members`,
@@ -39,7 +39,7 @@ export function GuildProvider({
             headers: {
               Authorization: accessToken,
             },
-          }
+          },
         );
         const { data: guildAvatarResponse } = await axios.get(
           `${ENDPOINT}/media/images/guild_avatar/${guildId}`,
@@ -47,7 +47,7 @@ export function GuildProvider({
             headers: {
               Authorization: accessToken,
             },
-          }
+          },
         );
         const { data: guildBannerResponse } = await axios.get(
           `${ENDPOINT}/media/images/guild_banner/${guildId}`,
@@ -55,12 +55,12 @@ export function GuildProvider({
             headers: {
               Authorization: accessToken,
             },
-          }
+          },
         );
 
         const guild = guildResponse.data.guild;
-        guild.avatar = guildAvatarResponse.data.imageURL;
-        guild.banner = guildBannerResponse.data.imageURL;
+        guild.avatar = guildAvatarResponse.data.imageURL.avatar;
+        guild.banner = guildBannerResponse.data.imageURL.banner;
 
         setGuild(guildResponse.data.guild);
         setGuildMembers(guildMembersResponse.data.guildMembers);
@@ -93,7 +93,7 @@ export function useGuildContext() {
   const guildCtxValue = useContext(GuildContext);
   if (!guildCtxValue) {
     throw new Error(
-      "You are using guild context outside of GuildProvider. Context undefined"
+      "You are using guild context outside of GuildProvider. Context undefined",
     );
   }
 

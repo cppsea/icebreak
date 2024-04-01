@@ -6,11 +6,21 @@ async function getAllUsers() {
 }
 
 async function getUser(userId) {
-  return prisma.users.findUniqueOrThrow({
+  const query = await prisma.users.findUnique({
     where: {
       userId: userId,
     },
   });
+  return query;
+}
+
+async function getUserEmail(userId) {
+  const query = await prisma.users.findUnique({
+    where: {
+      userId: userId,
+    },
+  });
+  return query.email;
 }
 
 async function getUserByEmail(email) {
@@ -20,6 +30,15 @@ async function getUserByEmail(email) {
     },
   });
   return query;
+}
+
+async function getUserIdByEmail(email) {
+  const query = await prisma.users.findUnique({
+    where: {
+      email: email,
+    },
+  });
+  return query.userId;
 }
 
 async function getGuildsForUser(userId) {
@@ -48,4 +67,6 @@ module.exports = {
   getAllUsers,
   getUserByEmail,
   getGuildsForUser,
+  getUserIdByEmail,
+  getUserEmail,
 };

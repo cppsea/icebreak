@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { UserProvider, useUserContext } from "@app/utils/UserContext";
 import { getUserInfo } from "@app/utils/datalayer";
@@ -60,7 +61,7 @@ function App() {
     } catch (err) {
       await logoutUser();
       console.log(
-        "Something went wrong trying to auto log in with stored access token"
+        "Something went wrong trying to auto log in with stored access token",
       );
     }
 
@@ -91,7 +92,7 @@ function App() {
     } catch (err) {
       await logoutUser();
       console.log(
-        "Something went wrong trying to auto log in with newly fetched access token from stored refresh token"
+        "Something went wrong trying to auto log in with newly fetched access token from stored refresh token",
       );
     }
   };
@@ -120,13 +121,16 @@ function App() {
 
 function Root() {
   return (
-    <ThemeProvider theme={Palette}>
-      <UserProvider>
-        <NavigationContainer>
-          <App />
-        </NavigationContainer>
-      </UserProvider>
-    </ThemeProvider>
+    // eslint-disable-next-line react-native/no-inline-styles
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ThemeProvider theme={Palette}>
+        <UserProvider>
+          <NavigationContainer>
+            <App />
+          </NavigationContainer>
+        </UserProvider>
+      </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 
