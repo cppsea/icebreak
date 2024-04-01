@@ -86,6 +86,7 @@ function CreateGroupFormScreen({ navigation }) {
       linkedInLink,
       githubLink,
     },
+    mode: "onBlur",
   });
 
   const categoryOptions = ["Sports", "Education", "Business", "Gaming"];
@@ -185,7 +186,7 @@ function CreateGroupFormScreen({ navigation }) {
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
                     style={styles.input}
-                    placeholder="Organization Name"
+                    placeholder="Guild Name"
                     onBlur={onBlur}
                     onChangeText={(text) => {
                       onChange(text);
