@@ -8,7 +8,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "dev": "ttab expo start",
+    "dev": "expo start --dev-client",
     "test": "jest"
   },
   "dependencies": {
