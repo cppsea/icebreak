@@ -6,8 +6,11 @@ const {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
+  checkInTimeValidator,
+  attendeeStatusValidator,
 } = require("../../validators/events");
 const { guildIdValidator } = require("../../validators/guilds");
+const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
@@ -314,6 +317,85 @@ router.get(
         data: {
           upcomingEvents: upcoming,
         },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.post(
+  "/:eventId/check-in",
+  AuthController.authenticate,
+  userIdBodyValidator,
+  checkInTimeValidator,
+  async (request, response) => {
+    const errors = validationResult(request);
+
+    if (!errors.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: errors.array(),
+      });
+      return;
+    }
+
+    try {
+      const { userId, eventId } = matchedData(request);
+      const eventAttendeeData = await EventController.updateAttendeeStatus(
+        eventId,
+        userId,
+        "CheckedIn"
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          eventRegistration: eventAttendeeData,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.put(
+  "/:eventId/status",
+  AuthController.authenticate,
+  eventIdValidator,
+  attendeeStatusValidator,
+  userIdBodyValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+
+    const userId = data.userId;
+    const eventId = data.eventId;
+    const status = data.status;
+
+    try {
+      const updatedEventAttendeeStatus =
+        await EventController.updateAttendeeStatus(eventId, userId, status);
+
+      response.status(200).json({
+        status: "success",
+        data: { eventAttendee: updatedEventAttendeeStatus },
       });
     } catch (error) {
       response.status(500).json({

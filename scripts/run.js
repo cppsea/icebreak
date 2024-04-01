@@ -90,7 +90,7 @@ setTimeout(() => {
       }
     });
 
-    newTerminal("yarn server:start");
-    newTerminal("yarn app:start");
+    newTerminal("yarn server:dev");
+    newTerminal("yarn app:dev");
   });
 }, REWRITE_NGROK_URL_DELAY);

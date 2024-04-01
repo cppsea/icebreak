@@ -12,31 +12,30 @@
     "app:ios": "yarn workspace app ios",
     "app:android": "yarn workspace app android",
     "app:start": "yarn workspace app start",
+    "app:dev": "yarn workspace app dev",
     "app:test": "yarn workspace app test",
     "app:link": "cd packages/app/ios; pod install;",
     "server:start": "yarn workspace server start",
+    "server:dev": "yarn workspace server dev",
     "server:test": "yarn workspace server test",
     "port:forward": "yarn workspace server forward",
     "reset": "find . -type dir -name node_modules | xargs rm -rf && yarn",
     "dev": "node ./scripts/run.js",
-    "postinstall": "husky install"
+    "postinstall": "husky"
   },
   "description": "organization engagement platform",
   "main": "index.js",
   "author": "SEA",
   "license": "MIT",
-  "packageManager": "yarn@3.2.3",
+  "packageManager": "yarn@1.22.19",
   "devDependencies": {
-    "@commitlint/cli": "17.8.1",
-    "@commitlint/config-conventional": "17.8.1",
-    "eslint": "8.39.0",
+    "@commitlint/cli": "19.2.0",
+    "@commitlint/config-conventional": "19.1.0",
+    "eslint": "8.57.0",
     "eslint-config-prettier": "^9.0.0",
-    "husky": "^8.0.3",
-    "lint-staged": "14.0.1",
-    "prettier": "2.8.8"
+    "husky": "^9.0.11",
+    "lint-staged": "15.2.2",
+    "prettier": "3.2.5"
   },
-  "repository": "https://github.com/cppsea/icebreak.git",
-  "dependencies": {
-    "yarn": "^1.22.19"
-  }
+  "repository": "https://github.com/cppsea/icebreak.git"
 }
