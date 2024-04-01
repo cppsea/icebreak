@@ -1,4 +1,5 @@
 const prisma = require("../prisma/prisma");
+var QRCode = require("qrcode");
 
 async function getAllEvents() {
   return prisma.event.findMany();
@@ -206,6 +207,17 @@ async function addCheckInPoints(eventId, userId) {
   });
 }
 
+async function generateCheckInQRCode(eventId) {
+  const text = `icebreak://qr-code-check-in?eventId=${eventId}`;
+
+  try {
+    const qrCodeDataURL = await QRCode.toDataURL(text);
+    return qrCodeDataURL;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -217,4 +229,5 @@ module.exports = {
   getUpcomingEvents,
   getEventAttendees,
   updateAttendeeStatus,
+  generateCheckInQRCode,
 };
