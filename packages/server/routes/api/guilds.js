@@ -375,6 +375,15 @@ router.put(
         });
       }
 
+      if (client.userId === userId) {
+        return response.status(403).json({
+          status: "fail",
+          data: {
+            userId: "The guild owner cannot edit their own role.",
+          },
+        });
+      }
+
       return response.status(200).json({
         status: "success",
         data: {
