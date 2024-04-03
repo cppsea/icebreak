@@ -91,7 +91,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Create Guild
@@ -124,7 +124,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Update guild by ID
@@ -160,7 +160,7 @@ router.put(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Delete guild by ID
@@ -194,7 +194,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -243,7 +243,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Add guild member
@@ -271,7 +271,7 @@ router.post(
       const guildData = await GuildController.getGuild(guildId);
       const clientData = await GuildController.getGuildMember(
         guildId,
-        client.userId
+        client.userId,
       );
 
       if (await GuildController.isGuildMember(guildId, userId)) {
@@ -325,7 +325,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Update guild member's role
@@ -354,7 +354,7 @@ router.put(
       const client = request.user;
       const clientData = await GuildController.getGuildMember(
         guildId,
-        client.userId
+        client.userId,
       );
 
       if (!(await GuildController.isGuildMember(guildId, userId))) {
@@ -381,7 +381,7 @@ router.put(
           updatedMember: await GuildController.updateGuildMemberRole(
             guildId,
             userId,
-            role
+            role,
           ),
         },
       });
@@ -391,7 +391,7 @@ router.put(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Delete guild member
@@ -429,7 +429,7 @@ router.delete(
       const client = request.user;
       const clientData = await GuildController.getGuildMember(
         guildId,
-        client.userId
+        client.userId,
       );
       const userData = await GuildController.getGuildMember(guildId, userId);
 
@@ -437,7 +437,7 @@ router.delete(
       if (
         !clientData ||
         clientData.role === GuildMemberRole.Member ||
-        userData.role > clientData.role
+        userData.role >= clientData.role
       ) {
         return response.status(403).json({
           status: "fail",
@@ -453,7 +453,7 @@ router.delete(
         data: {
           deletedMember: await GuildController.deleteGuildMember(
             guildId,
-            userId
+            userId,
           ),
         },
       });
@@ -463,7 +463,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -498,7 +498,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 module.exports = router;
