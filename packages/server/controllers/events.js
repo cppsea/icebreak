@@ -209,13 +209,7 @@ async function addCheckInPoints(eventId, userId) {
 
 async function generateCheckInQRCode(eventId) {
   const text = `icebreak://qr-code-check-in?eventId=${eventId}`;
-
-  try {
-    const qrCodeDataURL = await QRCode.toDataURL(text);
-    return qrCodeDataURL;
-  } catch (err) {
-    console.error(err);
-  }
+  return QRCode.toDataURL(text);
 }
 
 module.exports = {

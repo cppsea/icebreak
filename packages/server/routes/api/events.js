@@ -430,7 +430,7 @@ router.get(
       response.status(200).json({
         status: "success",
         data: {
-          uri: generatedQRURI,
+          qrCodeURI: generatedQRURI,
         },
       });
     } catch (error) {
