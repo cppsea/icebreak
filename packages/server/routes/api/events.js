@@ -43,7 +43,7 @@ router.get(
       const events = await EventController.getEvents(
         eventLimit,
         action,
-        eventId
+        eventId,
       );
 
       if (events.length === 0) {
@@ -56,10 +56,10 @@ router.get(
       const firstEventId = events[0].eventId;
       const lastEventId = events[events.length - 1].eventId;
       const prevCursor = Buffer.from(
-        `${currentPage - 1}___prev___${firstEventId}`
+        `${currentPage - 1}___prev___${firstEventId}`,
       ).toString("base64");
       const nextCursor = Buffer.from(
-        `${currentPage + 1}___next___${lastEventId}`
+        `${currentPage + 1}___next___${lastEventId}`,
       ).toString("base64");
 
       // follow-up request, not first request to api route
@@ -97,7 +97,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.post(
@@ -135,7 +135,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -168,7 +168,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.delete(
@@ -203,7 +203,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -231,7 +231,7 @@ router.put(
 
       const updatedEvent = await EventController.updateEvent(
         eventId,
-        validatedData
+        validatedData,
       );
 
       response.status(200).json({
@@ -249,7 +249,7 @@ router.put(
       });
       return;
     }
-  }
+  },
 );
 
 router.get(
@@ -266,9 +266,8 @@ router.get(
     }
     try {
       const { eventId } = matchedData(request);
-      const eventAttendeesData = await EventController.getEventAttendees(
-        eventId
-      );
+      const eventAttendeesData =
+        await EventController.getEventAttendees(eventId);
       response.status(200).json({
         status: "success",
         data: {
@@ -281,7 +280,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -309,7 +308,7 @@ router.get(
       //Should return a list of events from the guild that are upcoming and in ascending order
       const upcoming = await EventController.getUpcomingEvents(
         currDate,
-        guildId
+        guildId,
       );
 
       response.status(200).json({
@@ -324,7 +323,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.post(
@@ -348,7 +347,7 @@ router.post(
       const eventAttendeeData = await EventController.updateAttendeeStatus(
         eventId,
         userId,
-        "CheckedIn"
+        "CheckedIn",
       );
 
       response.status(200).json({
@@ -363,7 +362,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -403,7 +402,44 @@ router.put(
         message: error.message,
       });
     }
-  }
+  },
+);
+
+router.get(
+  "/:eventId/qr-code",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+    const eventId = data.eventId;
+
+    try {
+      const generatedQRURI =
+        await EventController.generateCheckInQRCode(eventId);
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          qrCodeURI: generatedQRURI,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
 );
 
 module.exports = router;
