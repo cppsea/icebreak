@@ -330,7 +330,7 @@ router.post(
 
 // Update guild member's role
 router.put(
-  "/:guildId/role/:userId",
+  "/:guildId/members/:userId/roles",
   AuthController.authenticate,
   guildIdValidator,
   userIdValidator,
