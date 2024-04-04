@@ -384,6 +384,14 @@ router.put(
         });
       }
 
+      if (role === GuildMemberRole.Owner) {
+        await GuildController.updateGuildMemberRole(
+          guildId,
+          client.userId,
+          GuildMemberRole.Member,
+        );
+      }
+
       return response.status(200).json({
         status: "success",
         data: {
