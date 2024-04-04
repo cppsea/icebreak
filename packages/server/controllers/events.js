@@ -206,6 +206,26 @@ async function addCheckInPoints(eventId, userId) {
   });
 }
 
+async function getUserEvents(currentDate, userId) {
+  const userEvents = await prisma.events.findMany({
+    where: {
+      eventAttendees: {
+        some: {
+          userId: userId,
+          status: {
+            in: ["Interested", "Attending"],
+          },
+        },
+      },
+      startDate: { gte: currentDate },
+    },
+    orderBy: {
+      startDate: "asc",
+    },
+  });
+  return userEvents;
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -217,4 +237,5 @@ module.exports = {
   getUpcomingEvents,
   getEventAttendees,
   updateAttendeeStatus,
+  getUserEvents,
 };
