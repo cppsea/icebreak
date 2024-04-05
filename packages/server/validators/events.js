@@ -1,4 +1,4 @@
-const { param, body } = require("express-validator");
+const { param, body, query } = require("express-validator");
 
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
@@ -202,7 +202,7 @@ const attendeeStatusValidator = [
     .withMessage("status cannot be null or empty")
     .matches(/^(NotInterested|Interested|Attending)$/)
     .withMessage(
-      "Invalid status value. Allowed values are: NotInterested, Interested, Attending"
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending",
     ),
 ];
 
@@ -220,7 +220,7 @@ const checkInTimeValidator = [
       const event = await EventController.getEvent(eventId);
       const isMember = await GuildController.isGuildMember(
         event.guildId,
-        userId
+        userId,
       );
       if (!isMember) {
         throw new Error("User is not a member of the guild.");
@@ -244,10 +244,36 @@ const checkInTimeValidator = [
     }),
 ];
 
+const fetchPublicUpcomingEventsValidator = [
+  query("limit")
+    .optional()
+    .trim()
+    .blacklist("<>")
+    .isInt()
+    .withMessage("Limit must be an integer value!"),
+
+  param("cursor", "Invalid cursor!")
+    .trim()
+    .custom((value) => {
+      // custom logic to allow empty cursor input because .optional doesn't work here, also using a regex cause the isbase64() doesn't let ours pass for some reason.
+      if (
+        value === ":cursor" ||
+        /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/.test(
+          value,
+        )
+      ) {
+        return true; // Return true if the value is either ':cursor' or a valid Base64 string
+      }
+      return false; // Return false if the value is not ':cursor' and not a valid Base64 string
+    })
+    .withMessage("Cursor must be BASE64 Encoded!"),
+];
+
 module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
   attendeeStatusValidator,
   checkInTimeValidator,
+  fetchPublicUpcomingEventsValidator,
 };

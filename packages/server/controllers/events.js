@@ -46,6 +46,52 @@ async function getEvents(limit, action, eventId) {
   return events;
 }
 
+async function getPublicUpcomingEvents(limit, action, eventId) {
+  let events;
+
+  switch (action) {
+    case "next":
+      events = await prisma.events.findMany({
+        take: limit,
+        skip: 1,
+        cursor: {
+          eventId: eventId,
+        },
+        orderBy: {
+          eventId: "asc",
+        },
+        where: {
+          guilds: {
+            isInviteOnly: false,
+          },
+          startDate: {
+            gt: new Date(),
+          },
+        },
+      });
+      break;
+    // first request made for first page, cursor is null
+    default:
+      events = await prisma.events.findMany({
+        take: limit,
+        orderBy: {
+          eventId: "asc",
+        },
+        where: {
+          guilds: {
+            isInviteOnly: false,
+          },
+          startDate: {
+            gt: new Date(),
+          },
+        },
+      });
+      break;
+  }
+
+  return events;
+}
+
 async function getPages(limit) {
   const totalEvents = await prisma.events.count();
   const totalPages = Math.ceil(totalEvents / limit);
@@ -217,4 +263,5 @@ module.exports = {
   getUpcomingEvents,
   getEventAttendees,
   updateAttendeeStatus,
+  getPublicUpcomingEvents,
 };

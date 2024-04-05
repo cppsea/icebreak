@@ -8,11 +8,13 @@ const {
   eventIdValidator,
   checkInTimeValidator,
   attendeeStatusValidator,
+  fetchPublicUpcomingEventsValidator,
 } = require("../../validators/events");
 const { guildIdValidator } = require("../../validators/guilds");
 const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const DEFAULT_EVENT_LIMIT = 10;
+
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
@@ -43,7 +45,7 @@ router.get(
       const events = await EventController.getEvents(
         eventLimit,
         action,
-        eventId
+        eventId,
       );
 
       if (events.length === 0) {
@@ -56,10 +58,10 @@ router.get(
       const firstEventId = events[0].eventId;
       const lastEventId = events[events.length - 1].eventId;
       const prevCursor = Buffer.from(
-        `${currentPage - 1}___prev___${firstEventId}`
+        `${currentPage - 1}___prev___${firstEventId}`,
       ).toString("base64");
       const nextCursor = Buffer.from(
-        `${currentPage + 1}___next___${lastEventId}`
+        `${currentPage + 1}___next___${lastEventId}`,
       ).toString("base64");
 
       // follow-up request, not first request to api route
@@ -97,7 +99,89 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
+);
+
+router.get(
+  "/public/upcoming/:cursor?",
+  AuthController.authenticate,
+  fetchPublicUpcomingEventsValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+
+    const requestedEventLimit = data.limit;
+    const cleansedCursor = data.cursor;
+
+    try {
+      const eventLimit = parseInt(requestedEventLimit) || DEFAULT_EVENT_LIMIT;
+      // base64 decode cursor parameter if not null
+      const requestCursor = cleansedCursor
+        ? Buffer.from(cleansedCursor, "base64").toString()
+        : "";
+      let [currentPage, action, eventId] = requestCursor.split("___");
+      currentPage = parseInt(currentPage) || 1;
+      const events = await EventController.getPublicUpcomingEvents(
+        eventLimit,
+        action,
+        eventId,
+      );
+
+      if (events.length === 0) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            limit: "No public upcoming events found!",
+          },
+        });
+      }
+
+      // generate next cursors for infinite scrolling
+      const lastEventId = events[events.length - 1].eventId;
+
+      const nextCursor = Buffer.from(
+        `${currentPage + 1}___next___${lastEventId}`,
+      ).toString("base64");
+
+      // follow-up request, not first request to api route
+      if (currentPage && action && eventId) {
+        response.status(200).json({
+          status: "success",
+          data: {
+            events: events,
+            cursor: {
+              next: nextCursor,
+            },
+          },
+        });
+      } else {
+        // initial request to route
+        response.status(200).json({
+          status: "success",
+          data: {
+            events: events,
+            cursor: {
+              next: nextCursor,
+            },
+          },
+        });
+      }
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
 );
 
 router.post(
@@ -135,7 +219,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -168,7 +252,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.delete(
@@ -203,7 +287,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -231,7 +315,7 @@ router.put(
 
       const updatedEvent = await EventController.updateEvent(
         eventId,
-        validatedData
+        validatedData,
       );
 
       response.status(200).json({
@@ -249,7 +333,7 @@ router.put(
       });
       return;
     }
-  }
+  },
 );
 
 router.get(
@@ -266,9 +350,8 @@ router.get(
     }
     try {
       const { eventId } = matchedData(request);
-      const eventAttendeesData = await EventController.getEventAttendees(
-        eventId
-      );
+      const eventAttendeesData =
+        await EventController.getEventAttendees(eventId);
       response.status(200).json({
         status: "success",
         data: {
@@ -281,7 +364,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -309,7 +392,7 @@ router.get(
       //Should return a list of events from the guild that are upcoming and in ascending order
       const upcoming = await EventController.getUpcomingEvents(
         currDate,
-        guildId
+        guildId,
       );
 
       response.status(200).json({
@@ -324,7 +407,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.post(
@@ -348,7 +431,7 @@ router.post(
       const eventAttendeeData = await EventController.updateAttendeeStatus(
         eventId,
         userId,
-        "CheckedIn"
+        "CheckedIn",
       );
 
       response.status(200).json({
@@ -363,7 +446,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -403,7 +486,7 @@ router.put(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 module.exports = router;
