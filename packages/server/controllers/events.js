@@ -141,6 +141,9 @@ async function getArchivedEvents(currDate, pastDate, guildId) {
       guildId: guildId,
       AND: [{ startDate: { gte: pastDate } }, { endDate: { lte: currDate } }],
     },
+    orderBy: {
+      startDate: "desc",
+    },
   });
 
   return archivedEvents;
