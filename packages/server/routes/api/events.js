@@ -12,6 +12,7 @@ const {
 const { guildIdValidator } = require("../../validators/guilds");
 const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
+const { DateTime } = require("luxon");
 const DEFAULT_EVENT_LIMIT = 10;
 /**
  * cursor is base-64 encoded and formatted as
@@ -315,6 +316,49 @@ router.get(
         status: "success",
         data: {
           upcomingEvents: upcoming,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
+router.get(
+  "/:guildId/archived",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const currDate = DateTime.now();
+      const pastDate = currDate.plus({ months: -1 }); //Get events from within the past month
+
+      const validatedData = matchedData(request);
+      const guildId = validatedData.guildId;
+
+      const archived = await EventController.getArchivedEvents(
+        currDate.toISO(),
+        pastDate.toISO(),
+        guildId,
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          archivedEvents: archived,
         },
       });
     } catch (error) {
