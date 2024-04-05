@@ -13,6 +13,7 @@ const {
 const { guildIdValidator } = require("../../validators/guilds");
 const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
+const { DateTime } = require("luxon");
 const DEFAULT_EVENT_LIMIT = 10;
 
 /**
@@ -410,6 +411,49 @@ router.get(
   },
 );
 
+router.get(
+  "/:guildId/archived",
+  AuthController.authenticate,
+  guildIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    try {
+      const currDate = DateTime.now();
+      const pastDate = currDate.plus({ months: -1 }); //Get events from within the past month
+
+      const validatedData = matchedData(request);
+      const guildId = validatedData.guildId;
+
+      const archived = await EventController.getArchivedEvents(
+        currDate.toISO(),
+        pastDate.toISO(),
+        guildId,
+      );
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          archivedEvents: archived,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
 router.post(
   "/:eventId/check-in",
   AuthController.authenticate,
@@ -479,6 +523,39 @@ router.put(
       response.status(200).json({
         status: "success",
         data: { eventAttendee: updatedEventAttendeeStatus },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
+router.get(
+  "/:eventId/qr-code",
+  AuthController.authenticate,
+  eventIdValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+    const data = matchedData(request);
+    const eventId = data.eventId;
+    try {
+      const generatedQRURI =
+        await EventController.generateCheckInQRCode(eventId);
+      response.status(200).json({
+        status: "success",
+        data: {
+          qrCodeURI: generatedQRURI,
+        },
       });
     } catch (error) {
       response.status(500).json({
