@@ -3,6 +3,7 @@ import { View, StyleSheet, Text, Image } from "react-native";
 import PropTypes from "prop-types";
 import EventCardText from "@app/components/EventCard/EventCardText";
 import EventCardRegistration from "@app/components/EventCard/EventCardRegistration";
+import AddToCalendarButton from "@app/components/EventCard/AddToCalendarButton";
 import { useEventContext } from "@app/utils/EventContext";
 
 const DARK_GRAY = "#2C2C2C";
@@ -44,6 +45,7 @@ function EventsScreen(props) {
                   previousScreen="GroupScreen"
                 />
                 <EventCardRegistration registerState={false} />
+                <AddToCalendarButton />
               </View>
             </View>
           ))}
