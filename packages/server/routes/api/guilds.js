@@ -6,6 +6,8 @@ const {
   guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
+  addGuildMemberValidator,
+  deleteGuildMemberValidator,
   updateGuildMemberRoleValidator,
 } = require("../../validators/guilds");
 const { userIdValidator } = require("../../validators/users");
@@ -13,8 +15,6 @@ const { validationResult, matchedData } = require("express-validator");
 
 const GuildController = require("../../controllers/guilds");
 const AuthController = require("../../controllers/auth");
-
-const { GuildMemberRole } = require("@prisma/client");
 
 router.get("/", AuthController.authenticate, async (request, response) => {
   const search = request.query.search;
@@ -252,6 +252,7 @@ router.post(
   AuthController.authenticate,
   guildIdValidator,
   userIdValidator,
+  addGuildMemberValidator,
   async (request, response) => {
     const result = validationResult(request);
 
@@ -267,52 +268,6 @@ router.post(
     const userId = data.userId;
 
     try {
-      const client = request.user;
-      const guildData = await GuildController.getGuild(guildId);
-      const clientData = await GuildController.getGuildMember(
-        guildId,
-        client.userId,
-      );
-
-      if (await GuildController.isGuildMember(guildId, userId)) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId: "Guild member already exists.",
-          },
-        });
-      }
-
-      if (
-        !(await GuildController.isGuildMember(guildId, client.userId)) &&
-        client.userId !== userId
-      ) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId: "Access denied. Non-members cannot add other users.",
-          },
-        });
-      }
-
-      // If invite-only guild, fail if
-      // - Non-member attempts to join the guild
-      // - unauth member attempts to add another user
-      if (guildData.isInviteOnly) {
-        if (
-          client.userId === userId ||
-          clientData.role === GuildMemberRole.Member
-        ) {
-          return response.status(403).json({
-            status: "fail",
-            data: {
-              userId:
-                "Access denied. Only authorized members may add users to an invite-only guild.",
-            },
-          });
-        }
-      }
-
       return response.status(200).json({
         status: "success",
         data: {
@@ -351,47 +306,6 @@ router.put(
     const role = request.body.role;
 
     try {
-      const client = request.user;
-      const clientData = await GuildController.getGuildMember(
-        guildId,
-        client.userId,
-      );
-
-      if (!(await GuildController.isGuildMember(guildId, userId))) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId: "Guild member does not exist.",
-          },
-        });
-      }
-
-      if (!clientData || clientData.role !== GuildMemberRole.Owner) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId: "Access denied. Only the guild owner can edit roles.",
-          },
-        });
-      }
-
-      if (client.userId === userId) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId: "The guild owner cannot edit their own role.",
-          },
-        });
-      }
-
-      if (role === GuildMemberRole.Owner) {
-        await GuildController.updateGuildMemberRole(
-          guildId,
-          client.userId,
-          GuildMemberRole.Member,
-        );
-      }
-
       return response.status(200).json({
         status: "success",
         data: {
@@ -417,6 +331,7 @@ router.delete(
   AuthController.authenticate,
   guildIdValidator,
   userIdValidator,
+  deleteGuildMemberValidator,
   async (request, response) => {
     const result = validationResult(request);
 
@@ -432,39 +347,6 @@ router.delete(
     const userId = data.userId;
 
     try {
-      // If member does not exist, fail
-      if (!(await GuildController.isGuildMember(guildId, userId))) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId: "Guild member does not exist.",
-          },
-        });
-      }
-
-      // Get client and user data
-      const client = request.user;
-      const clientData = await GuildController.getGuildMember(
-        guildId,
-        client.userId,
-      );
-      const userData = await GuildController.getGuildMember(guildId, userId);
-
-      // Not auth if client is member or has a lower role than the added user, fail
-      if (
-        !clientData ||
-        clientData.role === GuildMemberRole.Member ||
-        userData.role >= clientData.role
-      ) {
-        return response.status(403).json({
-          status: "fail",
-          data: {
-            userId:
-              "Access denied. User is not authorized to perform this function.",
-          },
-        });
-      }
-
       return response.status(200).json({
         status: "success",
         data: {

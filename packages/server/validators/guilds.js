@@ -2,6 +2,7 @@ const { param, body } = require("express-validator");
 
 const GuildController = require("../controllers/guilds");
 const { s3ImagesUrlRegex } = require("../utils/s3");
+const { GuildMemberRole } = require("@prisma/client");
 
 const guildIdValidator = [
   // Guild ID & Existing Guild Checks
@@ -223,6 +224,72 @@ const updateGuildValidator = [
     .withMessage("Invite mode must be set to true or false."),
 ];
 
+const addGuildMemberValidator = [
+  param("guildId", "userId").custom(async (_, { req }) => {
+    const { guildId, userId } = req.params;
+    const client = req.user;
+
+    const guildData = await GuildController.getGuild(guildId);
+    const clientData = await GuildController.getGuildMember(
+      guildId,
+      client.userId,
+    );
+
+    if (
+      !(await GuildController.isGuildMember(guildId, client.userId)) &&
+      client.userId !== userId
+    ) {
+      throw new Error("Access denied. Non-members cannot add other users.");
+    }
+
+    if (await GuildController.isGuildMember(guildId, userId)) {
+      throw new Error("Guild member already exists.");
+    }
+
+    // In a invite-only guild, fail if
+    // - non-member attempts to join the guild
+    // - unauth member attempts to add another user
+    if (guildData.isInviteOnly) {
+      if (
+        client.userId === userId ||
+        clientData.role === GuildMemberRole.Member
+      ) {
+        throw new Error(
+          "Access denied. Only authorized members may add users to an invite-only guild.",
+        );
+      }
+    }
+  }),
+];
+
+const deleteGuildMemberValidator = [
+  param("guildId", "userId").custom(async (_, { req }) => {
+    const { guildId, userId } = req.params;
+
+    if (!(await GuildController.isGuildMember(guildId, userId))) {
+      throw new Error("Guild member does not exist.");
+    }
+
+    const client = req.user;
+    const clientData = await GuildController.getGuildMember(
+      guildId,
+      client.userId,
+    );
+    const userData = await GuildController.getGuildMember(guildId, userId);
+
+    // Not auth if client is member or has an equal/lower role than the added user
+    if (
+      !clientData ||
+      clientData.role === GuildMemberRole.Member ||
+      userData.role >= clientData.role
+    ) {
+      throw new Error(
+        "Access denied. User is not authorized to perform this function.",
+      );
+    }
+  }),
+];
+
 const updateGuildMemberRoleValidator = [
   body("role", "Invalid Role.")
     .trim()
@@ -231,11 +298,39 @@ const updateGuildMemberRoleValidator = [
     .blacklist("<>")
     .matches(/^(?:Member|Officer|Owner)$/)
     .withMessage("Invalid role. Allowed values are: Member, Officer, or Owner"),
+  param("guildId", "userId").custom(async (_, { req }) => {
+    const { guildId, userId } = req.params;
+    const role = req.body.role;
+    const client = req.user;
+    const clientData = await GuildController.getGuildMember(
+      guildId,
+      client.userId,
+    );
+
+    if (!clientData || clientData.role !== GuildMemberRole.Owner) {
+      throw new Error("Access denied. Only the guild owner can edit roles.");
+    }
+    if (!(await GuildController.isGuildMember(guildId, userId))) {
+      throw new Error("Guild member does not exist.");
+    }
+    if (client.userId === userId) {
+      throw new Error("The guild owner cannot edit their own role.");
+    }
+    if (role === GuildMemberRole.Owner) {
+      await GuildController.updateGuildMemberRole(
+        guildId,
+        client.userId,
+        GuildMemberRole.Member,
+      );
+    }
+  }),
 ];
 
 module.exports = {
   guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
+  addGuildMemberValidator,
+  deleteGuildMemberValidator,
   updateGuildMemberRoleValidator,
 };
