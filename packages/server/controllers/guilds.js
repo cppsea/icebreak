@@ -72,7 +72,6 @@ async function addGuildMember(guildId, userId) {
   });
 }
 
-// Returns a record containing the userId, guildId, points, role, firstName, lastName, avatar
 async function getGuildMember(guildId, userId) {
   const getMember = await prisma.guildMembers.findUnique({
     where: {
@@ -93,28 +92,19 @@ async function getGuildMember(guildId, userId) {
   });
 
   if (getMember) {
-    // temp for functionality, replace later
-    const flattenedData = Object.entries(getMember)
-      .flatMap(([key, value]) => {
-        if (
-          typeof value === "object" &&
+    const flattenedData = (obj) =>
+      Object.entries(obj).reduce((acc, [key, value]) => {
+        return {
+          ...acc,
+          ...(typeof value === "object" &&
           value !== null &&
           !Array.isArray(value)
-        ) {
-          return Object.entries(value).map(([subKey, subValue]) => [
-            subKey,
-            subValue,
-          ]);
-        } else {
-          return [[key, value]];
-        }
-      })
-      .reduce((acc, [key, value]) => {
-        acc[key] = value;
-        return acc;
+            ? flattenedData(value)
+            : { [key]: value }),
+        };
       }, {});
 
-    return flattenedData;
+    return flattenedData(getMember);
   }
   return getMember;
 }
