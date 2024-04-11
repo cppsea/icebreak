@@ -252,21 +252,14 @@ const fetchPublicUpcomingEventsValidator = [
     .isInt()
     .withMessage("Limit must be an integer value!"),
 
-  param("cursor", "Invalid cursor!")
+  body("cursor", "Invalid cursor!")
+    .optional()
     .trim()
-    .custom((value) => {
-      // custom logic to allow empty cursor input because .optional doesn't work here, also using a regex cause the isbase64() doesn't let ours pass for some reason.
-      if (
-        value === ":cursor" ||
-        /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/.test(
-          value,
-        )
-      ) {
-        return true; // Return true if the value is either ':cursor' or a valid Base64 string
-      }
-      return false; // Return false if the value is not ':cursor' and not a valid Base64 string
-    })
-    .withMessage("Cursor must be BASE64 Encoded!"),
+    .isBase64()
+    .withMessage("Cursor must be BASE64 Encoded!")
+    .customSanitizer((value) =>
+      value ? Buffer.from(value, "base64").toString() : " ",
+    ),
 ];
 
 module.exports = {

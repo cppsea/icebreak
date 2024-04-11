@@ -47,49 +47,45 @@ async function getEvents(limit, action, eventId) {
   return events;
 }
 
-async function getPublicUpcomingEvents(limit, action, eventId) {
+async function getPublicUpcomingEvents(limit, eventId) {
   let events;
 
-  switch (action) {
-    case "next":
-      events = await prisma.events.findMany({
-        take: limit,
-        skip: 1,
-        cursor: {
-          eventId: eventId,
+  if (eventId) {
+    events = await prisma.events.findMany({
+      take: limit,
+      skip: 1,
+      cursor: {
+        eventId: eventId,
+      },
+      orderBy: {
+        startDate: "asc",
+      },
+      where: {
+        guilds: {
+          isInviteOnly: false,
         },
-        orderBy: {
-          eventId: "asc",
+        startDate: {
+          gt: new Date(),
         },
-        where: {
-          guilds: {
-            isInviteOnly: false,
-          },
-          startDate: {
-            gt: new Date(),
-          },
+      },
+    });
+  } else {
+    events = await prisma.events.findMany({
+      take: limit,
+      skip: 1,
+      orderBy: {
+        startDate: "asc",
+      },
+      where: {
+        guilds: {
+          isInviteOnly: false,
         },
-      });
-      break;
-    // first request made for first page, cursor is null
-    default:
-      events = await prisma.events.findMany({
-        take: limit,
-        orderBy: {
-          eventId: "asc",
+        startDate: {
+          gt: new Date(),
         },
-        where: {
-          guilds: {
-            isInviteOnly: false,
-          },
-          startDate: {
-            gt: new Date(),
-          },
-        },
-      });
-      break;
+      },
+    });
   }
-
   return events;
 }
 

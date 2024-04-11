@@ -104,7 +104,7 @@ router.get(
 );
 
 router.get(
-  "/public/upcoming/:cursor?",
+  "/public/upcoming?",
   AuthController.authenticate,
   fetchPublicUpcomingEventsValidator,
   async (request, response) => {
@@ -119,21 +119,13 @@ router.get(
     }
 
     const data = matchedData(request);
-
     const requestedEventLimit = data.limit;
-    const cleansedCursor = data.cursor;
+    const eventId = data.cursor;
 
     try {
       const eventLimit = parseInt(requestedEventLimit) || DEFAULT_EVENT_LIMIT;
-      // base64 decode cursor parameter if not null
-      const requestCursor = cleansedCursor
-        ? Buffer.from(cleansedCursor, "base64").toString()
-        : "";
-      let [currentPage, action, eventId] = requestCursor.split("___");
-      currentPage = parseInt(currentPage) || 1;
       const events = await EventController.getPublicUpcomingEvents(
         eventLimit,
-        action,
         eventId,
       );
 
@@ -146,36 +138,19 @@ router.get(
         });
       }
 
-      // generate next cursors for infinite scrolling
+      // generate next cursor for infinite scrolling
       const lastEventId = events[events.length - 1].eventId;
+      const nextCursor = Buffer.from(lastEventId).toString("base64");
 
-      const nextCursor = Buffer.from(
-        `${currentPage + 1}___next___${lastEventId}`,
-      ).toString("base64");
-
-      // follow-up request, not first request to api route
-      if (currentPage && action && eventId) {
-        response.status(200).json({
-          status: "success",
-          data: {
-            events: events,
-            cursor: {
-              next: nextCursor,
-            },
+      response.status(200).json({
+        status: "success",
+        data: {
+          events: events,
+          cursor: {
+            next: nextCursor,
           },
-        });
-      } else {
-        // initial request to route
-        response.status(200).json({
-          status: "success",
-          data: {
-            events: events,
-            cursor: {
-              next: nextCursor,
-            },
-          },
-        });
-      }
+        },
+      });
     } catch (error) {
       response.status(500).json({
         status: "error",

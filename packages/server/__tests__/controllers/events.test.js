@@ -23,18 +23,17 @@ describe("getPublicUpcomingEvents Unit Tests", () => {
 
   test("should fetch public upcoming events when action is 'next'", async () => {
     const limit = 10;
-    const action = "next";
     const eventId = "mockEventID";
 
     prismaMock.events.findMany.mockResolvedValue(testEvents);
 
-    const result = await getPublicUpcomingEvents(limit, action, eventId);
+    const result = await getPublicUpcomingEvents(limit, eventId);
 
     expect(prismaMock.events.findMany).toHaveBeenCalledWith({
       take: limit,
       skip: 1,
       cursor: { eventId: eventId },
-      orderBy: { eventId: "asc" },
+      orderBy: { startDate: "asc" },
       where: {
         guilds: { isInviteOnly: false },
         startDate: { gt: expect.any(Date) },
@@ -46,16 +45,15 @@ describe("getPublicUpcomingEvents Unit Tests", () => {
 
   test("should fetch public upcoming events when no action is provided", async () => {
     const limit = 10;
-    const action = undefined;
     const eventId = undefined;
 
     prismaMock.events.findMany.mockResolvedValue(testEvents);
 
-    const result = await getPublicUpcomingEvents(limit, action, eventId);
+    const result = await getPublicUpcomingEvents(limit, eventId);
 
     expect(prismaMock.events.findMany).toHaveBeenCalledWith({
       take: limit,
-      orderBy: { eventId: "asc" },
+      orderBy: { startDate: "asc" },
       where: {
         guilds: { isInviteOnly: false },
         startDate: { gt: expect.any(Date) },
