@@ -8,12 +8,14 @@ const {
   eventIdValidator,
   checkInTimeValidator,
   attendeeStatusValidator,
+  fetchPublicUpcomingEventsValidator,
 } = require("../../validators/events");
 const { guildIdValidator } = require("../../validators/guilds");
 const { userIdBodyValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 const { DateTime } = require("luxon");
 const DEFAULT_EVENT_LIMIT = 10;
+
 /**
  * cursor is base-64 encoded and formatted as
  * current page___(prev or next)___event_id reference,
@@ -92,6 +94,63 @@ router.get(
           },
         });
       }
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
+router.get(
+  "/public/upcoming?",
+  AuthController.authenticate,
+  fetchPublicUpcomingEventsValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+      return;
+    }
+
+    const data = matchedData(request);
+    const requestedEventLimit = data.limit;
+    const eventId = data.cursor;
+
+    try {
+      const eventLimit = parseInt(requestedEventLimit) || DEFAULT_EVENT_LIMIT;
+      const events = await EventController.getPublicUpcomingEvents(
+        eventLimit,
+        eventId,
+      );
+
+      if (events.length === 0) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            limit: "No public upcoming events found!",
+          },
+        });
+      }
+
+      // generate next cursor for infinite scrolling
+      const lastEventId = events[events.length - 1].eventId;
+      const nextCursor = Buffer.from(lastEventId).toString("base64");
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          events: events,
+          cursor: {
+            next: nextCursor,
+          },
+        },
+      });
     } catch (error) {
       response.status(500).json({
         status: "error",

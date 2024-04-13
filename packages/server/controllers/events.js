@@ -47,6 +47,48 @@ async function getEvents(limit, action, eventId) {
   return events;
 }
 
+async function getPublicUpcomingEvents(limit, eventId) {
+  let events;
+
+  if (eventId) {
+    events = await prisma.events.findMany({
+      take: limit,
+      skip: 1,
+      cursor: {
+        eventId: eventId,
+      },
+      orderBy: {
+        startDate: "asc",
+      },
+      where: {
+        guilds: {
+          isInviteOnly: false,
+        },
+        startDate: {
+          gt: new Date(),
+        },
+      },
+    });
+  } else {
+    events = await prisma.events.findMany({
+      take: limit,
+      skip: 1,
+      orderBy: {
+        startDate: "asc",
+      },
+      where: {
+        guilds: {
+          isInviteOnly: false,
+        },
+        startDate: {
+          gt: new Date(),
+        },
+      },
+    });
+  }
+  return events;
+}
+
 async function getPages(limit) {
   const totalEvents = await prisma.events.count();
   const totalPages = Math.ceil(totalEvents / limit);
@@ -238,5 +280,6 @@ module.exports = {
   getArchivedEvents,
   getEventAttendees,
   updateAttendeeStatus,
+  getPublicUpcomingEvents,
   generateCheckInQRCode,
 };
