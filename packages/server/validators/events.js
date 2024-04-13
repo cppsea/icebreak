@@ -259,7 +259,8 @@ const fetchPublicUpcomingEventsValidator = [
     .withMessage("Cursor must be BASE64 Encoded!")
     .customSanitizer((value) =>
       value ? Buffer.from(value, "base64").toString() : " ",
-    ),
+    )
+    .isUUID(),
 ];
 
 module.exports = {
