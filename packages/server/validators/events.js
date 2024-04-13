@@ -260,7 +260,8 @@ const fetchPublicUpcomingEventsValidator = [
     .customSanitizer((value) =>
       value ? Buffer.from(value, "base64").toString() : " ",
     )
-    .isUUID(),
+    .isUUID()
+    .withMessage("Must be UUID!"),
 ];
 
 module.exports = {
