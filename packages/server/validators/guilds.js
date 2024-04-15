@@ -298,7 +298,7 @@ const updateGuildMemberRoleValidator = [
     .blacklist("<>")
     .matches(/^(?:Member|Officer|Owner)$/)
     .withMessage("Invalid role. Allowed values are: Member, Officer, or Owner"),
-  param("guildId", "userId").custom(async (_, { req }) => {
+  param(["guildId", "userId"]).custom(async (_, { req }) => {
     const { guildId, userId } = req.params;
     const role = req.body.role;
     const client = req.user;
