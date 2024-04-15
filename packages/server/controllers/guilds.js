@@ -1,5 +1,6 @@
 const { GuildMemberRole } = require("@prisma/client");
 const prisma = require("../prisma/prisma");
+const { flatten } = require("../utils/flattener");
 const MINIMUM_SIMILARITY = 0.3;
 
 async function getAllGuilds() {
@@ -91,22 +92,7 @@ async function getGuildMember(guildId, userId) {
     },
   });
 
-  if (getMember) {
-    const flattenedData = (obj) =>
-      Object.entries(obj).reduce((acc, [key, value]) => {
-        return {
-          ...acc,
-          ...(typeof value === "object" &&
-          value !== null &&
-          !Array.isArray(value)
-            ? flattenedData(value)
-            : { [key]: value }),
-        };
-      }, {});
-
-    return flattenedData(getMember);
-  }
-  return getMember;
+  return getMember ? flatten(getMember) : getMember;
 }
 
 async function getAllGuildMembers(guildId) {
