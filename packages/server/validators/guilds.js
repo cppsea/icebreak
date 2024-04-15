@@ -225,7 +225,7 @@ const updateGuildValidator = [
 ];
 
 const addGuildMemberValidator = [
-  param("guildId", "userId").custom(async (_, { req }) => {
+  param(["guildId", "userId"]).custom(async (_, { req }) => {
     const { guildId, userId } = req.params;
     const client = req.user;
 
@@ -263,7 +263,7 @@ const addGuildMemberValidator = [
 ];
 
 const deleteGuildMemberValidator = [
-  param("guildId", "userId").custom(async (_, { req }) => {
+  param(["guildId", "userId"]).custom(async (_, { req }) => {
     const { guildId, userId } = req.params;
 
     if (!(await GuildController.isGuildMember(guildId, userId))) {

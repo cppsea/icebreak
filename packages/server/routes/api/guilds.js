@@ -285,7 +285,7 @@ router.post(
 
 // Update guild member's role
 router.put(
-  "/:guildId/members/:userId/roles",
+  "/:guildId/members/:userId/role",
   AuthController.authenticate,
   guildIdValidator,
   userIdValidator,
@@ -303,7 +303,7 @@ router.put(
     const data = matchedData(request);
     const guildId = data.guildId;
     const userId = data.userId;
-    const role = request.body.role;
+    const role = data.role;
 
     try {
       return response.status(200).json({
