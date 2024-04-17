@@ -225,7 +225,7 @@ const updateGuildValidator = [
 ];
 
 const addGuildMemberValidator = [
-  param(["guildId", "userId"]).custom(async (_, { req }) => {
+  param("userId").custom(async (_, { req }) => {
     const { guildId, userId } = req.params;
     const client = req.user;
 
@@ -263,7 +263,7 @@ const addGuildMemberValidator = [
 ];
 
 const deleteGuildMemberValidator = [
-  param(["guildId", "userId"]).custom(async (_, { req }) => {
+  param("userId").custom(async (_, { req }) => {
     const { guildId, userId } = req.params;
 
     if (!(await GuildController.isGuildMember(guildId, userId))) {
@@ -298,7 +298,7 @@ const updateGuildMemberRoleValidator = [
     .blacklist("<>")
     .matches(/^(?:Member|Officer|Owner)$/)
     .withMessage("Invalid role. Allowed values are: Member, Officer, or Owner"),
-  param(["guildId", "userId"]).custom(async (_, { req }) => {
+  param("userId").custom(async (_, { req }) => {
     const { guildId, userId } = req.params;
     const role = req.body.role;
     const client = req.user;
