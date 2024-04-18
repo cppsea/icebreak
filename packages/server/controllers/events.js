@@ -212,17 +212,21 @@ async function getUserEvents(currentDate, userId) {
       eventAttendees: {
         some: {
           userId: userId,
-          status: {
-            in: ["Interested", "Attending"],
-          },
+          status: { in: ["Interested", "Attending"] },
         },
       },
       startDate: { gte: currentDate },
     },
-    orderBy: {
-      startDate: "asc",
+    select: {
+      eventId: true,
+      startDate: true,
+      eventAttendees: {
+        select: { status: true },
+        where: { userId: userId },
+      },
     },
   });
+
   return userEvents;
 }
 
