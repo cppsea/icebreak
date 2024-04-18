@@ -409,7 +409,7 @@ router.put(
 );
 
 router.get(
-  "/events/:userId/upcoming",
+  "/:userId/events",
   AuthController.authenticate,
   userIdValidator,
   async (request, response) => {
