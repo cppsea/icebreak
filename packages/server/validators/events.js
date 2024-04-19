@@ -1,4 +1,4 @@
-const { param, body } = require("express-validator");
+const { param, body, query } = require("express-validator");
 
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
@@ -202,7 +202,7 @@ const attendeeStatusValidator = [
     .withMessage("status cannot be null or empty")
     .matches(/^(NotInterested|Interested|Attending)$/)
     .withMessage(
-      "Invalid status value. Allowed values are: NotInterested, Interested, Attending"
+      "Invalid status value. Allowed values are: NotInterested, Interested, Attending",
     ),
 ];
 
@@ -220,7 +220,7 @@ const checkInTimeValidator = [
       const event = await EventController.getEvent(eventId);
       const isMember = await GuildController.isGuildMember(
         event.guildId,
-        userId
+        userId,
       );
       if (!isMember) {
         throw new Error("User is not a member of the guild.");
@@ -244,10 +244,31 @@ const checkInTimeValidator = [
     }),
 ];
 
+const fetchPublicUpcomingEventsValidator = [
+  query("limit")
+    .optional()
+    .trim()
+    .blacklist("<>")
+    .isInt()
+    .withMessage("Limit must be an integer value!"),
+
+  body("cursor", "Invalid cursor!")
+    .optional()
+    .trim()
+    .isBase64()
+    .withMessage("Cursor must be BASE64 Encoded!")
+    .customSanitizer((value) =>
+      value ? Buffer.from(value, "base64").toString() : " ",
+    )
+    .isUUID()
+    .withMessage("Must be UUID!"),
+];
+
 module.exports = {
   createEventValidator,
   updateEventValidator,
   eventIdValidator,
   attendeeStatusValidator,
   checkInTimeValidator,
+  fetchPublicUpcomingEventsValidator,
 };
