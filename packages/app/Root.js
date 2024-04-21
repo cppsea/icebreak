@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import { UserProvider, useUserContext } from "@app/utils/UserContext";
 import { getUserInfo } from "@app/utils/datalayer";
@@ -117,11 +118,14 @@ function App() {
 
 function Root() {
   return (
-    <UserProvider>
-      <NavigationContainer>
-        <App />
-      </NavigationContainer>
-    </UserProvider>
+    // eslint-disable-next-line react-native/no-inline-styles
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <UserProvider>
+        <NavigationContainer>
+          <App />
+        </NavigationContainer>
+      </UserProvider>
+    </GestureHandlerRootView>
   );
 }
 

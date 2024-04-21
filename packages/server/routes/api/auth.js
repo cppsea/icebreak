@@ -2,10 +2,22 @@ const express = require("express");
 const router = express.Router();
 const token = require("../../utils/token");
 const bcrypt = require("bcrypt");
+const uuid = require("uuid");
+
+const {
+  userEmailValidator,
+  passwordResetValidator,
+} = require("../../validators/auth");
+const { validationResult, matchedData } = require("express-validator");
 
 const AuthController = require("../../controllers/auth");
 const UserController = require("../../controllers/users");
-const { checkInvalidToken, addToTokenBlacklist } = require("../../utils/redis");
+const TokenGenerator = require("../../utils/token");
+const {
+  checkInvalidToken,
+  addToTokenBlacklist,
+  addToPasswordResetTokenBlacklist,
+} = require("../../utils/redis");
 
 router.get("/user", AuthController.authenticate, (request, response) => {
   const accessToken = token.generateAccessToken(request.user);
@@ -282,5 +294,127 @@ router.post("/token/revoke", async (request, response) => {
     });
   }
 });
+
+router.post(
+  "/forgot-password",
+  userEmailValidator,
+  async (request, response) => {
+    // Express validators for email checks
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+
+    try {
+      const email = data.email;
+
+      // Grab the userID associated with the provided email.
+      const userId = await UserController.getUserIdByEmail(email);
+
+      // Generate the JWT password reset token
+      const passwordResetToken =
+        TokenGenerator.generateResetPasswordToken(userId);
+      if (!passwordResetToken) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Could not generate a token from the provided userID.",
+          },
+        });
+      }
+
+      // Send the reset link to the user's email.
+      const sendEmail = await AuthController.sendPasswordResetEmail(
+        email,
+        passwordResetToken
+      );
+      if (sendEmail === null) {
+        return response.status(400).json({
+          status: "fail",
+          data: {
+            message: "Failed to send reset email.",
+          },
+        });
+      }
+
+      response.status(200).json({
+        status: "success",
+        data: {
+          message:
+            "Sucessfully sent email! Check your inbox to reset your password.",
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
+
+router.post(
+  "/password/reset",
+  passwordResetValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+
+    try {
+      const token = data.token;
+      const password = data.password;
+
+      // Verify if the JWT token is valid, extract userID from if it is.
+      const { userId } = TokenGenerator.verifyPasswordResetToken(token);
+      if (!userId || !uuid.validate(userId)) {
+        return response.status(400).json({
+          status: "fail",
+          message: "Invalid user ID was associated with the provided token!",
+        });
+      }
+
+      // Reset the password using the userID and desired new password.
+      await AuthController.resetPassword(userId, password);
+
+      // Add the token to the blacklist once password reset is successful.
+      await addToPasswordResetTokenBlacklist(token);
+
+      // Send a confirmation email to the user informing them that their pasword has been changed.
+      const email = await UserController.getUserEmail(userId);
+      const emailConfirmation =
+        await AuthController.sendPasswordResetConfirmationEmail(email);
+      if (emailConfirmation === null) {
+        return response.status(400).json({
+          status: "fail",
+          message: "Failed to send confirmation email",
+        });
+      }
+
+      response.status(200).json({
+        status: "success",
+        data: null,
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  }
+);
 
 module.exports = router;
