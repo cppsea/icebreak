@@ -9,6 +9,7 @@ import {
   View,
   Alert,
   Image,
+  Platform,
 } from "react-native";
 import Screen from "@app/components/Screen";
 import PropTypes from "prop-types";
@@ -29,14 +30,50 @@ function EventsCreationScreen() {
   const [dateTime, setDateTime] = useState(new Date());
   const [dateTime2, setDateTime2] = useState(new Date());
   const [image, setImage] = useState(null);
+  const [showDatePicker1, setShowDatePicker1] = useState(false);
+  const [showTimePicker1, setShowTimePicker1] = useState(false);
+  const [showDatePicker2, setShowDatePicker2] = useState(false);
+  const [showTimePicker2, setShowTimePicker2] = useState(false);
+
+  const [dateDisplay1, setDateDisplay1] = useState("");
+  const [timeDisplay1, setTimeDisplay1] = useState("");
+
+  const [dateDisplay2, setDateDisplay2] = useState("");
+  const [timeDisplay2, setTimeDisplay2] = useState("");
+
+  React.useEffect(() => {
+    const formatDate = (date) => {
+      const options = { year: "numeric", month: "numeric", day: "numeric" };
+      return date.toLocaleDateString(undefined, options);
+    };
+
+    const formatTime = (date) => {
+      const options = { hour: "numeric", minute: "numeric" };
+      return date.toLocaleTimeString(undefined, options);
+    };
+
+    setDateDisplay1(formatDate(dateTime));
+    setTimeDisplay1(formatTime(dateTime));
+
+    setDateDisplay2(formatDate(dateTime2));
+    setTimeDisplay2(formatTime(dateTime2));
+  }, [dateTime, dateTime2]);
 
   const handleDateTimeChange = (event, selectedDateTime) => {
+    setShowDatePicker1(false);
+    setShowTimePicker1(false);
+    setShowDatePicker2(false);
+    setShowTimePicker2(false);
     const currentDate = selectedDateTime || dateTime;
     setDateTime(currentDate);
     console.log(JSON.stringify(dateTime));
   };
 
   const handleDateTimeChange2 = (event, selectedDateTime) => {
+    setShowDatePicker1(false);
+    setShowTimePicker1(false);
+    setShowDatePicker2(false);
+    setShowTimePicker2(false);
     const currentDate = selectedDateTime || dateTime2;
     setDateTime2(currentDate);
     console.log(JSON.stringify(dateTime2));
@@ -183,14 +220,43 @@ function EventsCreationScreen() {
             rules={{
               maxLength: 100,
             }}
-            render={() => (
-              <RNDateTimePicker
-                value={dateTime}
-                mode="datetime"
-                display="default"
-                onChange={handleDateTimeChange}
-              />
-            )}
+            render={() =>
+              Platform.OS === "ios" ? (
+                <RNDateTimePicker
+                  value={dateTime}
+                  mode="datetime"
+                  display="default"
+                  onChange={handleDateTimeChange}
+                />
+              ) : (
+                <View>
+                  <Button
+                    title={dateDisplay1}
+                    onPress={() => setShowDatePicker1(true)}
+                  />
+                  {showDatePicker1 && (
+                    <RNDateTimePicker
+                      value={dateTime}
+                      mode="date"
+                      display="default"
+                      onChange={handleDateTimeChange}
+                    />
+                  )}
+                  <Button
+                    title={timeDisplay1}
+                    onPress={() => setShowTimePicker1(true)}
+                  />
+                  {showTimePicker1 && (
+                    <RNDateTimePicker
+                      value={dateTime}
+                      mode="time"
+                      display="default"
+                      onChange={handleDateTimeChange}
+                    />
+                  )}
+                </View>
+              )
+            }
             name="startDate"
           />
 
@@ -200,14 +266,43 @@ function EventsCreationScreen() {
             rules={{
               maxLength: 100,
             }}
-            render={() => (
-              <RNDateTimePicker
-                value={dateTime2}
-                mode="datetime"
-                display="default"
-                onChange={handleDateTimeChange2}
-              />
-            )}
+            render={() =>
+              Platform.OS === "ios" ? (
+                <RNDateTimePicker
+                  value={dateTime2}
+                  mode="datetime"
+                  display="default"
+                  onChange={handleDateTimeChange2}
+                />
+              ) : (
+                <View>
+                  <Button
+                    title={dateDisplay2}
+                    onPress={() => setShowDatePicker2(true)}
+                  />
+                  {showDatePicker2 && (
+                    <RNDateTimePicker
+                      value={dateTime}
+                      mode="date"
+                      display="default"
+                      onChange={handleDateTimeChange}
+                    />
+                  )}
+                  <Button
+                    title={timeDisplay2}
+                    onPress={() => setShowTimePicker2(true)}
+                  />
+                  {showTimePicker2 && (
+                    <RNDateTimePicker
+                      value={dateTime}
+                      mode="time"
+                      display="default"
+                      onChange={handleDateTimeChange}
+                    />
+                  )}
+                </View>
+              )
+            }
             name="endDate"
           />
 
