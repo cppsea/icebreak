@@ -21,6 +21,8 @@ import axios from "axios";
 import * as SecureStore from "@app/utils/SecureStore";
 
 import { ENDPOINT } from "@app/utils/constants";
+import { ScrollView } from "react-native-reanimated/mock";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const gray = "gray";
 const guildId = "5f270196-ee82-4477-8277-8d4df5fcc864";
@@ -43,8 +45,26 @@ function EventsCreationScreen() {
 
   React.useEffect(() => {
     const formatDate = (date) => {
-      const options = { year: "numeric", month: "numeric", day: "numeric" };
-      return date.toLocaleDateString(undefined, options);
+      const months = [
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
+      ];
+
+      const month = months[date.getMonth()];
+      const day = date.getDate();
+      const year = date.getFullYear();
+
+      return `${month} ${day}, ${year}`;
     };
 
     const formatTime = (date) => {
@@ -57,7 +77,7 @@ function EventsCreationScreen() {
 
     setDateDisplay2(formatDate(dateTime2));
     setTimeDisplay2(formatTime(dateTime2));
-  }, [dateTime, dateTime2]);
+  }, [dateTime, dateTime2, timeDisplay1, timeDisplay2]);
 
   const handleDateTimeChange = (event, selectedDateTime) => {
     setShowDatePicker1(false);
@@ -174,174 +194,211 @@ function EventsCreationScreen() {
 
   return (
     <Screen>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View>
-          <Text>Event Creation Form</Text>
-
-          <Text>Title</Text>
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                multiline={true}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-            name="title"
-          />
-
-          <Text>Event Description</Text>
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                multiline={true}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-            name="description"
-          />
-
-          <Text>Start Date</Text>
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={() =>
-              Platform.OS === "ios" ? (
-                <RNDateTimePicker
-                  value={dateTime}
-                  mode="datetime"
-                  display="default"
-                  onChange={handleDateTimeChange}
-                />
-              ) : (
-                <View>
-                  <Button
-                    title={dateDisplay1}
-                    onPress={() => setShowDatePicker1(true)}
-                  />
-                  {showDatePicker1 && (
-                    <RNDateTimePicker
-                      value={dateTime}
-                      mode="date"
-                      display="default"
-                      onChange={handleDateTimeChange}
-                    />
-                  )}
-                  <Button
-                    title={timeDisplay1}
-                    onPress={() => setShowTimePicker1(true)}
-                  />
-                  {showTimePicker1 && (
-                    <RNDateTimePicker
-                      value={dateTime}
-                      mode="time"
-                      display="default"
-                      onChange={handleDateTimeChange}
-                    />
-                  )}
-                </View>
-              )
-            }
-            name="startDate"
-          />
-
-          <Text>End Date</Text>
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={() =>
-              Platform.OS === "ios" ? (
-                <RNDateTimePicker
-                  value={dateTime2}
-                  mode="datetime"
-                  display="default"
-                  onChange={handleDateTimeChange2}
-                />
-              ) : (
-                <View>
-                  <Button
-                    title={dateDisplay2}
-                    onPress={() => setShowDatePicker2(true)}
-                  />
-                  {showDatePicker2 && (
-                    <RNDateTimePicker
-                      value={dateTime}
-                      mode="date"
-                      display="default"
-                      onChange={handleDateTimeChange}
-                    />
-                  )}
-                  <Button
-                    title={timeDisplay2}
-                    onPress={() => setShowTimePicker2(true)}
-                  />
-                  {showTimePicker2 && (
-                    <RNDateTimePicker
-                      value={dateTime}
-                      mode="time"
-                      display="default"
-                      onChange={handleDateTimeChange}
-                    />
-                  )}
-                </View>
-              )
-            }
-            name="endDate"
-          />
-
-          <Text>Location</Text>
-          <Controller
-            control={control}
-            rules={{
-              maxLength: 100,
-            }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <TextInput
-                style={styles.input}
-                multiline={true}
-                onBlur={onBlur}
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-            name="location"
-          />
-
+      <ScrollView>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
           <View>
+            <View style={styles.centerView}>
+              <Text style={styles.header}>Event Creation Screen</Text>
+            </View>
+
+            <Text style={styles.header}>Title</Text>
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.centerView}>
+                  <TextInput
+                    style={styles.input}
+                    multiline={true}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                </View>
+              )}
+              name="title"
+            />
+
             <Text style={styles.header}>
-              <Text>Thumbnail</Text>
+              <Text>Event Description</Text>
             </Text>
-            <View style={styles.imageSelectorContainer}>
-              <Image
-                source={{ uri: `data:image/jpeg;base64,${image}` }}
-                style={styles.thumbnailDisplay}
-              />
-              <View style={styles.imageSelectorBtnContainer}>
-                <Button title="Select thumbnail" onPress={selectImage} />
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.centerView}>
+                  <TextInput
+                    style={styles.input}
+                    multiline={true}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                </View>
+              )}
+              name="description"
+            />
+
+            <Text style={styles.header}>
+              <Text>Start Date</Text>
+            </Text>
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={() =>
+                Platform.OS === "ios" ? (
+                  <View style={styles.centerView}>
+                    <RNDateTimePicker
+                      value={dateTime}
+                      mode="datetime"
+                      display="default"
+                      onChange={handleDateTimeChange}
+                    />
+                  </View>
+                ) : (
+                  <View style={styles.androidAlignView}>
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => setShowDatePicker1(true)}>
+                      <Text style={styles.androidButtonText}>
+                        {dateDisplay1}
+                      </Text>
+                    </TouchableOpacity>
+                    {showDatePicker1 && (
+                      <RNDateTimePicker
+                        value={dateTime}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateTimeChange}
+                      />
+                    )}
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => setShowTimePicker1(true)}>
+                      <Text style={styles.androidButtonText}>
+                        {timeDisplay1}
+                      </Text>
+                    </TouchableOpacity>
+                    {showTimePicker1 && (
+                      <RNDateTimePicker
+                        value={dateTime}
+                        mode="time"
+                        display="default"
+                        onChange={handleDateTimeChange}
+                      />
+                    )}
+                  </View>
+                )
+              }
+              name="startDate"
+            />
+
+            <Text style={styles.header}>
+              <Text>End Date</Text>
+            </Text>
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={() =>
+                Platform.OS === "ios" ? (
+                  <View style={styles.centerView}>
+                    <RNDateTimePicker
+                      value={dateTime2}
+                      mode="datetime"
+                      display="default"
+                      onChange={handleDateTimeChange2}
+                    />
+                  </View>
+                ) : (
+                  <View style={styles.androidAlignView}>
+                    <TouchableOpacity
+                      style={styles.button}
+                      title={dateDisplay2}
+                      onPress={() => setShowDatePicker2(true)}>
+                      <Text style={styles.androidButtonText}>
+                        {dateDisplay2}
+                      </Text>
+                    </TouchableOpacity>
+                    {showDatePicker2 && (
+                      <RNDateTimePicker
+                        value={dateTime2}
+                        mode="date"
+                        display="default"
+                        onChange={handleDateTimeChange2}
+                      />
+                    )}
+                    <TouchableOpacity
+                      style={styles.button}
+                      onPress={() => setShowTimePicker2(true)}>
+                      <Text style={styles.androidButtonText}>
+                        {timeDisplay2}
+                      </Text>
+                    </TouchableOpacity>
+                    {showTimePicker2 && (
+                      <RNDateTimePicker
+                        value={dateTime2}
+                        mode="time"
+                        display="default"
+                        onChange={handleDateTimeChange2}
+                      />
+                    )}
+                  </View>
+                )
+              }
+              name="endDate"
+            />
+
+            <Text style={styles.header}>
+              <Text>Location</Text>
+            </Text>
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View style={styles.centerView}>
+                  <TextInput
+                    style={styles.input}
+                    multiline={true}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                </View>
+              )}
+              name="location"
+            />
+
+            <View>
+              <Text style={styles.header}>
+                <Text>Thumbnail</Text>
+              </Text>
+              <View style={styles.centerView}>
+                <Image
+                  source={{ uri: `data:image/jpeg;base64,${image}` }}
+                  style={styles.thumbnailDisplay}
+                />
+              </View>
+              <View style={styles.centerView}>
+                <TouchableOpacity style={styles.button} onPress={selectImage}>
+                  <Text>Select Thumbnail</Text>
+                </TouchableOpacity>
               </View>
             </View>
-          </View>
 
-          <Button title="Submit" onPress={handleSubmit(onSubmit)} />
-        </View>
-      </TouchableWithoutFeedback>
+            <Button title="Submit" onPress={handleSubmit(onSubmit)} />
+          </View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
     </Screen>
   );
 }
@@ -354,29 +411,40 @@ EventsCreationScreen.propTypes = {
 };
 
 const styles = StyleSheet.create({
-  imageSelectorBtnContainer: {
-    borderWidth: 1,
-    height: 50,
-    justifyContent: "center",
-    marginTop: 6,
-    textAlign: "center",
-  },
-  imageSelectorContainer: {
+  androidAlignView: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
+  },
+  button: {
+    alignItems: "center",
+    borderRadius: 5,
+    borderWidth: 1,
+    justifyContent: "center",
+    marginHorizontal: 5,
+    marginVertical: 10,
+    paddingVertical: 10,
+    width: 150,
+  },
+  centerView: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  header: {
+    fontSize: 20,
+    marginVertical: 5,
+    padding: 10,
   },
   input: {
     borderColor: gray,
     borderRadius: 10,
     borderWidth: 1,
     padding: 10,
-    width: "100%",
+    width: "90%",
   },
   thumbnailDisplay: {
-    borderRadius: 100,
     borderWidth: 1,
-    height: 100,
-    width: 100,
+    height: 130,
+    width: "80%",
   },
 });
 
