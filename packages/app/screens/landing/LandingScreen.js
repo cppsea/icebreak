@@ -203,7 +203,7 @@ function LandingScreen({ navigation, route }) {
                 fontColor="#ffffff"
                 fontWeight="bold"
                 style={[styles.loginButton, styles.component]}
-                textStyle={styles.boldText}
+                textStyle={styles.text}
               />
             </KeyboardAvoidingView>
           </TouchableWithoutFeedback>
@@ -251,7 +251,7 @@ const useStyles = () => {
       alignSelf: "flex-end",
     },
     googleButton: {
-      borderColor: theme.panelPrimary.opacity30,
+      borderColor: theme.panelPrimary.opacity10,
       borderWidth: 0.5,
       backgroundColor: theme.panelPrimary.opacity0,
       fontSize: 24,
@@ -293,7 +293,7 @@ const useStyles = () => {
       fontSize: 16,
     },
     textInput: {
-      backgroundColor: theme.panelPrimary.opacity10,
+      backgroundColor: theme.panelPrimary.opacity0,
       borderWidth: 1,
       justifyContent: "space-between",
       marginBottom: 7,
@@ -306,6 +306,7 @@ const useStyles = () => {
     },
     screen: {
       flex: 1,
+      backgroundColor: "#f4fbfc",
     },
     banner: {
       flex: 1,
