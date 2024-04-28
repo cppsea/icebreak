@@ -6,7 +6,11 @@ const {
   guildIdValidator,
   createGuildValidator,
   updateGuildValidator,
+  addGuildMemberValidator,
+  deleteGuildMemberValidator,
+  updateGuildMemberRoleValidator,
 } = require("../../validators/guilds");
+const { userIdValidator } = require("../../validators/users");
 const { validationResult, matchedData } = require("express-validator");
 
 const GuildController = require("../../controllers/guilds");
@@ -87,7 +91,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Create Guild
@@ -120,7 +124,7 @@ router.post(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Update guild by ID
@@ -156,7 +160,7 @@ router.put(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Delete guild by ID
@@ -190,7 +194,7 @@ router.delete(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.get(
@@ -226,7 +230,7 @@ router.get(
         });
       }
 
-      const guildMembers = await GuildController.getGuildMembers(guildId);
+      const guildMembers = await GuildController.getAllGuildMembers(guildId);
       response.status(200).json({
         status: "success",
         data: {
@@ -239,7 +243,126 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
+);
+
+// Add guild member
+router.post(
+  "/:guildId/members/:userId",
+  AuthController.authenticate,
+  guildIdValidator,
+  userIdValidator,
+  addGuildMemberValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const userId = data.userId;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          createdMember: await GuildController.addGuildMember(guildId, userId),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
+// Update guild member's role
+router.put(
+  "/:guildId/members/:userId/role",
+  AuthController.authenticate,
+  guildIdValidator,
+  userIdValidator,
+  updateGuildMemberRoleValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const userId = data.userId;
+    const role = data.role;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          updatedMember: await GuildController.updateGuildMemberRole(
+            guildId,
+            userId,
+            role,
+          ),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
+);
+
+// Delete guild member
+router.delete(
+  "/:guildId/members/:userId",
+  AuthController.authenticate,
+  guildIdValidator,
+  userIdValidator,
+  deleteGuildMemberValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+
+    const data = matchedData(request);
+    const guildId = data.guildId;
+    const userId = data.userId;
+
+    try {
+      return response.status(200).json({
+        status: "success",
+        data: {
+          deletedMember: await GuildController.deleteGuildMember(
+            guildId,
+            userId,
+          ),
+        },
+      });
+    } catch (error) {
+      return response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
 );
 
 router.get(
@@ -274,7 +397,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 module.exports = router;
