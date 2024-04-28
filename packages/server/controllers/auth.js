@@ -13,13 +13,13 @@ async function create(accessToken, refreshToken, profile, callback) {
     let { sub, given_name, family_name, picture, email } = profile._json;
     picture = picture.replace("=s96-c", "");
     const googleUUID = uuidv5(sub, NAMESPACE);
-    const user = await prisma.users.findUniqueOrThrow({
+    const user = await prisma.user.findUniqueOrThrow({
       where: {
         userId: googleUUID,
       },
     });
     if (!user) {
-      const newUser = await prisma.users.create({
+      const newUser = await prisma.user.create({
         data: {
           userId: googleUUID,
           email: email,
@@ -53,7 +53,7 @@ async function authenticateWithGoogle(token) {
   // completely random Type 4 UUIDs to keep UUIDs unique regardless of google or
   // local authentication
   const googleUUID = uuidv5(sub, NAMESPACE);
-  const user = await prisma.users.findUnique({
+  const user = await prisma.user.findUnique({
     where: {
       userId: googleUUID,
     },
@@ -61,7 +61,7 @@ async function authenticateWithGoogle(token) {
 
   // if the query returns a row, there's a user with the existing userId.
   if (!user) {
-    const newUser = await prisma.users.create({
+    const newUser = await prisma.user.create({
       data: {
         userId: googleUUID,
         email: email,
@@ -84,7 +84,7 @@ async function register(newUser) {
   const userId = uuidv4();
 
   // placeholder names until new user puts in their names in onboarding screen
-  await prisma.users.create({
+  return await prisma.user.create({
     data: {
       userId,
       firstName: "New",
@@ -142,7 +142,7 @@ async function deserialize(id, callback) {
   try {
     console.log("deserializeUser");
     console.log("id", id);
-    const user = await prisma.users.findUniqueOrThrow({
+    const user = await prisma.user.findUniqueOrThrow({
       where: {
         userId: id,
       },
@@ -191,7 +191,7 @@ async function authenticate(request, response, next) {
 }
 
 async function isUserEmail(email) {
-  const result = await prisma.users.findUnique({
+  const result = await prisma.user.findUnique({
     where: {
       email: email,
     },
@@ -203,7 +203,7 @@ async function isUserEmail(email) {
 }
 
 async function isGoogleAccount(userId) {
-  const result = await prisma.users.findUnique({
+  const result = await prisma.user.findUnique({
     where: {
       userId: userId,
     },
@@ -259,7 +259,7 @@ async function resetPassword(userId, password) {
   const hashedPass = await bcrypt.hash(password, salt);
 
   // Update the db with the new encryped password
-  return await prisma.users.update({
+  return await prisma.user.update({
     where: {
       userId: userId,
     },

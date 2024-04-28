@@ -10,7 +10,7 @@ async function getEvents(limit, action, eventId) {
 
   switch (action) {
     case "prev":
-      events = await prisma.events.findMany({
+      events = await prisma.event.findMany({
         take: -1 * limit,
         skip: 1, // skip cursor (TODO: check if skip 1 is needed for previous page queries)
         cursor: {
@@ -22,7 +22,7 @@ async function getEvents(limit, action, eventId) {
       });
       break;
     case "next":
-      events = await prisma.events.findMany({
+      events = await prisma.event.findMany({
         take: limit,
         skip: 1, // skip cursor
         cursor: {
@@ -35,7 +35,7 @@ async function getEvents(limit, action, eventId) {
       break;
     // first request made for first page, no action in cursor present
     default:
-      events = await prisma.events.findMany({
+      events = await prisma.event.findMany({
         take: limit,
         orderBy: {
           eventId: "asc",
@@ -51,7 +51,7 @@ async function getPublicUpcomingEvents(limit, eventId) {
   let events;
 
   if (eventId) {
-    events = await prisma.events.findMany({
+    events = await prisma.event.findMany({
       take: limit,
       skip: 1,
       cursor: {
@@ -70,7 +70,7 @@ async function getPublicUpcomingEvents(limit, eventId) {
       },
     });
   } else {
-    events = await prisma.events.findMany({
+    events = await prisma.event.findMany({
       take: limit,
       skip: 1,
       orderBy: {
@@ -90,13 +90,13 @@ async function getPublicUpcomingEvents(limit, eventId) {
 }
 
 async function getPages(limit) {
-  const totalEvents = await prisma.events.count();
+  const totalEvents = await prisma.event.count();
   const totalPages = Math.ceil(totalEvents / limit);
   return totalPages;
 }
 
 async function createEvent(eventData, guildId) {
-  const newEvent = await prisma.events.create({
+  const newEvent = await prisma.event.create({
     data: {
       guildId: guildId,
       title: eventData.title,
@@ -111,7 +111,7 @@ async function createEvent(eventData, guildId) {
 }
 
 async function getEvent(eventId) {
-  return prisma.events.findUniqueOrThrow({
+  return prisma.event.findUniqueOrThrow({
     where: {
       eventId: eventId,
     },
@@ -119,7 +119,7 @@ async function getEvent(eventId) {
 }
 
 async function deleteEvent(eventId) {
-  const deletedEvent = await prisma.events.delete({
+  const deletedEvent = await prisma.event.delete({
     where: {
       eventId: eventId,
     },
@@ -128,7 +128,7 @@ async function deleteEvent(eventId) {
 }
 
 async function updateEvent(eventId, eventData) {
-  const updateEvent = await prisma.events.update({
+  const updateEvent = await prisma.event.update({
     where: {
       eventId: eventId,
     },
@@ -165,7 +165,7 @@ async function getEventAttendees(eventId) {
 }
 
 async function getUpcomingEvents(currentDate, guildId) {
-  const upcomingEvents = await prisma.events.findMany({
+  const upcomingEvents = await prisma.event.findMany({
     where: {
       guildId: guildId,
       startDate: { gte: currentDate },
@@ -179,7 +179,7 @@ async function getUpcomingEvents(currentDate, guildId) {
 }
 
 async function getArchivedEvents(currDate, pastDate, guildId) {
-  const archivedEvents = await prisma.events.findMany({
+  const archivedEvents = await prisma.event.findMany({
     where: {
       guildId: guildId,
       AND: [{ startDate: { gte: pastDate } }, { endDate: { lte: currDate } }],
@@ -193,9 +193,9 @@ async function getArchivedEvents(currDate, pastDate, guildId) {
 }
 
 async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
-  const query = await prisma.eventAttendees.upsert({
+  const query = await prisma.eventAttendee.upsert({
     where: {
-      userId_eventId: {
+      eventId_userId: {
         userId: userId,
         eventId: eventId,
       },
@@ -218,7 +218,7 @@ async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
 }
 
 async function addCheckInPoints(eventId, userId) {
-  const event = await prisma.events.findUnique({
+  const event = await prisma.event.findUnique({
     where: {
       eventId: eventId,
     },
