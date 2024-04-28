@@ -1,12 +1,13 @@
 const prisma = require("./prisma");
 const AuthController = require("../controllers/auth");
 const GuildController = require("../controllers/guilds");
+const EventController = require("../controllers/events");
 
 /**
  * Seed script for our PostgreSQL database through Prisma ORM.
- * Whenever we make new breaking changes to our database schema,
+ * Whenever we make new, breaking changes to our database schema,
  * data is lost and Prisma runs this seed script to re-populate the
- * database.
+ * database for convenience for development and testing.
  *
  * Read more here:
  *   https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding
@@ -47,9 +48,19 @@ async function main() {
     isInviteOnly: true,
   };
 
-  await GuildController.createGuild(sea);
-  await GuildController.createGuild(swift);
+  const seaGuild = await GuildController.createGuild(sea);
+  const swiftGuild = await GuildController.createGuild(swift);
   await GuildController.createGuild(css);
+
+  await EventController.createEvent({
+    guildId: swiftGuild.guildId,
+    title: "Intro to Cybersecurity",
+  });
+
+  await EventController.createEvent({
+    guildId: seaGuild.guildId,
+    title: "Workshop: The Software Development Lifecycle",
+  });
 }
 
 main()
