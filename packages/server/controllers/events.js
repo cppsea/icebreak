@@ -1,4 +1,5 @@
 const prisma = require("../prisma/prisma");
+var QRCode = require("qrcode");
 
 async function getAllEvents() {
   return prisma.event.findMany();
@@ -43,6 +44,48 @@ async function getEvents(limit, action, eventId) {
       break;
   }
 
+  return events;
+}
+
+async function getPublicUpcomingEvents(limit, eventId) {
+  let events;
+
+  if (eventId) {
+    events = await prisma.events.findMany({
+      take: limit,
+      skip: 1,
+      cursor: {
+        eventId: eventId,
+      },
+      orderBy: {
+        startDate: "asc",
+      },
+      where: {
+        guilds: {
+          isInviteOnly: false,
+        },
+        startDate: {
+          gt: new Date(),
+        },
+      },
+    });
+  } else {
+    events = await prisma.events.findMany({
+      take: limit,
+      skip: 1,
+      orderBy: {
+        startDate: "asc",
+      },
+      where: {
+        guilds: {
+          isInviteOnly: false,
+        },
+        startDate: {
+          gt: new Date(),
+        },
+      },
+    });
+  }
   return events;
 }
 
@@ -135,6 +178,20 @@ async function getUpcomingEvents(currentDate, guildId) {
   return upcomingEvents;
 }
 
+async function getArchivedEvents(currDate, pastDate, guildId) {
+  const archivedEvents = await prisma.events.findMany({
+    where: {
+      guildId: guildId,
+      AND: [{ startDate: { gte: pastDate } }, { endDate: { lte: currDate } }],
+    },
+    orderBy: {
+      startDate: "desc",
+    },
+  });
+
+  return archivedEvents;
+}
+
 async function updateAttendeeStatus(eventId, userId, attendeeStatus) {
   const query = await prisma.eventAttendees.upsert({
     where: {
@@ -206,6 +263,11 @@ async function addCheckInPoints(eventId, userId) {
   });
 }
 
+async function generateCheckInQRCode(eventId) {
+  const text = `icebreak://qr-code-check-in?eventId=${eventId}`;
+  return QRCode.toDataURL(text);
+}
+
 module.exports = {
   getEvent,
   getEvents,
@@ -215,6 +277,9 @@ module.exports = {
   updateEvent,
   createEvent,
   getUpcomingEvents,
+  getArchivedEvents,
   getEventAttendees,
   updateAttendeeStatus,
+  getPublicUpcomingEvents,
+  generateCheckInQRCode,
 };
