@@ -2,6 +2,7 @@ const prisma = require("./prisma");
 const AuthController = require("../controllers/auth");
 const GuildController = require("../controllers/guilds");
 const EventController = require("../controllers/events");
+const { GuildMemberRole, EventAttendeeStatus } = require("@prisma/client");
 
 /**
  * Seed script for our PostgreSQL database through Prisma ORM.
@@ -13,12 +14,10 @@ const EventController = require("../controllers/events");
  *   https://www.prisma.io/docs/orm/prisma-migrate/workflows/seeding
  */
 async function main() {
-  const testUser = {
+  const testUser = await AuthController.register({
     email: "test@gmail.com",
     password: "test",
-  };
-
-  await AuthController.register(testUser);
+  });
 
   const sea = {
     guildId: "5f270196-ee82-4477-8277-8d4df5fcc864",
@@ -50,17 +49,43 @@ async function main() {
 
   const seaGuild = await GuildController.createGuild(sea);
   const swiftGuild = await GuildController.createGuild(swift);
-  await GuildController.createGuild(css);
+  const cssGuild = await GuildController.createGuild(css);
 
-  await EventController.createEvent({
-    guildId: swiftGuild.guildId,
-    title: "Intro to Cybersecurity",
-  });
+  await GuildController.addGuildMember(seaGuild.guildId, testUser.userId);
+  await GuildController.updateGuildMemberRole(
+    seaGuild.guildId,
+    testUser.userId,
+    GuildMemberRole.Owner,
+  );
 
-  await EventController.createEvent({
-    guildId: seaGuild.guildId,
-    title: "Workshop: The Software Development Lifecycle",
-  });
+  await GuildController.addGuildMember(cssGuild.guildId, testUser.userId);
+  await GuildController.addGuildMember(swiftGuild.guildId, testUser.userId);
+
+  const cybersecurityEvent = await EventController.createEvent(
+    {
+      title: "Intro to Cybersecurity",
+    },
+    swiftGuild.guildId,
+  );
+
+  const workshopEvent = await EventController.createEvent(
+    {
+      title: "Workshop: The Software Development Lifecycle",
+    },
+    seaGuild.guildId,
+  );
+
+  await EventController.updateAttendeeStatus(
+    cybersecurityEvent.eventId,
+    testUser.userId,
+    EventAttendeeStatus.Attending,
+  );
+
+  await EventController.updateAttendeeStatus(
+    workshopEvent.eventId,
+    testUser.userId,
+    EventAttendeeStatus.Interested,
+  );
 }
 
 main()
