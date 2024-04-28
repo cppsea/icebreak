@@ -1,12 +1,12 @@
 const prisma = require("../prisma/prisma");
 
 async function getAllUsers() {
-  const query = await prisma.users.findMany();
+  const query = await prisma.user.findMany();
   return query;
 }
 
 async function getUser(userId) {
-  const query = await prisma.users.findUnique({
+  const query = await prisma.user.findUnique({
     where: {
       userId: userId,
     },
@@ -15,7 +15,7 @@ async function getUser(userId) {
 }
 
 async function getUserEmail(userId) {
-  const query = await prisma.users.findUnique({
+  const query = await prisma.user.findUnique({
     where: {
       userId: userId,
     },
@@ -24,7 +24,7 @@ async function getUserEmail(userId) {
 }
 
 async function getUserByEmail(email) {
-  const query = await prisma.users.findUnique({
+  const query = await prisma.user.findUnique({
     where: {
       email: email,
     },
@@ -33,7 +33,7 @@ async function getUserByEmail(email) {
 }
 
 async function getUserIdByEmail(email) {
-  const query = await prisma.users.findUnique({
+  const query = await prisma.user.findUnique({
     where: {
       email: email,
     },
@@ -42,7 +42,7 @@ async function getUserIdByEmail(email) {
 }
 
 async function getGuildsForUser(userId) {
-  const userGuilds = await prisma.guildMembers.findMany({
+  const userGuilds = await prisma.guildMember.findMany({
     where: {
       userId: userId,
     },

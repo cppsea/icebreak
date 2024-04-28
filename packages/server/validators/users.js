@@ -12,6 +12,7 @@ const userIdValidator = [
     .blacklist("<>")
     .isUUID()
     .withMessage("Invalid user ID provided")
+    .bail()
     .custom(async (value) => {
       try {
         await UserController.getUser(value);
@@ -42,7 +43,7 @@ const userIdBodyValidator = [
       const event = await EventController.getEvent(eventId);
       const isMember = await GuildController.isGuildMember(
         event.guildId,
-        userId
+        userId,
       );
       if (!isMember) {
         throw new Error("User is not a member of the guild.");
@@ -84,7 +85,7 @@ const updateNewUserValidator = [
     .isIn(ALLOWED_PRONOUN)
     .withMessage(
       "pronouns must be one of the allowed values: " +
-        ALLOWED_PRONOUN.join(", ")
+        ALLOWED_PRONOUN.join(", "),
     ),
 
   // Major Check: exist, be between 1 and 255 chars, match URL regex

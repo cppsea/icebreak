@@ -7,76 +7,104 @@ datasource db {
   url      = env("DB_URL")
 }
 
-model users {
-  userId         String           @id @map("user_id") @db.Uuid
-  joinedDate     DateTime?        @map("joined_date") @db.Timestamp(6)
-  firstName      String           @map("first_name") @db.VarChar(50)
-  lastName       String           @map("last_name") @db.VarChar(50)
-  isNew          Boolean          @default(true) @map("is_new")
-  email          String           @unique @db.VarChar(255)
-  avatar         String?          @db.VarChar(255)
-  password       String?          @db.VarChar(255)
-  handler        String?          @db.VarChar(50)
+model User {
+  userId         String          @id(map: "pk_user") @default(dbgenerated("gen_random_uuid()")) @map("user_id") @db.Uuid
+  joinedDate     DateTime?       @map("joined_date") @db.Timestamp(6)
+  firstName      String          @map("first_name") @db.VarChar(50)
+  lastName       String          @map("last_name") @db.VarChar(50)
+  email          String          @db.VarChar(255)
+  avatar         String?         @db.VarChar(255)
+  password       String?         @db.VarChar(255)
+  isNew          Boolean         @default(true) @map("is_new")
+  handler        String?         @db.VarChar(50)
+  major          String?         @db.VarChar(100)
   age            Int?
-  pronouns       Pronouns?
-  major          String?          @db.VarChar(255)
-  interests      String[]         @db.VarChar(255)
-  eventAttendees eventAttendees[]
-  guildMembers   guildMembers[]
-}
-enum Pronouns {
-  HeHim
-  SheHer
-  TheyThem
+  pronouns       UserPronouns    @default(TheyThemTheir)
+  interests      String[]
+  eventAttendees EventAttendee[]
+  guildMembers   GuildMember[]
+
+  @@map("users")
 }
 
-model eventAttendees {
-  userId    String @map("user_id") @db.Uuid
-  eventId   String @map("event_id") @db.Uuid
-  events    events @relation(fields: [eventId], references: [eventId], onDelete: Cascade, onUpdate: NoAction, map: "fk_event")
-  attendees users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+model EventAttendee {
+  userId    String              @map("user_id") @db.Uuid
+  eventId   String              @map("event_id") @db.Uuid
+  status    EventAttendeeStatus @default(NotInterested)
+  events    Event               @relation(fields: [eventId], references: [eventId], onDelete: Cascade, onUpdate: NoAction, map: "fk_event")
+  attendees User                @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
-  @@id([userId, eventId])
+  @@id([eventId, userId], map: "pk_event_attendee")
   @@map("event_attendees")
 }
 
-model events {
-  eventId        String           @id(map: "pk_event") @default(dbgenerated("gen_random_uuid()")) @map("event_id") @db.Uuid
-  guildId        String           @map("guild_id") @db.Uuid
-  title          String           @db.VarChar(255)
-  description    String?          @db.VarChar(255)
-  startDate      DateTime?        @map("start_date") @db.Timestamp(6)
-  endDate        DateTime?        @map("end_date") @db.Timestamp(6)
-  location       String?          @db.VarChar(255)
-  thumbnail      String?          @db.VarChar(255)
-  eventAttendees eventAttendees[]
-  guilds         guilds           @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: Cascade, map: "fk_guild")
+model Event {
+  eventId        String          @id(map: "pk_event") @default(dbgenerated("gen_random_uuid()")) @map("event_id") @db.Uuid
+  guildId        String          @map("guild_id") @db.Uuid
+  startDate      DateTime?       @map("start_date") @db.Timestamp(6)
+  endDate        DateTime?       @map("end_date") @db.Timestamp(6)
+  location       String?         @db.VarChar(255)
+  thumbnail      String?         @db.VarChar(255)
+  title          String          @db.VarChar(255)
+  description    String?
+  eventAttendees EventAttendee[]
+  guilds         Guild           @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
+
+  @@map("events")
 }
 
-model guildMembers {
-  userId  String @map("user_id") @db.Uuid
-  guildId String @map("guild_id") @db.Uuid
-  points  Int    @db.SmallInt
-  guilds  guilds @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
-  members users  @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
+model GuildMember {
+  userId  String          @map("user_id") @db.Uuid
+  guildId String          @map("guild_id") @db.Uuid
+  points  Int             @default(0) @db.SmallInt
+  role    GuildMemberRole @default(Member)
+  guilds  Guild           @relation(fields: [guildId], references: [guildId], onDelete: Cascade, onUpdate: NoAction, map: "fk_guild")
+  members User            @relation(fields: [userId], references: [userId], onDelete: Cascade, onUpdate: NoAction, map: "fk_user")
 
   @@id([guildId, userId], map: "pk_guild_member")
   @@map("guild_members")
 }
 
-model guilds {
-  guildId      String         @id(map: "guild_pkey") @default(dbgenerated("gen_random_uuid()")) @map("guild_id") @db.Uuid
-  name         String         @db.VarChar(100)
-  handler      String         @db.VarChar(50)
+model Guild {
+  guildId      String        @id(map: "pk_guild") @default(dbgenerated("gen_random_uuid()")) @map("guild_id") @db.Uuid
+  name         String        @db.VarChar(100)
+  handler      String        @db.VarChar(50)
   description  String
-  category     String         @db.VarChar(255)
-  location     String?        @db.VarChar(255)
-  website      String?        @db.VarChar(255)
+  category     String        @db.VarChar(255)
+  location     String?       @db.VarChar(255)
+  website      String?       @db.VarChar(255)
   tags         String[]
-  banner       String?        @db.VarChar(255)
-  avatar       String?        @db.VarChar(255)
+  banner       String?       @db.VarChar(255)
+  avatar       String?       @db.VarChar(255)
   media        String[]
-  isInviteOnly Boolean        @map("invite_only")
-  events       events[]
-  members      guildMembers[]
+  isInviteOnly Boolean       @default(true) @map("invite_only")
+  events       Event[]
+  members      GuildMember[]
+
+  @@map("guilds")
+}
+
+enum EventAttendeeStatus {
+  NotInterested @map("Not Interested")
+  Interested    @map("Interested")
+  Attending     @map("Attending")
+  CheckedIn     @map("Checked In")
+
+  @@map("event_attendee_status")
+}
+
+enum GuildMemberRole {
+  Member  @map("Member")
+  Officer @map("Officer")
+  Owner   @map("Owner")
+
+  @@map("guild_member_role")
+}
+
+enum UserPronouns {
+  HeHim         @map("He/Him")
+  SheHer        @map("She/Her")
+  TheyThemTheir @map("They/Them/Their")
+
+  @@map("user_pronoun")
 }
