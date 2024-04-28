@@ -22,7 +22,7 @@ async function uploadImageInAWS(imageType, entityUUID, imageData) {
 async function getImageInDb(imageType, entityUUID) {
   switch (imageType) {
     case "user_avatar":
-      return prisma.users.findUniqueOrThrow({
+      return prisma.user.findUniqueOrThrow({
         where: {
           userId: entityUUID,
         },
@@ -31,7 +31,7 @@ async function getImageInDb(imageType, entityUUID) {
         },
       });
     case "guild_avatar":
-      return prisma.guilds.findUniqueOrThrow({
+      return prisma.guild.findUniqueOrThrow({
         where: {
           guildId: entityUUID,
         },
@@ -40,7 +40,7 @@ async function getImageInDb(imageType, entityUUID) {
         },
       });
     case "guild_banner":
-      return prisma.guilds.findUniqueOrThrow({
+      return prisma.guild.findUniqueOrThrow({
         where: {
           guildId: entityUUID,
         },
@@ -49,7 +49,7 @@ async function getImageInDb(imageType, entityUUID) {
         },
       });
     case "event_thumbnail":
-      return prisma.events.findUniqueOrThrow({
+      return prisma.event.findUniqueOrThrow({
         where: {
           eventId: entityUUID,
         },
@@ -87,7 +87,7 @@ async function updateImageInAWS(imageType, entityUUID, imageData) {
 async function updateImageInDb(imageType, entityUUID, imageUrl) {
   switch (imageType) {
     case "user_avatar":
-      await prisma.users.update({
+      await prisma.user.update({
         where: {
           userId: entityUUID,
         },
@@ -97,7 +97,7 @@ async function updateImageInDb(imageType, entityUUID, imageUrl) {
       });
       break;
     case "guild_avatar":
-      await prisma.guilds.update({
+      await prisma.guild.update({
         where: {
           guildId: entityUUID,
         },
@@ -107,7 +107,7 @@ async function updateImageInDb(imageType, entityUUID, imageUrl) {
       });
       break;
     case "guild_banner":
-      await prisma.guilds.update({
+      await prisma.guild.update({
         where: {
           guildId: entityUUID,
         },
@@ -117,7 +117,7 @@ async function updateImageInDb(imageType, entityUUID, imageUrl) {
       });
       break;
     case "event_thumbnail":
-      await prisma.events.update({
+      await prisma.event.update({
         where: {
           eventId: entityUUID,
         },
