@@ -1,4 +1,6 @@
+const { GuildMemberRole } = require("@prisma/client");
 const prisma = require("../prisma/prisma");
+const { flatten } = require("../utils/flattener");
 const MINIMUM_SIMILARITY = 0.3;
 
 async function getAllGuilds() {
@@ -60,7 +62,40 @@ async function guildExists(guildId) {
   return !!guild;
 }
 
-async function getGuildMembers(guildId) {
+async function addGuildMember(guildId, userId) {
+  return await prisma.guildMembers.create({
+    data: {
+      userId: userId,
+      guildId: guildId,
+      points: 0,
+      role: GuildMemberRole.Member,
+    },
+  });
+}
+
+async function getGuildMember(guildId, userId) {
+  const getMember = await prisma.guildMembers.findUnique({
+    where: {
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
+    },
+    include: {
+      members: {
+        select: {
+          firstName: true,
+          lastName: true,
+          avatar: true,
+        },
+      },
+    },
+  });
+
+  return getMember ? flatten(getMember) : getMember;
+}
+
+async function getAllGuildMembers(guildId) {
   const getMembers = await prisma.guildMembers.findMany({
     where: {
       guildId: guildId,
@@ -80,6 +115,31 @@ async function getGuildMembers(guildId) {
   const members = getMembers.flatMap((member) => member.members);
 
   return members;
+}
+
+async function updateGuildMemberRole(guildId, userId, role) {
+  return await prisma.guildMembers.update({
+    where: {
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
+    },
+    data: {
+      role: role,
+    },
+  });
+}
+
+async function deleteGuildMember(guildId, userId) {
+  return await prisma.guildMembers.delete({
+    where: {
+      guildId_userId: {
+        guildId: guildId,
+        userId: userId,
+      },
+    },
+  });
 }
 
 async function getLeaderboard(guildId) {
@@ -134,8 +194,12 @@ module.exports = {
   createGuild,
   updateGuild,
   deleteGuild,
-  getGuildMembers,
   guildExists,
+  addGuildMember,
+  getGuildMember,
+  getAllGuildMembers,
+  updateGuildMemberRole,
+  deleteGuildMember,
   getLeaderboard,
   isGuildMember,
 };
