@@ -117,7 +117,11 @@ function EventsCreationScreen() {
     }
   };
 
-  const { handleSubmit, control } = useForm({
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       title: "",
       description: "",
@@ -136,20 +140,15 @@ function EventsCreationScreen() {
       endDate = JSON.stringify(dateTime2).substring(1, 25);
       thumbnail = image;
 
-      console.log("title:", title);
-      console.log("description:", description);
-      console.log("startDate:", startDate);
-      console.log("endDate:", endDate);
-      console.log("location:", location);
-      console.log("thumbnail:", thumbnail);
-
       const token = await SecureStore.getValueFor("accessToken");
       const headers = { Authorization: token };
 
       const testThumbnail =
         "https://icebreak-assets.s3.us-west-1.amazonaws.com/guild_banner.5325b147-5524-4539-b652-0549e074a159.jpg";
 
-      const response = await axios.post(
+      const requestBody = thumbnail ? { jpegBase64: thumbnail } : null;
+
+      const initialEventReponse = await axios.post(
         `${ENDPOINT}/events/${guildId}`,
         {
           title: title,
@@ -161,21 +160,41 @@ function EventsCreationScreen() {
         },
         { headers },
       );
-      const eventID = JSON.stringify(response.data).substring(40, 76);
-      const { status } = response.data;
-      console.log("Status:", status);
-      console.log("Event ID:", eventID);
-
-      const response2 = await axios.post(
-        `${ENDPOINT}/media/images/${imageType}/${eventID}`,
-        {
-          jpegBase64: thumbnail,
-        },
-        { headers },
+      const eventID = JSON.stringify(initialEventReponse.data).substring(
+        40,
+        76,
       );
 
-      const { status2 } = response2.status;
-      console.log("Status:", status2);
+      axios
+        .post(`${ENDPOINT}/media/images/${imageType}/${eventID}`, requestBody, {
+          headers,
+        })
+        .then()
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      const thumbnailData = await axios.get(
+        `${ENDPOINT}/media/images/${imageType}/${eventID}`,
+      );
+
+      axios
+        .put(
+          `${ENDPOINT}/events/${eventID}`,
+          {
+            title: title,
+            description: description,
+            startDate: startDate,
+            endDate: endDate,
+            location: location,
+            thumbnail: thumbnailData.data.data.imageURL.thumbnail,
+          },
+          { headers },
+        )
+        .then()
+        .catch((error) => {
+          console.error("Error:", error);
+        });
 
       Alert.alert("Success", "Event created successfully!");
     } catch (error) {
@@ -201,12 +220,15 @@ function EventsCreationScreen() {
               <Text style={styles.header}>Event Creation Screen</Text>
             </View>
 
-            <Text style={styles.header}>Title</Text>
+            <Text style={styles.header}>
+              Title
+              <Text style={styles.important}>
+                *{errors.title && "\n"}
+                {errors.title && errors.title.message}
+              </Text>
+            </Text>
             <Controller
               control={control}
-              rules={{
-                maxLength: 100,
-              }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <View style={styles.centerView}>
                   <TextInput
@@ -219,6 +241,10 @@ function EventsCreationScreen() {
                 </View>
               )}
               name="title"
+              rules={{
+                maxLength: 100,
+                required: "Event title is required",
+              }}
             />
 
             <Text style={styles.header}>
@@ -410,6 +436,10 @@ EventsCreationScreen.propTypes = {
   previousScreen: PropTypes.string,
 };
 
+const colors = {
+  red: "red",
+};
+
 const styles = StyleSheet.create({
   androidAlignView: {
     flexDirection: "row",
@@ -433,6 +463,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginVertical: 5,
     padding: 10,
+  },
+  important: {
+    color: colors.red,
+    fontSize: 15,
   },
   input: {
     borderColor: gray,

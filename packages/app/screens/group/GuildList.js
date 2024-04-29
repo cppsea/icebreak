@@ -12,7 +12,7 @@ const shadow = "rgba(0, 0, 0, 0.25)";
 const titleColor = "rgb(51,51,51)";
 const white = "#fff";
 
-const USER_ID = "80eb49ef-ce2a-46e2-b440-911192976ac1"; // temporary userId
+const USER_ID = "a9be9311-cc8d-4b51-adca-07624bb0f09f"; // temporary userId
 
 const styles = StyleSheet.create({
   card: {
@@ -61,7 +61,7 @@ const useUserGuilds = () => {
             headers: {
               Authorization: accessToken,
             },
-          }
+          },
         );
 
         const userGuildResponse = response.data;
