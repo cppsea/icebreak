@@ -55,7 +55,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Get all guilds for a specific user
@@ -92,7 +92,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 router.put(
@@ -111,32 +111,36 @@ router.put(
     }
     const validatedData = matchedData(request);
     const { userId } = matchedData(request);
+
     try {
-      const updatedNewUser = await UserController.updateNewUser(
-        userId,
-        validatedData
-      );
-      if (validatedData.isNew) {
-        validatedData.isNew == false;
-        response.status(200).json({
-          status: "success",
-          data: {
-            updatedNewUser,
-          },
-        });
-      } else {
+      // check if user is new
+      const user = await UserController.getUser(userId);
+      if (user.isNew === false) {
         return response.status(400).json({
           status: "fail",
-          data: result.array(),
+          data: {
+            userId: "User is not new!",
+          },
         });
       }
+
+      const updatedNewUser = await UserController.updateNewUser(
+        userId,
+        validatedData,
+      );
+      response.status(200).json({
+        status: "success",
+        data: {
+          updatedNewUser,
+        },
+      });
     } catch (error) {
       response.status(500).json({
         status: "error",
         message: error.message,
       });
     }
-  }
+  },
 );
 
 module.exports = router;

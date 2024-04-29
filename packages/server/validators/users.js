@@ -3,7 +3,7 @@ const { param, body } = require("express-validator");
 const UserController = require("../controllers/users");
 const EventController = require("../controllers/events");
 const GuildController = require("../controllers/guilds");
-const ALLOWED_PRONOUN = ["he/him", "she/her", "they/them"];
+const ALLOWED_PRONOUN = ["HeHim", "SheHer", "TheyThemTheir"];
 
 const userIdValidator = [
   param("userId")
@@ -52,7 +52,7 @@ const userIdBodyValidator = [
 ];
 
 const updateNewUserValidator = [
-  // First Name Check: exist, be between 1 and 50 chars, match URL regex
+  // First Name Check: exist, be between 1 and 50 chars
   body("firstName", "Invalid firstName.")
     .exists({ checkFalsy: true })
     .withMessage("firstName can't be null or empty.")
@@ -61,43 +61,41 @@ const updateNewUserValidator = [
     .isLength({ min: 1, max: 50 })
     .withMessage("firstName length must be between 1 to 255 characters.")
     .isAlpha()
-    .withMessage("firstName should be Alphabetic characters.")
-    .withMessage("Must be an URL"),
+    .withMessage("firstName should be Alphabetic characters."),
 
-  // Last Name Check: exist, be between 1 and 50 chars, match URL regex
+  // Last Name Check: exist, be between 1 and 50 chars
   body("lastName", "Invalid lastName.")
     .exists({ checkFalsy: true })
     .withMessage("firstName can't be null or empty.")
     .blacklist("<>")
     .trim()
     .isLength({ min: 1, max: 50 })
-    .withMessage("lastName length must be between 1 to 50 characters.")
-    .withMessage("Must be an URL"),
+    .withMessage("lastName length must be between 1 to 50 characters."),
 
-  // Pronoun Check: exist, be between 1 and 255 chars
-  body("pronoun", "Invalid pronoun.")
+  // Pronoun Check: exist, be between 1 and 25 chars, and inside the allowed array.
+  body("pronouns", "Invalid pronoun.")
     .exists({ checkFalsy: true })
     .withMessage("pronoun can't be null or empty.")
     .blacklist("<>")
     .trim()
-    .isLength({ min: 1, max: 255 })
-    .withMessage("pronoun length must be between 1 to 255 characters.")
+    .isLength({ min: 1, max: 25 })
+    .withMessage("pronoun length must be between 1 to 25 characters.")
     .isIn(ALLOWED_PRONOUN)
     .withMessage(
       "pronouns must be one of the allowed values: " +
         ALLOWED_PRONOUN.join(", "),
     ),
 
-  // Major Check: exist, be between 1 and 255 chars, match URL regex
+  // Major Check: exist, be between 1 and 50 chars
   body("major", "Invalid major.")
     .exists({ checkFalsy: true })
     .withMessage("major can't be null or empty.")
     .blacklist("<>")
     .trim()
-    .isLength({ min: 1, max: 255 })
-    .withMessage("Major length must be between 1 to 255 characters."),
+    .isLength({ min: 1, max: 25 })
+    .withMessage("Major length must be between 1 to 25 characters."),
 
-  // Avatar Check: exist, be between 1 and 255 chars, match URL regex
+  // Avatar Check: exist, be between 1 and 255 chars, and is URL!
   body("avatar", "Invalid avatar.")
     .exists({ checkFalsy: true })
     .withMessage("avatar can't be null or empty.")
@@ -108,7 +106,7 @@ const updateNewUserValidator = [
     .isURL()
     .withMessage("Must be an URL"),
 
-  // Age Check: be greater than or equal to 16
+  // Age Check: be greater than or equal to 16.
   body("age", "Invalid age.")
     .exists({ checkFalsy: true })
     .blacklist("<>")
@@ -120,7 +118,7 @@ const updateNewUserValidator = [
       return true;
     }),
 
-  // Interests Check: exist, be between 1 and 255 chars, not include "<>",
+  // Interests Check: Must be an array.
   body("interests", "Invalid interests.")
     .blacklist("<>")
     .trim()

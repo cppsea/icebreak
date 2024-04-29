@@ -63,22 +63,18 @@ async function getGuildsForUser(userId) {
 }
 
 async function updateNewUser(userId, userData) {
-  const updateEvent = await prisma.events.update({
+  // convert age field into a int, because Int? in prisma schema allows an string age such as "25".
+  userData.age = parseInt(userData.age);
+  const updatedUser = await prisma.user.update({
     where: {
       userId: userId,
     },
-    //If a given data was not updated, it will be undefined and prisma will ignore the update of that field
     data: {
-      firstName: userData.firstName,
-      lastName: userData.lastName,
-      avatar: userData.avatar,
-      age: userData.age,
-      pronouns: userData.pronouns,
-      major: userData.major,
-      interests: userData.interests,
+      ...userData,
+      isNew: false,
     },
   });
-  return updateEvent;
+  return updatedUser;
 }
 
 module.exports = {
