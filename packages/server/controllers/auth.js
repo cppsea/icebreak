@@ -5,6 +5,7 @@ const token = require("../utils/token");
 const bcrypt = require("bcrypt");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 const nodemailer = require("nodemailer");
+const crypto = require("node:crypto");
 
 const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
 
@@ -13,6 +14,9 @@ async function create(accessToken, refreshToken, profile, callback) {
     let { sub, given_name, family_name, picture, email } = profile._json;
     picture = picture.replace("=s96-c", "");
     const googleUUID = uuidv5(sub, NAMESPACE);
+    const hash = crypto.createHash("sha256");
+    hash.update(email);
+    const emailHash = hash.digest("hex");
     const user = await prisma.user.findUniqueOrThrow({
       where: {
         userId: googleUUID,
@@ -22,7 +26,7 @@ async function create(accessToken, refreshToken, profile, callback) {
       const newUser = await prisma.user.create({
         data: {
           userId: googleUUID,
-          email: email,
+          email: emailHash,
           avatar: picture,
           firstName: given_name,
           lastName: family_name,
@@ -82,6 +86,9 @@ async function register(newUser) {
   const salt = await bcrypt.genSalt(saltRounds);
   const passwordHash = await bcrypt.hash(newUser.password, salt);
   const userId = uuidv4();
+  const hash = crypto.createHash("sha256");
+  hash.update(newUser.email);
+  const emailHash = hash.digest("hex");
 
   // placeholder names until new user puts in their names in onboarding screen
   return await prisma.user.create({
@@ -89,7 +96,7 @@ async function register(newUser) {
       userId,
       firstName: "New",
       lastName: "User",
-      email: newUser.email,
+      email: emailHash,
       password: passwordHash,
     },
   });
@@ -191,9 +198,12 @@ async function authenticate(request, response, next) {
 }
 
 async function isUserEmail(email) {
+  const hash = crypto.createHash("sha256");
+  hash.update(email);
+  const emailHash = hash.digest("hex");
   const result = await prisma.user.findUnique({
     where: {
-      email: email,
+      email: emailHash,
     },
   });
 
