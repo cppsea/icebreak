@@ -3,7 +3,7 @@ const router = express.Router();
 const { validationResult, matchedData } = require("express-validator");
 const {
   userIdValidator,
-  updateNewUserValidator,
+  onboardingValidator,
 } = require("../../validators/users");
 
 const UserController = require("../../controllers/users");
@@ -98,8 +98,7 @@ router.get(
 router.put(
   "/:userId/new",
   AuthController.authenticate,
-  userIdValidator,
-  updateNewUserValidator,
+  onboardingValidator,
   async (request, response) => {
     const result = validationResult(request);
 
@@ -113,17 +112,6 @@ router.put(
     const { userId } = matchedData(request);
 
     try {
-      // check if user is new
-      const user = await UserController.getUser(userId);
-      if (user.isNew === false) {
-        return response.status(400).json({
-          status: "fail",
-          data: {
-            userId: "User is not new!",
-          },
-        });
-      }
-
       const updatedNewUser = await UserController.updateNewUser(
         userId,
         validatedData,

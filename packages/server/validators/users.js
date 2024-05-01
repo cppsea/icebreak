@@ -51,7 +51,32 @@ const userIdBodyValidator = [
     }),
 ];
 
-const updateNewUserValidator = [
+const onboardingValidator = [
+  // User ID Check: Must Exist, and be new onboarding user.
+  param("userId")
+    .notEmpty()
+    .withMessage("User ID cannot be empty")
+    .blacklist("<>")
+    .isUUID()
+    .withMessage("Invalid user ID provided")
+    .bail()
+
+    // check if user exists and hasn't completed onboarding
+    .custom(async (value) => {
+      try {
+        const user = await UserController.getUser(value);
+        if (user.isNew === false) {
+          throw new Error("User already onboarded!");
+        }
+      } catch (error) {
+        if (error.message === "User already onboarded!") {
+          throw new Error("User already onboarded!");
+        } else {
+          throw new Error("User not found!");
+        }
+      }
+    }),
+
   // First Name Check: exist, be between 1 and 50 chars
   body("firstName", "Invalid firstName.")
     .exists({ checkFalsy: true })
@@ -104,13 +129,16 @@ const updateNewUserValidator = [
     .isLength({ min: 1, max: 255 })
     .withMessage("Name length must be between 1 to 255 characters.")
     .isURL()
-    .withMessage("Must be an URL"),
+    .withMessage("Must be an URL!")
+    .matches(/(?:\.jpg|\.png)$/)
+    .withMessage("Must be an image URL in .jpg or .png form!"),
 
   // Age Check: be greater than or equal to 16.
   body("age", "Invalid age.")
     .exists({ checkFalsy: true })
     .blacklist("<>")
     .trim()
+    .toInt()
     .custom((value) => {
       if (value < 16) {
         throw new Error("Age must be greater than 16.");
@@ -131,5 +159,5 @@ const updateNewUserValidator = [
 module.exports = {
   userIdValidator,
   userIdBodyValidator,
-  updateNewUserValidator,
+  onboardingValidator,
 };

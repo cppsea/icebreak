@@ -63,8 +63,6 @@ async function getGuildsForUser(userId) {
 }
 
 async function updateNewUser(userId, userData) {
-  // convert age field into a int, because Int? in prisma schema allows an string age such as "25".
-  userData.age = parseInt(userData.age);
   const updatedUser = await prisma.user.update({
     where: {
       userId: userId,
