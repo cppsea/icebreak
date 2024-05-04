@@ -62,6 +62,19 @@ async function getGuildsForUser(userId) {
   return guilds;
 }
 
+async function updateNewUser(userId, userData) {
+  const updatedUser = await prisma.user.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      ...userData,
+      isNew: false,
+    },
+  });
+  return updatedUser;
+}
+
 module.exports = {
   getUser,
   getAllUsers,
@@ -69,4 +82,5 @@ module.exports = {
   getGuildsForUser,
   getUserIdByEmail,
   getUserEmail,
+  updateNewUser,
 };

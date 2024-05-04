@@ -18,6 +18,9 @@ model User {
   isNew          Boolean         @default(true) @map("is_new")
   handler        String?         @db.VarChar(50)
   major          String?         @db.VarChar(100)
+  age            Int?
+  pronouns       UserPronouns    @default(TheyThemTheir)
+  interests      String[]
   eventAttendees EventAttendee[]
   guildMembers   GuildMember[]
 

@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
 const { validationResult, matchedData } = require("express-validator");
-const { userIdValidator } = require("../../validators/users");
+const {
+  userIdValidator,
+  onboardingValidator,
+} = require("../../validators/users");
 
 const UserController = require("../../controllers/users");
 const AuthController = require("../../controllers/auth");
@@ -52,7 +55,7 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
 );
 
 // Get all guilds for a specific user
@@ -89,7 +92,43 @@ router.get(
         message: error.message,
       });
     }
-  }
+  },
+);
+
+router.post(
+  "/:userId/onboarding",
+  AuthController.authenticate,
+  onboardingValidator,
+  async (request, response) => {
+    const result = validationResult(request);
+
+    if (!result.isEmpty()) {
+      return response.status(400).json({
+        status: "fail",
+        data: result.array(),
+      });
+    }
+    const validatedData = matchedData(request);
+    const { userId } = matchedData(request);
+
+    try {
+      const updatedNewUser = await UserController.updateNewUser(
+        userId,
+        validatedData,
+      );
+      response.status(200).json({
+        status: "success",
+        data: {
+          updatedNewUser,
+        },
+      });
+    } catch (error) {
+      response.status(500).json({
+        status: "error",
+        message: error.message,
+      });
+    }
+  },
 );
 
 module.exports = router;
