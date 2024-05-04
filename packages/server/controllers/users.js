@@ -25,9 +25,7 @@ async function getUserEmail(userId) {
 }
 
 async function getUserByEmail(email) {
-  const hash = crypto.createHash("sha256");
-  hash.update(email);
-  const emailHash = hash.digest("hex");
+  const emailHash = hashUserEmail(email);
   const query = await prisma.user.findUnique({
     where: {
       email: emailHash,
@@ -37,9 +35,7 @@ async function getUserByEmail(email) {
 }
 
 async function getUserIdByEmail(email) {
-  const hash = crypto.createHash("sha256");
-  hash.update(email);
-  const emailHash = hash.digest("hex");
+  const emailHash = hashUserEmail(email);
   const query = await prisma.user.findUnique({
     where: {
       email: emailHash,
@@ -69,6 +65,13 @@ async function getGuildsForUser(userId) {
   return guilds;
 }
 
+async function hashUserEmail(email) {
+  const hash = crypto.createHash("sha256");
+  hash.update(email);
+  const emailHash = hash.digest("hex");
+  return emailHash;
+}
+
 module.exports = {
   getUser,
   getAllUsers,
@@ -76,4 +79,5 @@ module.exports = {
   getGuildsForUser,
   getUserIdByEmail,
   getUserEmail,
+  hashUserEmail,
 };
