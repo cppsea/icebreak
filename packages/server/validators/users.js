@@ -84,7 +84,7 @@ const onboardingValidator = [
     .blacklist("<>")
     .trim()
     .isLength({ min: 1, max: 50 })
-    .withMessage("firstName length must be between 1 to 255 characters.")
+    .withMessage("firstName length must be between 1 to 50 characters.")
     .isAlpha()
     .withMessage("firstName should be Alphabetic characters."),
 
@@ -111,14 +111,14 @@ const onboardingValidator = [
         ALLOWED_PRONOUN.join(", "),
     ),
 
-  // Major Check: exist, be between 1 and 50 chars
+  // Major Check: exist, be between 1 and 100 chars
   body("major", "Invalid major.")
     .exists({ checkFalsy: true })
     .withMessage("major can't be null or empty.")
     .blacklist("<>")
     .trim()
-    .isLength({ min: 1, max: 25 })
-    .withMessage("Major length must be between 1 to 25 characters."),
+    .isLength({ min: 1, max: 100 })
+    .withMessage("Major length must be between 1 to 100 characters."),
 
   // Avatar Check: exist, be between 1 and 255 chars, and is URL!
   body("avatar", "Invalid avatar.")
@@ -146,14 +146,19 @@ const onboardingValidator = [
       return true;
     }),
 
-  // Interests Check: Must be an array.
+  // Interests Check: Must be a populated array
   body("interests", "Invalid interests.")
     .blacklist("<>")
     .trim()
-    .isArray()
-    .withMessage("Must be an array.")
+    .isArray({ min: 1 })
+    .withMessage("Array can't be empty!")
     .exists({ checkFalsy: true })
-    .withMessage("interests can't be null or empty."),
+    .withMessage("Interests can't be null or empty."),
+
+  // validate each element in the interests array
+  body("interests.*", "Invalid interests.")
+    .isAlpha("en-US", { ignore: " " })
+    .withMessage("Must be alphabetical string!"),
 ];
 
 module.exports = {

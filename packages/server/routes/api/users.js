@@ -95,8 +95,8 @@ router.get(
   },
 );
 
-router.put(
-  "/:userId/new",
+router.post(
+  "/:userId/onboarding",
   AuthController.authenticate,
   onboardingValidator,
   async (request, response) => {
