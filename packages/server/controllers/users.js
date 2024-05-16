@@ -66,6 +66,19 @@ async function hashUserEmail(email) {
   return emailHash;
 }
 
+async function updateNewUser(userId, userData) {
+  const updatedUser = await prisma.user.update({
+    where: {
+      userId: userId,
+    },
+    data: {
+      ...userData,
+      isNew: false,
+    },
+  });
+  return updatedUser;
+}
+
 module.exports = {
   getUser,
   getAllUsers,
@@ -74,4 +87,5 @@ module.exports = {
   getUserIdByEmail,
   getUserEmail,
   hashUserEmail,
+  updateNewUser,
 };

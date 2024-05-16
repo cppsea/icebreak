@@ -16,7 +16,7 @@ describe("Guilds Unit Tests", () => {
     prismaMock.guilds.findUniqueOrThrow.mockResolvedValue(testFetchGuild);
 
     await expect(
-      GuildsController.getGuild(testFetchGuild.guildId)
+      GuildsController.getGuild(testFetchGuild.guildId),
     ).resolves.toEqual({
       guildId: "1f050f81-fbef-485a-84b2-516dfbb3d0da",
       name: "Software Engineering Association",
@@ -28,11 +28,11 @@ describe("Guilds Unit Tests", () => {
 
   test("should throw error if no guild has given id", async () => {
     prismaMock.guilds.findUniqueOrThrow.mockRejectedValue(
-      new PrismaClientKnownRequestError("record not found", { code: "P2025" })
+      new PrismaClientKnownRequestError("record not found", { code: "P2025" }),
     );
 
     await expect(
-      GuildsController.getGuild("e2bdade9-4bf2-4220-8020-e09266363762")
+      GuildsController.getGuild("e2bdade9-4bf2-4220-8020-e09266363762"),
     ).rejects.toThrow(PrismaClientKnownRequestError);
   });
 
@@ -47,7 +47,7 @@ describe("Guilds Unit Tests", () => {
     prismaMock.guilds.create.mockResolvedValue(testCreateGuild);
 
     await expect(
-      GuildsController.createGuild(testCreateGuild)
+      GuildsController.createGuild(testCreateGuild),
     ).resolves.toEqual(expect.objectContaining(testCreateGuild));
   });
 
@@ -62,11 +62,11 @@ describe("Guilds Unit Tests", () => {
     prismaMock.guilds.create.mockRejectedValue(
       new PrismaClientKnownRequestError("Missing required field error", {
         code: "P2012",
-      })
+      }),
     );
 
     await expect(
-      GuildsController.createGuild(testinvalidCreateGuild)
+      GuildsController.createGuild(testinvalidCreateGuild),
     ).rejects.toThrow(PrismaClientKnownRequestError);
   });
 
@@ -104,7 +104,7 @@ describe("Guilds Unit Tests", () => {
 
     const result = await GuildsController.updateGuild(
       "308b5bc4-7771-4514-99b7-6666cefb7e1d",
-      initial
+      initial,
     );
 
     expect(result).toEqual(expect.objectContaining(expected));
@@ -124,7 +124,7 @@ describe("Guilds Unit Tests", () => {
 
     const result = await GuildsController.updateGuild(
       "308b5bc4-7771-4514-99b7-6666cefb7e1d",
-      initial
+      initial,
     );
 
     expect(result).toEqual(expect.objectContaining(expected));
