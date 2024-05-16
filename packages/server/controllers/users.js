@@ -25,23 +25,17 @@ async function getUserEmail(userId) {
 }
 
 async function getUserByEmail(email) {
-  const emailHash = hashUserEmail(email);
-  const query = await prisma.user.findUnique({
+  const emailHash = await hashUserEmail(email);
+  return prisma.user.findUnique({
     where: {
       email: emailHash,
     },
   });
-  return query;
 }
 
 async function getUserIdByEmail(email) {
-  const emailHash = hashUserEmail(email);
-  const query = await prisma.user.findUnique({
-    where: {
-      email: emailHash,
-    },
-  });
-  return query.userId;
+  const user = await getUserByEmail(email);
+  return user ? user.userId : null;
 }
 
 async function getGuildsForUser(userId) {

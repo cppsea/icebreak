@@ -5,7 +5,7 @@ const token = require("../utils/token");
 const bcrypt = require("bcrypt");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 const nodemailer = require("nodemailer");
-const UserController = require("../../controllers/users");
+const UserController = require("./users");
 
 const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
 
@@ -194,16 +194,8 @@ async function authenticate(request, response, next) {
 }
 
 async function isUserEmail(email) {
-  const emailHash = await UserController.hashUserEmail(email);
-  const result = await prisma.user.findUnique({
-    where: {
-      email: emailHash,
-    },
-  });
-
-  if (result === null) return false;
-
-  return true;
+  const user = await UserController.getUserByEmail(email);
+  return !!user;
 }
 
 async function isGoogleAccount(userId) {
