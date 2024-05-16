@@ -21,7 +21,7 @@ function setNgrokPath() {
 
   if (newPath.length > PATH_LIMIT) {
     throw new Error(
-      "Your path variable is over 1024 characters long. You will have to shorten it or add ngrok manually to your path."
+      "Your path variable is over 1024 characters long. You will have to shorten it or add ngrok manually to your path.",
     );
   } else {
     console.log("path changed");
@@ -50,7 +50,7 @@ function newTerminal(command) {
       break;
     default:
       console.log(
-        "This dev script currently only supports Windows/unix at the moment."
+        "This dev script currently only supports Windows/unix at the moment.",
       );
   }
 }
@@ -79,7 +79,7 @@ setTimeout(() => {
           if (error) throw error;
           const overwrite = data.replace(
             /\b(https:\/\/)\b.*\b(.ngrok.free.app)\b/,
-            public_url
+            public_url,
           );
 
           fs.writeFile(FILE_PATH, overwrite, "utf-8", function (error) {

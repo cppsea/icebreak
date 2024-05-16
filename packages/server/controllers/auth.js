@@ -5,6 +5,7 @@ const token = require("../utils/token");
 const bcrypt = require("bcrypt");
 const client = new OAuth2Client(process.env.WEB_CLIENT_ID);
 const nodemailer = require("nodemailer");
+const UserController = require("./users");
 
 const NAMESPACE = "7af17462-8078-4703-adda-be2143a4d93a";
 
@@ -13,6 +14,7 @@ async function create(accessToken, refreshToken, profile, callback) {
     let { sub, given_name, family_name, picture, email } = profile._json;
     picture = picture.replace("=s96-c", "");
     const googleUUID = uuidv5(sub, NAMESPACE);
+    const emailHash = await UserController.hashUserEmail(email);
     const user = await prisma.user.findUniqueOrThrow({
       where: {
         userId: googleUUID,
@@ -22,7 +24,7 @@ async function create(accessToken, refreshToken, profile, callback) {
       const newUser = await prisma.user.create({
         data: {
           userId: googleUUID,
-          email: email,
+          email: emailHash,
           avatar: picture,
           firstName: given_name,
           lastName: family_name,
@@ -82,6 +84,7 @@ async function register(newUser) {
   const salt = await bcrypt.genSalt(saltRounds);
   const passwordHash = await bcrypt.hash(newUser.password, salt);
   const userId = uuidv4();
+  const emailHash = await UserController.hashUserEmail(newUser.email);
 
   // placeholder names until new user puts in their names in onboarding screen
   return await prisma.user.create({
@@ -89,7 +92,7 @@ async function register(newUser) {
       userId,
       firstName: "New",
       lastName: "User",
-      email: newUser.email,
+      email: emailHash,
       password: passwordHash,
     },
   });
@@ -191,15 +194,8 @@ async function authenticate(request, response, next) {
 }
 
 async function isUserEmail(email) {
-  const result = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
-
-  if (result === null) return false;
-
-  return true;
+  const user = await UserController.getUserByEmail(email);
+  return !!user;
 }
 
 async function isGoogleAccount(userId) {

@@ -1,4 +1,5 @@
 const prisma = require("../prisma/prisma");
+const crypto = require("node:crypto");
 
 async function getAllUsers() {
   const query = await prisma.user.findMany();
@@ -24,21 +25,17 @@ async function getUserEmail(userId) {
 }
 
 async function getUserByEmail(email) {
-  const query = await prisma.user.findUnique({
+  const emailHash = await hashUserEmail(email);
+  return prisma.user.findUnique({
     where: {
-      email: email,
+      email: emailHash,
     },
   });
-  return query;
 }
 
 async function getUserIdByEmail(email) {
-  const query = await prisma.user.findUnique({
-    where: {
-      email: email,
-    },
-  });
-  return query.userId;
+  const user = await getUserByEmail(email);
+  return user ? user.userId : null;
 }
 
 async function getGuildsForUser(userId) {
@@ -62,6 +59,13 @@ async function getGuildsForUser(userId) {
   return guilds;
 }
 
+async function hashUserEmail(email) {
+  const hash = crypto.createHash("sha256");
+  hash.update(email);
+  const emailHash = hash.digest("hex");
+  return emailHash;
+}
+
 async function updateNewUser(userId, userData) {
   const updatedUser = await prisma.user.update({
     where: {
@@ -82,5 +86,6 @@ module.exports = {
   getGuildsForUser,
   getUserIdByEmail,
   getUserEmail,
+  hashUserEmail,
   updateNewUser,
 };
